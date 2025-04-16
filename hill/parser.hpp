@@ -4,6 +4,7 @@
 #include "lexer.hpp"
 #include "analyzer.hpp"
 
+#include <memory>
 #include <istream>
 #include <iostream>
 #include <stack>
@@ -12,86 +13,81 @@ void error(const char *msg)
 {
 }
 
-namespace hill
-{
+namespace hill {
+
 	struct token_queue {
-		std::shared_ptr<token> pull_token(std::istream& istr)
+		token pull_token(std::istream &istr)
 		{
-			current_token.swap(next_token);
-			while ((next_token = get_token(istr))->ws()) ;
-			return current_token;
+			token curr = std::move(this->next_token);
+			while ((this->next_token = get_token(istr)).ws());
+			return curr;
 		}
 
-		std::shared_ptr<token> get_next_token()
-		{
-			return next_token;
-		}
+		const token &get_next_token() const {return this->next_token;}
 
 	private:
-		std::shared_ptr<token> current_token = std::make_shared<token>(token(tt::START, ""));
-		std::shared_ptr<token> next_token = std::make_shared<token>(token(tt::START, ""));
+		token next_token = token(tt::START, "");
 	};
 
-
 	struct parser {
-		std::stack<std::shared_ptr<token>> op_stack;
+		std::stack<token> op_stack;
 		analyzer analyzer;
 
-		void put_token(std::shared_ptr<token> t)
+		void put_token(token t)
 		{
-			std::cout<<t->str()<<'\n';
+			std::cout << t.str() << '\n';
 
-			analyzer.analyze_token(t);
+			analyzer.analyze_token(std::move(t));
 		}
 
-		void parse_token(std::shared_ptr<token> t)
+		void parse_token(token t)
 		{
-			if (t->val()) {
-				put_token(t);
-			} else if (t->lgroup()) {
-				op_stack.push(t);
-			} else if (t->rgroup()) {
+			if (t.val()) {
+				put_token(std::move(t));
+			} else if (t.lgroup()) {
+				op_stack.push(std::move(t));
+			} else if (t.rgroup()) {
 				// TODO:
-				while (!op_stack.empty() && !op_stack.top()->lgroup()) {
-					put_token(op_stack.top());
+				while (!op_stack.empty() && !op_stack.top().lgroup()) {
+					put_token(std::move(op_stack.top()));
 					op_stack.pop();
 				}
 				// TODO: Consider checking if grouping tokens matches in token type
 				op_stack.pop();
-				put_token(t);
-			} else if (t->op()) {
-				if (t->lassoc()) {
-					while (!op_stack.empty() && !op_stack.top()->lgroup() && op_stack.top()->prec() <= t->prec()) {
-						put_token(op_stack.top());
+				put_token(std::move(t));
+			} else if (t.op()) {
+				if (t.lassoc()) {
+					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() <= t.prec()) {
+						put_token(std::move(op_stack.top()));
 						op_stack.pop();
 					}
-				} else if (t->rassoc()) {
-					while (!op_stack.empty() && !op_stack.top()->lgroup() && op_stack.top()->prec() < t->prec()) {
-						put_token(op_stack.top());
+				} else if (t.rassoc()) {
+					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() < t.prec()) {
+						put_token(std::move(op_stack.top()));
 						op_stack.pop();
 					}
 				} else {
-					while (!op_stack.empty() && !op_stack.top()->lgroup() && op_stack.top()->prec() <= t->prec()) {
-						put_token(op_stack.top());
+					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() <= t.prec()) {
+						put_token(std::move(op_stack.top()));
 						op_stack.pop();
 					}
 				}
 
-				if (t->get_actual_arity()==tt_arity::RUNARY) put_token(t);
-				else op_stack.push(t);
+				if (t.get_actual_arity()==tt_arity::RUNARY) put_token(std::move(t));
+				else op_stack.push(std::move(t));
 
 				// TODO: Handle short circuit
-			} else if (t->end()) {
+			} else if (t.end()) {
 				while (!op_stack.empty()) {
-					put_token(op_stack.top());
+					put_token(std::move(op_stack.top()));
 					op_stack.pop();
 				}
 			}
 		}
 
-		void error_token(std::shared_ptr<token> t)
+		void error_token(token t)
 		{
-			std::cerr<<"ERROR: "<<t->str()<<'\n';
+			std::cerr<<"ERROR: " << t.str() << '\n';
 			std::exit(EXIT_FAILURE); // TODO: Handle errors properly
 		}
 
@@ -99,47 +95,48 @@ namespace hill
 		{
 			token_queue queue;
 
-			std::shared_ptr<token> prev_t = std::make_shared<token>(token(tt::START, ""));
-			std::shared_ptr<token> t(nullptr);
-			std::shared_ptr<token> next_t(nullptr);
-			while (!(t=queue.pull_token(istr))->end()) {
-				next_t = queue.get_next_token();
+			token prev_t = token(tt::START, "");
+			token t;
 
-				if (prev_t->vend() && t->vbegin()) {
-					parse_token(std::make_shared<token>(token(tt::CALL, "")));
-				}
-
-				if (t->op()) {
-					if (prev_t->vend()) {
-						if ((next_t->vbegin() || next_t->has_arity(tt_arity::LUNARY))
-								&& t->has_arity(tt_arity::BINARY)) {
-							t->set_actual_arity(tt_arity::BINARY);
-							parse_token(t);
-						} else {
-							if (t->has_arity(tt_arity::RUNARY)) {
-								t->set_actual_arity(tt_arity::RUNARY);
-								parse_token(t);
-							} else error_token(t);
-						}
-					} else {
-						if (t->has_arity(tt_arity::LUNARY)) {
-							t->set_actual_arity(tt_arity::LUNARY);
-							parse_token(t);
-						} else error_token(t);
-					}
-				} else {
-					t->set_actual_arity(tt_arity::NULLARY);
-					parse_token(t);
-				}
-
-				if (t->error()) {
+			while (!(t = queue.pull_token(istr)).end()) {
+				if (t.error()) {
 					error("Lexing failed");
 				}
 
-				prev_t.swap(t);
+				const auto &next_t = &queue.get_next_token();
+
+				if (prev_t.vend() && t.vbegin()) {
+					parse_token(token(tt::CALL, ""));
+				}
+
+				if (t.op()) {
+					if (prev_t.vend()) {
+						if ((next_t->vbegin() || next_t->has_arity(tt_arity::LUNARY))
+								&& t.has_arity(tt_arity::BINARY)) {
+							t.set_actual_arity(tt_arity::BINARY);
+							parse_token(std::move(t));
+						} else {
+							if (t.has_arity(tt_arity::RUNARY)) {
+								t.set_actual_arity(tt_arity::RUNARY);
+								parse_token(std::move(t));
+							} else error_token(std::move(t));
+						}
+					} else {
+						if (t.has_arity(tt_arity::LUNARY)) {
+							t.set_actual_arity(tt_arity::LUNARY);
+							parse_token(std::move(t));
+						} else error_token(std::move(t));
+					}
+				} else {
+					t.set_actual_arity(tt_arity::NULLARY);
+					parse_token(std::move(t));
+				}
+
+				// Use after move??
+				prev_t = std::move(t);
 			}
 
-			parse_token(std::make_shared<token>(token(tt::END, "")));
+			parse_token(token(tt::END, ""));
 		}
 	};
 }

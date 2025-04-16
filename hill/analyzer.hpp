@@ -36,11 +36,11 @@ namespace hill
 	struct block {
 		std::vector<instr> instrs;
 
-		void add(std::shared_ptr<token> t)
+		void add(token t)
 		{
-			switch (t->get_type()) {
+			switch (t.get_type()) {
 			case tt::NAME:
-				instrs.push_back(id(t->get_text()));
+				instrs.push_back(id(t.get_text()));
 				break;
 			case tt::NUM:
 				instrs.push_back(num());
@@ -68,11 +68,11 @@ namespace hill
 		//std::stack <std::shared_ptr<val>> vals;
 		//std::stack <std::shared_ptr<scope>> scopes;
 
-		void analyze_token(std::shared_ptr<token> t)
+		void analyze_token(token t)
 		{
-			std::cout<<"analyzer: "<<t->str()<<'\n';
+			std::cout<<"analyzer: "<< t.str() <<'\n';
 
-			main.add(t);
+			main.add(std::move(t));
 
 		}
 	};
