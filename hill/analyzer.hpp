@@ -11,6 +11,17 @@
 
 namespace hill
 {
+	struct type {
+	};
+
+	struct i: type { // Integer literal of unspecified size
+	};
+
+	struct u: type { //Unsigned integer literal of unspecified size
+	};
+
+	struct i32: type {
+	};
 
 	struct instr {
 	};
