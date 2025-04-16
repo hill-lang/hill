@@ -20,37 +20,41 @@ namespace hill
 
 	struct token {
 		token():
-			token_type(tt::END),
+			type(tt::END),
 			token_type_spec(lang_spec::get_tt_spec(tt::END)),
 			text(""),
 			actual_arity(0)
 		{}
 		token(tt token_type, const std::string &text):
-			token_type(token_type),
+			type(token_type),
 			token_type_spec(lang_spec::get_tt_spec(token_type)),
 			text(text),
 			actual_arity(0)
 		{}
 
 	private:
-		tt token_type;
+		tt type;
 
 		const tt_spec *token_type_spec;
 		std::string text;
 		int actual_arity;
 
 	public:
-		tt get_token_type()
+		tt get_type()
 		{
-			return token_type;
+			return type;
+		}
+		const std::string &get_text()
+		{
+			return text;
 		}
 		bool end() const
 		{
-			return token_type==tt::END || token_type==tt::ERROR;
+			return type==tt::END || type==tt::ERROR;
 		}
 		bool error() const
 		{
-			return token_type==tt::ERROR;
+			return type==tt::ERROR;
 		}
 		bool ws() const
 		{

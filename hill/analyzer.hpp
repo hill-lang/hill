@@ -7,45 +7,73 @@
 #include <memory>
 #include <stack>
 #include <iostream>
+#include <map>
 
 namespace hill
 {
 
-	struct val {
+	struct instr {
 	};
 
-	struct name_val: val {
+	struct id: instr {
+		id(const std::string &name): name(name) {}
+		std::string name;
 	};
 
-	struct num_val: val {
+	struct num: instr {
 	};
 
-	struct op_val: val {
+	struct op: instr {
 	};
 
-	struct scope {
+	struct type: instr {
+	};
+
+/*	struct scope {
+		//std::map<std::string, val> names;
+	};*/
+
+	struct block {
+		std::vector<instr> instrs;
+
+		void add(std::shared_ptr<token> t)
+		{
+			switch (t->get_type()) {
+			case tt::NAME:
+				instrs.push_back(id(t->get_text()));
+				break;
+			case tt::NUM:
+				instrs.push_back(num());
+				break;
+			case tt::OP:
+				instrs.push_back(op());
+				break;
+			default:;
+			}
+		}
 	};
 
 	struct analyzer {
-		std::stack <std::shared_ptr<val>> vals;
-		std::stack <std::shared_ptr<scope>> scopes;
+		analyzer() {
+			/*scope root;*/
+
+			/*root.names = {
+				{"i8", type_val()},
+			};*/
+
+			/*scopes.push(std::make_shared<scope>(root));*/
+		}
+
+		block main;
+		//std::stack <std::shared_ptr<val>> vals;
+		//std::stack <std::shared_ptr<scope>> scopes;
 
 		void analyze_token(std::shared_ptr<token> t)
 		{
 			std::cout<<"analyzer: "<<t->str()<<'\n';
 
-			switch (t->get_token_type()) {
-			case tt::NAME:
-				vals.push(std::make_shared<name_val>());
-				break;
-			case tt::NUM:
-				vals.push(std::make_shared<num_val>());
-				break;
-			case tt::OP:
-				vals.push(std::make_shared<op_val>());
-				break;
-			default:;
-			}
+			main.add(t);
+
 		}
 	};
 
