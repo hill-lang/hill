@@ -1,133 +1,91 @@
-
-
 #ifndef LEXER_HPP_INCLUDED
 #define LEXER_HPP_INCLUDED
 
 #include "lang_spec.hpp"
 
-#include <memory>
-#include <string>
-#include <map>
-#include <algorithm>
 #include <istream>
+#include <string>
+#include <string_view>
 #include <sstream>
-#include <cctype>
 
-namespace hill
-{
-	class not_implemented_exception {
-	};
+namespace hill {
+
+	class not_implemented_exception {};
 
 	struct token {
 		token():
 			type(tt::END),
-			token_type_spec(lang_spec::get_tt_spec(tt::END)),
+			type_spec(lang_spec::get()->get_tt_spec(tt::END)),
 			text(""),
 			actual_arity(0)
 		{}
 		token(tt token_type, const std::string &text):
 			type(token_type),
-			token_type_spec(lang_spec::get_tt_spec(token_type)),
+			type_spec(lang_spec::get()->get_tt_spec(token_type)),
 			text(text),
 			actual_arity(0)
 		{}
+		token(token &&other) noexcept:
+			type(other.type),
+			type_spec(other.type_spec),
+			text(std::move(other.text)),
+			actual_arity(other.actual_arity)
+		{}
+
+		token(token &) = delete;
+		token(const token &) = delete;
+		token &operator=(token &) = delete;
+		token &operator=(const token &) = delete;
+
+		token &operator=(token &&other) noexcept
+		{
+			if (this != &other) {
+				type = other.type;
+				text = std::move(other.text);
+				actual_arity = other.actual_arity;
+			}
+			return *this;
+		}
 
 	private:
 		tt type;
 
-		const tt_spec *token_type_spec;
+		const tt_spec &type_spec;
 		std::string text;
 		int actual_arity;
 
 	public:
-		tt get_type()
-		{
-			return type;
-		}
-		const std::string &get_text()
-		{
-			return text;
-		}
-		bool end() const
-		{
-			return type==tt::END || type==tt::ERROR;
-		}
-		bool error() const
-		{
-			return type==tt::ERROR;
-		}
-		bool ws() const
-		{
-			return token_type_spec->kind==tt_kind::WS;
-		}
-		bool vend() const
-		{
-			return token_type_spec->kind==tt_kind::RGROUP || token_type_spec->kind==tt_kind::VAL;
-		}
-		bool vbegin() const
-		{
-			return token_type_spec->kind==tt_kind::LGROUP || token_type_spec->kind==tt_kind::VAL;
-		}
-		bool op() const
-		{
-			return token_type_spec->kind==tt_kind::OP;
-		}
-		bool val() const
-		{
-			return token_type_spec->kind==tt_kind::VAL;
-		}
-		bool lgroup() const
-		{
-			return token_type_spec->kind==tt_kind::LGROUP;
-		}
-		bool rgroup() const
-		{
-			return token_type_spec->kind==tt_kind::RGROUP;
-		}
-		bool has_arity(int arity) const
-		{
-			return token_type_spec->arity & arity;
-		}
-		bool lassoc() const
-		{
-			return token_type_spec->assoc==tt_assoc::LEFT;
-		}
-		bool rassoc() const
-		{
-			return token_type_spec->assoc==tt_assoc::RIGHT;
-		}
-		bool nassoc() const
-		{
-			return token_type_spec->assoc==tt_assoc::NONE;
-		}
-		int prec() const
-		{
-			return token_type_spec->prec;
-		}
-		/*tt_kind kind() const
-		{
-			return token_type_spec->kind;
-		}*/
-		std::string str() const
-		{
-			return token_type_spec->name + " (" + text + ")";
-		}
+		tt get_type() const {return this->type;}
+		const std::string &get_text() const {return this->text;}
+		/*std::string_view view_text() const { return this->text; }*/ /* Maybe we want this? */
 
-		void set_actual_arity(int a)
-		{
-			actual_arity = a;
-		}
-		int get_actual_arity()
-		{
-			return actual_arity;
-		}
+		bool end() const {return this->type==tt::END || this->type==tt::ERROR;}
+		bool error() const {return this->type==tt::ERROR;}
+
+		bool ws() const {return this->type_spec.kind==tt_kind::WS;}
+		bool vend() const {return this->type_spec.kind==tt_kind::RGROUP || this->type_spec.kind==tt_kind::VAL;}
+		bool vbegin() const {return this->type_spec.kind==tt_kind::LGROUP || this->type_spec.kind==tt_kind::VAL;}
+		bool op() const {return this->type_spec.kind==tt_kind::OP;}
+		bool val() const {return this->type_spec.kind==tt_kind::VAL;}
+		bool lgroup() const {return this->type_spec.kind==tt_kind::LGROUP;}
+		bool rgroup() const {return this->type_spec.kind==tt_kind::RGROUP;}
+		bool has_arity(int arity) const {return this->type_spec.arity & arity;}
+		bool lassoc() const {return this->type_spec.assoc==tt_assoc::LEFT;}
+		bool rassoc() const {return this->type_spec.assoc==tt_assoc::RIGHT;}
+		bool nassoc() const {return this->type_spec.assoc==tt_assoc::NONE;}
+		int prec() const {return this->type_spec.prec;}
+		/*tt_kind kind() const {return this->type_spec.kind;}*/
+		std::string str() const {return this->type_spec.name + " (" + this->text + ")";}
+
+		void set_actual_arity(int a) { this->actual_arity=a;}
+		int get_actual_arity() const {return this->actual_arity;}
 	};
 
-	std::shared_ptr<token> get_token(std::istream &istr)
+	token get_token(std::istream &istr)
 	{
-		auto ops = lang_spec().build_tt_patterns();
+		auto &ops = lang_spec::get()->get_tt_patterns();
 
-		if (istr.eof()) return std::make_shared<token>(tt::END, "");
+		if (istr.eof()) return token(tt::END, "");
 
 		std::ostringstream texts;
 
@@ -141,7 +99,7 @@ namespace hill
 			}
 		
 			istr.unget();
-			return std::make_shared<token>(tt::WHITESPACE, texts.str());
+			return token(tt::WHITESPACE, texts.str());
 		}
 
 		// String
@@ -163,7 +121,7 @@ namespace hill
 				std::string rest;
 				std::getline(istr, rest);
 				texts<<rest;
-				return std::make_shared<token>(tt::COMMENT, texts.str());
+				return token(tt::COMMENT, texts.str());
 			} else if (ch=='*') {
 				texts.put(ch);
 				std::string rest;
@@ -171,7 +129,7 @@ namespace hill
 					std::getline(istr, rest, '/');
 					texts<<rest<<'/';
 				}
-				return std::make_shared<token>(tt::COMMENT, texts.str());
+				return token(tt::COMMENT, texts.str());
 			} else {
 				ch = texts.str()[0];
 				texts.str("");
@@ -192,7 +150,7 @@ namespace hill
 			}
 			istr.unget();
 
-			return std::make_shared<token>(tt::NUM, texts.str());
+			return token(tt::NUM, texts.str());
 		}
 
 		// Names
@@ -203,7 +161,7 @@ namespace hill
 			}
 			istr.unget();
 
-			return std::make_shared<token>(tt::NAME, texts.str());
+			return token(tt::NAME, texts.str());
 		}
 
 		// Operators etc.
@@ -221,11 +179,11 @@ namespace hill
 			}
 			istr.unget();
 
-			return std::make_shared<token>(tt, texts.str());
+			return token(tt, texts.str());
 		}
 
 		// Failed to find a token
-		return std::make_shared<token>(tt::END, "");
+		return token(tt::END, "");
 	}
 }
 
