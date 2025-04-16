@@ -1,14 +1,13 @@
 #ifndef LANG_SPEC_HPP_INCLUDED
 #define LANG_SPEC_HPP_INCLUDED
 
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
-#include <algorithm>
-#include <utility>
+#include <memory>
 
-namespace hill
-{
+namespace hill {
+
 	enum class tt {
 		START,
 		WHITESPACE,
@@ -101,7 +100,37 @@ namespace hill
 	};
 
 	struct lang_spec {
-		inline static const std::map<tt, tt_spec> tt_specs = {
+		lang_spec()
+		{
+			// Build tt patterns
+			for (const auto &ts : tt_specs) {
+				if (!ts.second.op_pattern.empty()) {
+					this->tt_patterns[ts.second.op_pattern] = ts.first;
+				}
+			}
+		}
+
+		static const std::unique_ptr<lang_spec> &get()
+		{
+			if (!s_instance) {
+				s_instance = std::make_unique<lang_spec>();
+			}
+			return s_instance;
+		}
+
+		const std::map<std::string, tt> &get_tt_patterns() {return tt_patterns;}
+		const tt_spec &get_tt_spec(tt type)
+		{
+#if _DEBUG // Not really needed imo
+			if (!this->tt_specs.contains(type)) {
+				throw;
+			}
+#endif
+			return this->tt_specs.at(type);
+		}
+
+	private:
+		const std::map<tt, tt_spec> tt_specs = {
 			{tt::START, tt_spec(0, tt_assoc::NONE, tt_arity::NULLARY, tt_kind::NO, "", "START")},
 			{tt::END, tt_spec(0, tt_assoc::NONE, tt_arity::NULLARY, tt_kind::NO, "", "END")},
 			{tt::ERROR, tt_spec(0, tt_assoc::NONE, tt_arity::NULLARY, tt_kind::NO, "", "ERROR")},
@@ -131,30 +160,11 @@ namespace hill
 			{tt::OP_SEMICOLON, tt_spec(19, tt_assoc::LEFT, tt_arity::RUNARY, tt_kind::OP, ";", "OP_SEMICOLON")},
 		};
 
-		static std::map<std::string, tt> build_tt_patterns()
-		{
-			std::map<std::string, tt> ret;
+		std::map<std::string, tt> tt_patterns;
 
-			for (auto &ts: tt_specs) {
-				if (!ts.second.op_pattern.empty()) ret[ts.second.op_pattern] = ts.first;
-			}
-
-			return ret;
-		}
-
-		inline static const std::map<std::string, tt> tt_patterns = build_tt_patterns();
-
-		static const std::map<std::string, tt> &get_tt_patterns()
-		{
-			return tt_patterns;
-		}
-
-		static const tt_spec *get_tt_spec(tt type)
-		{
-			return tt_specs.contains(type) ? &tt_specs.at(type) : nullptr;
-		}
+	private:
+		static std::unique_ptr<lang_spec> s_instance;
 	};
 }
 
 #endif
-

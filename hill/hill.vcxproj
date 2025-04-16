@@ -138,6 +138,7 @@
     <None Include="parser.hill" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="lang_spec.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
