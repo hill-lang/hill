@@ -36,7 +36,7 @@ namespace hill
 	struct block {
 		std::vector<instr> instrs;
 
-		void add(token t)
+		void add(const token &t)
 		{
 			switch (t.get_type()) {
 			case tt::NAME:
@@ -68,11 +68,11 @@ namespace hill
 		//std::stack <std::shared_ptr<val>> vals;
 		//std::stack <std::shared_ptr<scope>> scopes;
 
-		void analyze_token(token t)
+		void analyze_token(const token &t)
 		{
 			std::cout<<"analyzer: "<< t.str() <<'\n';
 
-			main.add(std::move(t));
+			main.add(t);
 
 		}
 	};

@@ -33,53 +33,53 @@ namespace hill {
 		std::stack<token> op_stack;
 		analyzer analyzer;
 
-		void put_token(token t)
+		void put_token(const token &t)
 		{
 			std::cout << t.str() << '\n';
 
-			analyzer.analyze_token(std::move(t));
+			analyzer.analyze_token(t);
 		}
 
 		void parse_token(token t)
 		{
 			if (t.val()) {
-				put_token(std::move(t));
+				put_token(t);
 			} else if (t.lgroup()) {
 				op_stack.push(std::move(t));
 			} else if (t.rgroup()) {
 				// TODO:
 				while (!op_stack.empty() && !op_stack.top().lgroup()) {
-					put_token(std::move(op_stack.top()));
+					put_token(op_stack.top());
 					op_stack.pop();
 				}
 				// TODO: Consider checking if grouping tokens matches in token type
 				op_stack.pop();
-				put_token(std::move(t));
+				put_token(t);
 			} else if (t.op()) {
 				if (t.lassoc()) {
 					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() <= t.prec()) {
-						put_token(std::move(op_stack.top()));
+						put_token(op_stack.top());
 						op_stack.pop();
 					}
 				} else if (t.rassoc()) {
 					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() < t.prec()) {
-						put_token(std::move(op_stack.top()));
+						put_token(op_stack.top());
 						op_stack.pop();
 					}
 				} else {
 					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() <= t.prec()) {
-						put_token(std::move(op_stack.top()));
+						put_token(op_stack.top());
 						op_stack.pop();
 					}
 				}
 
-				if (t.get_actual_arity()==tt_arity::RUNARY) put_token(std::move(t));
+				if (t.get_actual_arity()==tt_arity::RUNARY) put_token(t);
 				else op_stack.push(std::move(t));
 
 				// TODO: Handle short circuit
 			} else if (t.end()) {
 				while (!op_stack.empty()) {
-					put_token(std::move(op_stack.top()));
+					put_token(op_stack.top());
 					op_stack.pop();
 				}
 			}
@@ -111,6 +111,8 @@ namespace hill {
 
 				if (t.op()) {
 					if (prev_t.vend()) {
+						prev_t = token(t.get_type(), t.get_text());
+
 						if ((next_t->vbegin() || next_t->has_arity(tt_arity::LUNARY))
 								&& t.has_arity(tt_arity::BINARY)) {
 							t.set_actual_arity(tt_arity::BINARY);
@@ -122,18 +124,21 @@ namespace hill {
 							} else error_token(std::move(t));
 						}
 					} else {
+						prev_t = token(t.get_type(), t.get_text());
+
 						if (t.has_arity(tt_arity::LUNARY)) {
 							t.set_actual_arity(tt_arity::LUNARY);
 							parse_token(std::move(t));
 						} else error_token(std::move(t));
 					}
 				} else {
+					prev_t = token(t.get_type(), t.get_text());
+
 					t.set_actual_arity(tt_arity::NULLARY);
 					parse_token(std::move(t));
 				}
 
-				// Use after move??
-				prev_t = std::move(t);
+				//prev_t = std::move(t); // Use after move, no good
 			}
 
 			parse_token(token(tt::END, ""));
