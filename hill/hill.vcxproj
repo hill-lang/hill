@@ -129,9 +129,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="analyzer.hpp" />
+    <ClInclude Include="instr.hpp" />
     <ClInclude Include="lang_spec.hpp" />
     <ClInclude Include="lexer.hpp" />
     <ClInclude Include="parser.hpp" />
+    <ClInclude Include="type.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lexer.hill" />

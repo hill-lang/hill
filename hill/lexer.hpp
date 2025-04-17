@@ -76,7 +76,6 @@ namespace hill {
 		bool rassoc() const {return this->type_spec.assoc==tt_assoc::RIGHT;}
 		bool nassoc() const {return this->type_spec.assoc==tt_assoc::NONE;}
 		int prec() const {return this->type_spec.prec;}
-		/*tt_kind kind() const {return this->type_spec.kind;}*/
 		std::string str() const {return this->type_spec.name + " (" + this->text + ")";}
 
 		void set_actual_arity(int a) { this->actual_arity=a;}

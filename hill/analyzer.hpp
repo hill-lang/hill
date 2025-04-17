@@ -3,81 +3,58 @@
 
 #include "lang_spec.hpp"
 #include "lexer.hpp"
+#include "type.hpp"
+#include "instr.hpp"
 
+
+#include <cstdlib>
 #include <memory>
 #include <stack>
 #include <iostream>
 #include <map>
+#include <vector>
 
 namespace hill
 {
-	struct type {
-	};
 
-	struct i: type { // Integer literal of unspecified size
+	class semantic_error_exception: std::exception {
+		const char *what() const noexcept override {return "Semantic error";}
 	};
-
-	struct u: type { //Unsigned integer literal of unspecified size
-	};
-
-	struct i32: type {
-	};
-
-	struct instr {
-	};
-
-	struct id: instr {
-		id(const std::string &name): name(name) {}
-		std::string name;
-	};
-
-	struct num: instr {
-	};
-
-	struct op: instr {
-	};
-
-	struct type: instr {
-	};
-
-/*	struct scope {
-		//std::map<std::string, val> names;
-	};*/
 
 	struct block {
 		std::vector<instr> instrs;
 
 		void add(const token &t)
 		{
-			switch (t.get_type()) {
-			case tt::NAME:
-				instrs.push_back(id(t.get_text()));
+			auto instr = make_instr(t);
+
+			
+
+			switch (t.get_actual_arity()) {
+			case tt_arity::NULLARY: throw not_implemented_exception();
+			case tt_arity::LUNARY: throw not_implemented_exception();
+			case tt_arity::RUNARY: throw not_implemented_exception();
+			case tt_arity::BINARY:
+				if (instrs.size()<2) throw semantic_error_exception();
+				size_t left_ix = instrs.size()-2;
+				size_t right_ix = instrs.size()-1;
+				switch (t.get_type()) {
+				case tt::OP_COLON_EQ:
+				default:
+					throw not_implemented_exception();
+				}
 				break;
-			case tt::NUM:
-				instrs.push_back(num());
-				break;
-			case tt::OP:
-				instrs.push_back(op());
-				break;
-			default:;
 			}
+
+			instrs.push_back(instr);
 		}
 	};
 
 	struct analyzer {
 		analyzer() {
-			/*scope root;*/
-
-			/*root.names = {
-				{"i8", type_val()},
-			};*/
-
-			/*scopes.push(std::make_shared<scope>(root));*/
 		}
 
 		block main;
-		//std::stack <std::shared_ptr<val>> vals;
-		//std::stack <std::shared_ptr<scope>> scopes;
 
 		void analyze_token(const token &t)
 		{

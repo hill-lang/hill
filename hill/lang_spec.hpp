@@ -16,7 +16,7 @@ namespace hill {
 		NUM,
 		CHAR,
 		STRING,
-		OP,
+		//OP,
 		LPAR,
 		RPAR,
 		LCURLY,
