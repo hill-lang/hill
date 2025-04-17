@@ -6,7 +6,7 @@
 namespace hill {
 
 	struct type {
-		virtual std::string str() {return "";}
+		static std::string str() {return "";}
 	};
 
 	struct undecided: type {
