@@ -40,4 +40,4 @@ namespace hill {
 	}
 }
 
-#endif
+#endif /* TYPE_HPP_INCLUDED */

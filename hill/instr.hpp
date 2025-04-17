@@ -64,4 +64,4 @@ namespace hill {
 	}
 }
 
-#endif
+#endif /* INSTR_HPP_INCLUDED */

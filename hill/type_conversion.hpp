@@ -40,4 +40,4 @@ namespace hill {
 	}
 }
 
-#endif
+#endif /* TYPE_CONVERSION_HPP_DEFINED */

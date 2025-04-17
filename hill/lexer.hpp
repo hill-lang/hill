@@ -184,4 +184,4 @@ namespace hill {
 	}
 }
 
-#endif
+#endif /* LEXER_HPP_INCLUDED */

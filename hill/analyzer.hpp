@@ -84,4 +84,4 @@ namespace hill
 
 }
 
-#endif
+#endif /* ANALYZER_HPP_INCLUDED */

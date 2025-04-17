@@ -175,4 +175,4 @@ namespace hill {
 	};
 }
 
-#endif
+#endif /* LANG_SPEC_HPP_INCLUDED */
