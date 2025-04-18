@@ -42,7 +42,7 @@ namespace hill {
 
 	instr make_instr(const token &t)
 	{
-		auto kind = lang_spec::get()->get_tt_spec(t.get_type()).kind;
+		auto kind = lang_spec::get().get_tt_spec(t.get_type())->kind;
 		switch (t.get_type()) {
 			case tt::NAME:
 				return instr(instr_kind::ID, type_desc(basic_type::UNDECIDED));

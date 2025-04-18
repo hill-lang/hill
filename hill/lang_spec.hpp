@@ -118,23 +118,21 @@ namespace hill {
 			}
 		}
 
-		static const std::unique_ptr<lang_spec> &get()
+		static const lang_spec &get()
 		{
-			if (!s_instance) {
-				s_instance = std::make_unique<lang_spec>();
-			}
+			static lang_spec s_instance;
 			return s_instance;
 		}
 
-		const std::map<std::string, tt> &get_tt_patterns() {return tt_patterns;}
-		const tt_spec &get_tt_spec(tt type)
+		const std::map<std::string, tt> &get_tt_patterns() const {return tt_patterns;}
+		const tt_spec *get_tt_spec(tt type) const
 		{
 #if _DEBUG // Not really needed imo
 			if (!this->tt_specs.contains(type)) {
 				throw;
 			}
 #endif
-			return this->tt_specs.at(type);
+			return &this->tt_specs.at(type);
 		}
 
 	private:
@@ -169,9 +167,6 @@ namespace hill {
 		};
 
 		std::map<std::string, tt> tt_patterns;
-
-	private:
-		static std::unique_ptr<lang_spec> s_instance;
 	};
 }
 

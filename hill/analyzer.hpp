@@ -56,10 +56,14 @@ namespace hill
 					instrs[right_ix].type);
 
 				if (instrs[left_ix].kind==instr_kind::ID) {
+					if (t.get_type()==tt::OP_COLON_EQ) {
+						// TODO: Fail if id already in current scope
+						// TODO: Register id with type
+					}
 				} else throw semantic_error_exception();
 
-				// TODO: Register id in scope (if not already there)
 				// TODO: Set actual type of operator expression
+
 				break;
 			}
 
