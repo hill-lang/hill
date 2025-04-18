@@ -8,30 +8,31 @@
 namespace hill {
 
 	struct instr {
-		virtual const type &get_type() const {return type_o<undecided>();}
+		virtual const type &get_type() const {return type_tag<undecided>();}
+		//virtual void set_type(const type &t) {throw not_implemented_exception();}
 	};
 
 	struct id: instr {
 		id(const std::string &name): name(name) {}
-		const type &get_type() const {return type_o<undecided>();}
+		const type &get_type() const {return type_tag<undecided>();}
 		std::string name;
 	};
 
 	struct ival: instr {
 		ival(long long v): v(v) {}
-		const type &get_type() const {return type_o<i>();}
+		const type &get_type() const {return type_tag<i>();}
 		long long v;
 	};
 
 	struct fval: instr {
 		fval(long double v): v(v) {}
-		const type &get_type() const {return type_o<f>();}
+		const type &get_type() const {return type_tag<f>();}
 		long double v;
 	};
 
 	struct op: instr {
 		op(tt op_type): op_type(op_type) {}
-		const type &get_type() const {return type_o<undecided>();}
+		const type &get_type() const {return type_tag<undecided>();}
 		tt op_type;
 	};
 
@@ -63,4 +64,4 @@ namespace hill {
 	}
 }
 
-#endif
+#endif /* INSTR_HPP_INCLUDED */

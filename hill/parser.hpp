@@ -146,4 +146,4 @@ namespace hill {
 	};
 }
 
-#endif
+#endif /* PARSER_HPP_INCLUDED */

@@ -10,10 +10,6 @@
 
 namespace hill {
 
-	class not_implemented_exception: std::exception {
-		const char *what() const noexcept override {return "Not implemented";}
-	};
-
 	struct token {
 		token():
 			type(tt::END),
@@ -188,4 +184,4 @@ namespace hill {
 	}
 }
 
-#endif
+#endif /* LEXER_HPP_INCLUDED */

@@ -134,6 +134,7 @@
     <ClInclude Include="lexer.hpp" />
     <ClInclude Include="parser.hpp" />
     <ClInclude Include="type.hpp" />
+    <ClInclude Include="type_conversion.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lexer.hill" />
