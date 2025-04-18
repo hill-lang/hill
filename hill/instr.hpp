@@ -7,42 +7,36 @@
 
 namespace hill {
 
+	enum class instr_kind {
+		ID,
+		VAL,
+		OP
+	};
+
+	union instr_val {
+		long long i;
+		long double f;
+		int32_t i32;
+	};
+
 	struct instr {
-		virtual const type &get_type() const {return type_tag<undecided>();}
-		//virtual void set_type(const type &t) {throw not_implemented_exception();}
-	};
-
-	struct id: instr {
-		id(const std::string &name): name(name) {}
-		const type &get_type() const {return type_tag<undecided>();}
-		std::string name;
-	};
-
-	struct ival: instr {
-		ival(long long v): v(v) {}
-		const type &get_type() const {return type_tag<i>();}
-		long long v;
-	};
-
-	struct fval: instr {
-		fval(long double v): v(v) {}
-		const type &get_type() const {return type_tag<f>();}
-		long double v;
-	};
-
-	struct op: instr {
-		op(tt op_type): op_type(op_type) {}
-		const type &get_type() const {return type_tag<undecided>();}
-		tt op_type;
+		instr(instr_kind kind, type_desc type): kind(kind), type(type) {}
+		instr_kind kind;
+		type_desc type;
+		instr_val val;
 	};
 
 	instr make_numval(const std::string &s)
 	{
 		char *endp;
 		if (s.find('.')!=std::string::npos) { // floating point
-			return ival(std::strtoll(s.c_str(), &endp, 10));
+			auto i = instr(instr_kind::VAL, type_desc(basic_type::F));
+			i.val.f = std::strtold(s.c_str(), &endp);
+			return i;
 		} else { // integral
-			return fval(std::strtold(s.c_str(), &endp));
+			auto i = instr(instr_kind::VAL, type_desc(basic_type::I));
+			i.val.i = std::strtoll(s.c_str(), &endp, 10);
+			return i;
 		}
 	}
 
@@ -51,14 +45,14 @@ namespace hill {
 		auto kind = lang_spec::get()->get_tt_spec(t.get_type()).kind;
 		switch (t.get_type()) {
 			case tt::NAME:
-				return id(t.get_text());
+				return instr(instr_kind::ID, type_desc(basic_type::UNDECIDED));
 				break;
 			case tt::NUM:
 				return make_numval(t.get_text());
 				break;
 			default:
 				if (kind==tt_kind::OP) {
-					return op(t.get_type());
+					return instr(instr_kind::OP, type_desc(basic_type::UNDECIDED));
 				} else throw not_implemented_exception();
 		}
 	}

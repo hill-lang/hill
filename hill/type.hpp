@@ -5,39 +5,22 @@
 
 namespace hill {
 
-	struct type {
-		static std::string str() {return "";}
+	enum class basic_type {
+		UNDECIDED,
+		I,
+		I32,
+		F
 	};
 
-	struct undecided: type {
-		static std::string str() {return "@undecided";}
+	struct type_desc {
+		type_desc(basic_type basic_type): basic_type(basic_type) {}
+		bool operator==(const type_desc &other) {return this->basic_type==other.basic_type;}
+		bool operator<(const type_desc &other) const
+		{
+			return static_cast<int>(this->basic_type)<static_cast<int>(other.basic_type);
+		}
+		basic_type basic_type;
 	};
-
-	struct i: type { // Integer literal of unspecified size
-		static std::string str() {return "@i";}
-	};
-
-	struct u: type { // Unsigned integer literal of unspecified size
-		static std::string str() {return "@u";}
-	};
-
-	struct f: type { // Floating point literal of unspecified size
-		static std::string str() {return "@f";}
-	};
-
-	struct i32: type {
-		static std::string str() {return "@i32";}
-	};
-
-	template<typename T> const type &type_tag()
-	{
-		static T t;
-		return t;
-	}
-	template<typename ST, typename OT> bool is_type(const OT &t)
-	{
-		return typeid(t)==typeid(type_tag<ST>());
-	}
 }
 
 #endif /* TYPE_HPP_INCLUDED */

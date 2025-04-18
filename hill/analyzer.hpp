@@ -18,6 +18,7 @@
 
 namespace hill
 {
+
 	struct frame { // Actual data storage
 		std::vector<std::uint64_t> data;
 	};
@@ -50,14 +51,12 @@ namespace hill
 				size_t right_ix = instrs.size()-1;
 				const auto &res_type = convert_binary(
 					t.get_type(),
-					instrs[left_ix].get_type(),
-					instrs[right_ix].get_type());
-				if (is_type<id>(instrs[left_ix].get_type())) {
-					//auto name = dynamic_cast<id &>(instrs[left_ix]).name;
-					//scope[instrs[left_ix]
+					instrs[left_ix].type,
+					instrs[right_ix].type);
+
+				if (instr.kind==instr_kind::ID) {
 				} else throw semantic_error_exception();
-				/*instrs[left_ix].set_type(res_type);
-				instr.set_type(res_type);*/
+
 				// TODO: Register id in scope (if not already there)
 				// TODO: Set actual type of operator expression
 				break;
