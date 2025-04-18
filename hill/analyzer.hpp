@@ -42,7 +42,8 @@ namespace hill
 			auto instr = make_instr(t);
 
 			switch (t.get_actual_arity()) {
-			case tt_arity::NULLARY: throw not_implemented_exception();
+			case tt_arity::NULLARY:
+				break;
 			case tt_arity::LUNARY: throw not_implemented_exception();
 			case tt_arity::RUNARY: throw not_implemented_exception();
 			case tt_arity::BINARY:
@@ -54,7 +55,7 @@ namespace hill
 					instrs[left_ix].type,
 					instrs[right_ix].type);
 
-				if (instr.kind==instr_kind::ID) {
+				if (instrs[left_ix].kind==instr_kind::ID) {
 				} else throw semantic_error_exception();
 
 				// TODO: Register id in scope (if not already there)

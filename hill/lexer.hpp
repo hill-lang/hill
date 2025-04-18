@@ -39,6 +39,7 @@ namespace hill {
 		{
 			if (this != &other) {
 				type = other.type;
+				type_spec = other.type_spec;
 				text = std::move(other.text);
 				actual_arity = other.actual_arity;
 			}
@@ -48,7 +49,7 @@ namespace hill {
 	private:
 		tt type;
 
-		const tt_spec &type_spec;
+		tt_spec type_spec;
 		std::string text;
 		int actual_arity;
 
