@@ -17,7 +17,7 @@ namespace hill {
 		bool operator==(const type_desc &other) {return this->basic_type==other.basic_type;}
 		bool operator<(const type_desc &other) const
 		{
-			return static_cast<int>(this->basic_type)<static_cast<int>(other.basic_type);
+			return this->basic_type < other.basic_type;
 		}
 		basic_type basic_type;
 	};
