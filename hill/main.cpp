@@ -7,7 +7,19 @@
 
 static void test_lexer()
 {
-	std::ifstream istr("lexer.hill");
+	std::istringstream istr(R"(
+// Comment
+n = 1 * 10.0f;
+/*
+Multi line comment
+*/
+a = b /* Inline comment */ + c;
+
+total: = 100_000L;
+PI: = 3.1415f;
+
+a b;
+)");
 
 	hill::token token;
 	while (!(token=std::move(hill::get_token(istr))).end()) {
@@ -17,7 +29,7 @@ static void test_lexer()
 
 static void test_parser()
 {
-	std::ifstream istr("parser.hill");
+	std::istringstream istr("\r\na:=5\r\n\r\n");
 
 	hill::parser parser;
 

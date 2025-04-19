@@ -137,10 +137,6 @@
     <ClInclude Include="type_conversion.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="lexer.hill" />
-    <None Include="parser.hill" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

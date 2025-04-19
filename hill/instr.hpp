@@ -4,6 +4,7 @@
 #include "type.hpp"
 
 #include <string>
+#include <stdint.h>
 
 namespace hill {
 

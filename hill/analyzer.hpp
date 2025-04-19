@@ -7,7 +7,6 @@
 #include "type_conversion.hpp"
 #include "instr.hpp"
 
-
 #include <cstdlib>
 #include <memory>
 #include <stack>
@@ -16,8 +15,7 @@
 #include <vector>
 #include <cstdint>
 
-namespace hill
-{
+namespace hill {
 
 	struct frame { // Actual data storage
 		std::vector<std::uint64_t> data;
@@ -72,8 +70,7 @@ namespace hill
 	};
 
 	struct analyzer {
-		analyzer() {
-		}
+		analyzer() {}
 
 		block main;
 
