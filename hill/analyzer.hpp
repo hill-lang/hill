@@ -73,9 +73,7 @@ namespace hill {
 					}
 				} else throw semantic_error_exception();
 				
-				instrs.push_back(instr);
-
-				// TODO: Set actual type of operator expression
+				instr.type = res_type;
 
 				break;
 			}
