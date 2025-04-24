@@ -19,10 +19,17 @@ namespace hill {
 
 	struct frame { // Actual data storage
 		std::vector<std::uint64_t> data;
+		size_t alloc(size_t n)
+		{
+			auto ix = data.size();
+			for (size_t i=0; i<n; ++i) data.emplace_back(0);
+			return ix;
+		}
 	};
 
 	struct val { // Data ref
 		frame *frame;
+		const type_desc *type;
 		size_t ix;
 	};
 
@@ -55,10 +62,18 @@ namespace hill {
 
 				if (instrs[left_ix].kind==instr_kind::ID) {
 					if (t.get_type()==tt::OP_COLON_EQ) {
-						// TODO: Fail if id already in current scope
-						// TODO: Register id with type
+						if (scope.ids.contains(t.get_text())) throw semantic_error_exception();
+
+						val v = {
+							.frame = &scope.frame,
+							.type = &res_type,
+							.ix = scope.frame.alloc(1) // TODO: Handle larger objects
+						};
+						scope.ids[t.get_text()] = v;
 					}
 				} else throw semantic_error_exception();
+				
+				instrs.push_back(instr);
 
 				// TODO: Set actual type of operator expression
 
