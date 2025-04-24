@@ -94,6 +94,26 @@ namespace hill {
 			main.add(t);
 
 		}
+
+		void run(block b)
+		{
+			// TODO: Move this into separate module
+
+			for (const auto &instr: b.instrs) {
+				switch (instr.kind) {
+				case instr_kind::VAL:
+					break;
+				case instr_kind::ID:
+					break;
+				default: throw not_implemented_exception();
+				}
+			}
+		}
+
+		void run()
+		{
+			run(main);
+		}
 	};
 
 }

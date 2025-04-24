@@ -142,6 +142,8 @@ namespace hill {
 			}
 
 			parse_token(token(tt::END, ""));
+
+			analyzer.run();
 		}
 	};
 }
