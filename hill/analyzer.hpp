@@ -102,7 +102,6 @@ namespace hill {
 		void run(block b)
 		{
 			// TODO: Move this into separate module
-
 			for (const auto &instr: b.instrs) {
 				switch (instr.kind) {
 				case instr_kind::VAL:
