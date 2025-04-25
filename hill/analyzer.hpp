@@ -22,8 +22,12 @@ namespace hill {
 		size_t alloc(size_t n)
 		{
 			auto ix = data.size();
-			for (size_t i=0; i<n; ++i) data.emplace_back(0);
+			for (size_t i=0; i<n; ++i) data.push_back(0);
 			return ix;
+		}
+		size_t push(std::uint64_t v)
+		{
+			data.push_back(v);
 		}
 	};
 
@@ -102,6 +106,7 @@ namespace hill {
 			for (const auto &instr: b.instrs) {
 				switch (instr.kind) {
 				case instr_kind::VAL:
+					main.scope.frame.push(instr.val.i32);
 					break;
 				case instr_kind::ID:
 					break;
