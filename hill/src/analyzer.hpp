@@ -33,8 +33,8 @@ namespace hill {
 
 	struct val { // Data ref
 		frame *frame;
+		size_t frame_ix;
 		const type_desc *type;
-		size_t ix;
 	};
 
 	struct scope { // The names and values
@@ -70,8 +70,8 @@ namespace hill {
 
 						val v = {
 							.frame = &scope.frame,
+							.frame_ix = scope.frame.alloc(1), // TODO: Handle larger objects
 							.type = &res_type,
-							.ix = scope.frame.alloc(1) // TODO: Handle larger objects
 						};
 						scope.ids[t.get_text()] = v;
 					}

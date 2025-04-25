@@ -13,13 +13,14 @@ namespace hill {
 	};
 
 	struct type_desc {
-		type_desc(basic_type basic_type): basic_type(basic_type) {}
+		type_desc(basic_type basic_type): basic_type(basic_type), mut(false) {}
 		bool operator==(const type_desc &other) {return this->basic_type==other.basic_type;}
 		bool operator<(const type_desc &other) const
 		{
 			return this->basic_type < other.basic_type;
 		}
 		basic_type basic_type;
+		bool mut;
 	};
 }
 
