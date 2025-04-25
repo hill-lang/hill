@@ -109,6 +109,8 @@ namespace hill {
 					break;
 				case instr_kind::ID:
 					break;
+				case instr_kind::OP:
+					break;
 				default: throw not_implemented_exception();
 				}
 			}
