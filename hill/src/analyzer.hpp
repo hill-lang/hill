@@ -25,7 +25,7 @@ namespace hill {
 			for (size_t i=0; i<n; ++i) data.push_back(0);
 			return ix;
 		}
-		size_t push(std::uint64_t v)
+		void push(std::uint64_t v)
 		{
 			data.push_back(v);
 		}
