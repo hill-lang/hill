@@ -3,6 +3,7 @@
 
 #include "token.hpp"
 #include "lang_spec.hpp"
+#include "exceptions.hpp"
 
 #include <istream>
 #include <string>
@@ -10,7 +11,6 @@
 #include <sstream>
 
 namespace hill {
-
 
 	token get_token(std::istream &istr)
 	{
