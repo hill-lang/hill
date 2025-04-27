@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <cstdint>
 
 static void test_lexer()
 {
@@ -36,10 +37,31 @@ static void test_parser()
 	parser.parse(istr);
 }
 
+struct {
+	const char *src_fname;
+	uint64_t expected_resulted;
+} tests[]={
+	{"tests/initial-assignment.hill", 5}
+};
+
+static void run_tests()
+{
+	int ix;
+
+	for (ix = 0; ix<sizeof tests/sizeof tests[0]; ++ix) {
+		std::ifstream istr(tests[ix].src_fname);
+		hill::parser parser;
+
+		parser.parse(istr);
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	//test_lexer();
-	test_parser();
+	//test_parser();
+
+	run_tests();
 
 	return EXIT_SUCCESS;
 }
