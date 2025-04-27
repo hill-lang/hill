@@ -31,6 +31,7 @@ namespace hill {
 		OP_MINUS,
 		OP_MINUS_MINUS,
 		OP_MINUS_EQ,
+		OP_BANG,
 		OP_STAR,
 		OP_STAR_STAR,
 		OP_STAR_EQ,
@@ -145,16 +146,35 @@ namespace hill {
 			{tt::LSQUARE, tt_spec(0, tt_assoc::NONE, tt_arity::NULLARY, tt_kind::LGROUP, "[", "LSQUARE")},
 			{tt::RSQUARE, tt_spec(0, tt_assoc::NONE, tt_arity::NULLARY, tt_kind::RGROUP, "]", "RSQUARE")},
 			{tt::CALL, tt_spec(2, tt_assoc::NONE, tt_arity::BINARY, tt_kind::OP, "", "CALL")},
+			{tt::OP_PLUS_PLUS, tt_spec(2, tt_assoc::RIGHT, tt_arity::RUNARY, tt_kind::OP, "++", "OP_PLUS_PLUS")}, /* Postfix increment */
+			{tt::OP_MINUS_MINUS, tt_spec(2, tt_assoc::RIGHT, tt_arity::RUNARY, tt_kind::OP, "--", "OP_MINUS_MINUS")}, /* Postfix increment */
 			{tt::OP_DOT, tt_spec(2, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, ".", "OP_DOT")},
-			{tt::OP_PLUS, tt_spec(3, tt_assoc::RIGHT, tt_arity::BINARY, tt_kind::OP, "+", "OP_PLUS")},
-			{tt::OP_MINUS, tt_spec(3, tt_assoc::RIGHT, tt_arity::BINARY|tt_arity::LUNARY, tt_kind::OP, "-", "OP_MINUS")},
-			{tt::OP_STAR, tt_spec(5, tt_assoc::RIGHT, tt_arity::BINARY, tt_kind::OP, "*", "OP_STAR")},
-			{tt::OP_SLASH, tt_spec(5, tt_assoc::RIGHT, tt_arity::BINARY, tt_kind::OP, "/", "OP_SLASH")},
-			{tt::OP_PERCENT, tt_spec(5, tt_assoc::RIGHT, tt_arity::BINARY, tt_kind::OP, "%", "OP_PERCENT")},
+			//{tt::OP_PLUS_PLUS, tt_spec(3, tt_assoc::LEFT, tt_arity::LUNARY, tt_kind::OP, "++", "OP_PLUS_PLUS")}, /* Prefix increment */
+			//{tt::OP_MINUS_MINUS, tt_spec(3, tt_assoc::LEFT, tt_arity::LUNARY, tt_kind::OP, "--", "OP_MINUS_MINUS")}, /* Prefix increment */
+			{tt::OP_PLUS, tt_spec(3, tt_assoc::RIGHT, tt_arity::LUNARY, tt_kind::OP, "+", "OP_PLUS")}, /* Unary plus */
+			{tt::OP_MINUS, tt_spec(3, tt_assoc::RIGHT, tt_arity::LUNARY, tt_kind::OP, "-", "OP_MINUS")}, /* Unary minus */
+			{tt::OP_BANG, tt_spec(3, tt_assoc::RIGHT, tt_arity::LUNARY, tt_kind::OP, "!", "OP_BANG")},
+			{tt::OP_STAR_STAR, tt_spec(4, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, "**", "OP_STAR_STAR")}, /* Power of */
+			{tt::OP_STAR, tt_spec(5, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, "*", "OP_STAR")}, /* Multiplication */
+			{tt::OP_SLASH, tt_spec(5, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, "/", "OP_SLASH")}, /* Division */
+			{tt::OP_PERCENT, tt_spec(5, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, "%", "OP_PERCENT")},
+			//{tt::OP_PLUS, tt_spec(6, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, "+", "OP_PLUS")}, /* Addition */
+			//{tt::OP_MINUS, tt_spec(6, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, "-", "OP_MINUS")}, /* Subtraction */
+			{tt::OP_LESS, tt_spec(9, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, "<", "OP_LESS")},
+			{tt::OP_LESS_EQ, tt_spec(9, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, "<=", "OP_LESS_EQ")},
+			{tt::OP_GREATER, tt_spec(9, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, ">", "OP_GREATER")},
+			{tt::OP_GREATER_EQ, tt_spec(9, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, ">=", "OP_GREATER_EQ")},
+			{tt::OP_EQ_EQ, tt_spec(10, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, "==", "OP_EQ_EQ")},
+			{tt::OP_BANG_EQ, tt_spec(10, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, "!=", "OP_BANG_EQ")},
 			{tt::OP_EQ, tt_spec(17, tt_assoc::NONE, tt_arity::BINARY, tt_kind::OP, "=", "OP_EQ")},
 			{tt::OP_COLON_EQ, tt_spec(17, tt_assoc::NONE, tt_arity::BINARY, tt_kind::OP, ":=", "OP_COLON_EQ")},
+			{tt::OP_PLUS_EQ, tt_spec(17, tt_assoc::NONE, tt_arity::BINARY, tt_kind::OP, "+=", "OP_PLUS_EQ")},
+			{tt::OP_MINUS_EQ, tt_spec(17, tt_assoc::NONE, tt_arity::BINARY, tt_kind::OP, "-=", "OP_MINUS_EQ")},
+			{tt::OP_STAR_EQ, tt_spec(17, tt_assoc::NONE, tt_arity::BINARY, tt_kind::OP, "*=", "OP_STAR_EQ")},
+			{tt::OP_SLASH_EQ, tt_spec(17, tt_assoc::NONE, tt_arity::BINARY, tt_kind::OP, "/=", "OP_SLASH_EQ")},
+			{tt::OP_PERCENT_EQ, tt_spec(17, tt_assoc::NONE, tt_arity::BINARY, tt_kind::OP, "%=", "OP_PERCENT_EQ")},
 			{tt::OP_OR_GREATER, tt_spec(17, tt_assoc::NONE, tt_arity::BINARY, tt_kind::OP, "|>", "OP_OR_GREATER")},
-			{tt::OP_COMMA, tt_spec(18, tt_assoc::NONE, tt_arity::BINARY, tt_kind::OP, ",", "OP_COMMA")},
+			{tt::OP_COMMA, tt_spec(18, tt_assoc::LEFT, tt_arity::BINARY, tt_kind::OP, ",", "OP_COMMA")},
 			{tt::OP_SEMICOLON, tt_spec(19, tt_assoc::LEFT, tt_arity::RUNARY, tt_kind::OP, ";", "OP_SEMICOLON")},
 		};
 
