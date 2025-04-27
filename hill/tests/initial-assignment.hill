@@ -1,5 +1,5 @@
 a:=5
 
-// These caue issues, pls fix :)
+// These cause issues, pls fix :)
 a++;
 ++b;
