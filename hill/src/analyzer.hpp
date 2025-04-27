@@ -96,7 +96,6 @@ namespace hill {
 			std::cout<<"analyzer: "<< t.str() <<'\n';
 
 			main.add(t);
-
 		}
 
 		void run(block b)

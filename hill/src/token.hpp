@@ -72,9 +72,9 @@ namespace hill {
 		int prec() const {return this->type_spec->prec;}
 		std::string str() const {return this->type_spec->name + " (" + this->text + ")";}
 
-		void set_actual_arity(int a) { this->actual_arity=a;}
+		void set_actual_arity(int a) {this->actual_arity=a;}
 		int get_actual_arity() const {return this->actual_arity;}
 	};
 }
 
-#endif
+#endif /* TOKEN_HPP_INCLUDED */

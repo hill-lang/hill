@@ -14,4 +14,4 @@ namespace hill {
 	};
 }
 
-#endif
+#endif /* EXCEPTIONS_HPP_INCLUDED */
