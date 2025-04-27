@@ -15,6 +15,14 @@ void error(const char *msg)
 
 namespace hill {
 
+	template<typename T>
+	static T pop_mv(std::stack<T> &stack)
+	{
+		T t = std::move(stack.top());
+		stack.pop();
+		return t;
+	}
+
 	struct token_queue {
 		token pull_token(std::istream &istr)
 		{
@@ -33,7 +41,7 @@ namespace hill {
 		std::stack<token> op_stack;
 		analyzer analyzer;
 
-		void put_token(const token &t)
+		void put_token(token t)
 		{
 			std::cout << t.str() << '\n';
 
@@ -43,43 +51,38 @@ namespace hill {
 		void parse_token(token t)
 		{
 			if (t.val()) {
-				put_token(t);
+				put_token(std::move(t));
 			} else if (t.lgroup()) {
 				op_stack.push(std::move(t));
 			} else if (t.rgroup()) {
 				while (!op_stack.empty() && !op_stack.top().lgroup()) {
-					put_token(op_stack.top());
-					op_stack.pop();
+					put_token(std::move(pop_mv(op_stack)));
 				}
 				// TODO: Consider checking if grouping tokens matches in token type
 				op_stack.pop();
-				put_token(t);
+				put_token(std::move(t));
 			} else if (t.op()) {
 				if (t.lassoc()) {
 					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() <= t.prec()) {
-						put_token(op_stack.top());
-						op_stack.pop();
+						put_token(std::move(pop_mv(op_stack)));
 					}
 				} else if (t.rassoc()) {
 					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() < t.prec()) {
-						put_token(op_stack.top());
-						op_stack.pop();
+						put_token(std::move(pop_mv(op_stack)));
 					}
 				} else {
 					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() <= t.prec()) {
-						put_token(op_stack.top());
-						op_stack.pop();
+						put_token(std::move(pop_mv(op_stack)));
 					}
 				}
 
-				if (t.get_actual_arity()==tt_arity::RUNARY) put_token(t);
+				if (t.get_actual_arity()==tt_arity::RUNARY) put_token(std::move(t));
 				else op_stack.push(std::move(t));
 
 				// TODO: Handle short circuit
 			} else if (t.end()) {
 				while (!op_stack.empty()) {
-					put_token(op_stack.top());
-					op_stack.pop();
+					put_token(std::move(pop_mv(op_stack)));
 				}
 			}
 		}
