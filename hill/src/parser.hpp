@@ -23,7 +23,7 @@ namespace hill {
 			return curr;
 		}
 
-		const token &get_next_token() const {return this->next_token;}
+		const token &peek_token() const {return this->next_token;}
 
 	private:
 		token next_token = token(tt::START, "");
@@ -103,7 +103,7 @@ namespace hill {
 					error("Lexing failed");
 				}
 
-				const auto &next_t = &queue.get_next_token();
+				const auto &next_t = &queue.peek_token();
 
 				if (prev_t.vend() && t.vbegin()) {
 					parse_token(token(tt::CALL, ""));
