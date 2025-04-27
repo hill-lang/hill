@@ -89,7 +89,7 @@ namespace hill {
 
 		void error_token(token t)
 		{
-			std::cerr<<"ERROR: " << t.str() << '\n';
+			std::cerr << "ERROR: " << t.str() << '\n';
 			std::exit(EXIT_FAILURE); // TODO: Handle errors properly
 		}
 
@@ -113,7 +113,7 @@ namespace hill {
 
 				if (t.op()) {
 					if (prev_t.vend()) {
-						prev_t = token(t.get_type(), t.get_text());
+						prev_t = t.clone();
 
 						if ((next_t->vbegin() || next_t->has_arity(tt_arity::LUNARY))
 								&& t.has_arity(tt_arity::BINARY)) {
@@ -128,7 +128,7 @@ namespace hill {
 							} else error_token(std::move(t));
 						}
 					} else {
-						prev_t = token(t.get_type(), t.get_text());
+						prev_t = t.clone();
 
 						if (t.has_arity(tt_arity::LUNARY)) {
 							t.set_actual_arity(tt_arity::LUNARY);
@@ -136,7 +136,7 @@ namespace hill {
 						} else error_token(std::move(t));
 					}
 				} else {
-					prev_t = token(t.get_type(), t.get_text());
+					prev_t = t.clone();
 
 					t.set_actual_arity(tt_arity::NULLARY);
 					parse_token(std::move(t));

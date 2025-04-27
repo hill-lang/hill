@@ -21,7 +21,7 @@ namespace hill {
 	};
 
 	struct instr {
-		instr(instr_kind kind, type_desc type): kind(kind), type(type) {}
+		instr(instr_kind kind, type_desc type): kind(kind), type(type), val(0) {}
 		instr_kind kind;
 		type_desc type;
 		instr_val val;
@@ -43,7 +43,7 @@ namespace hill {
 
 	instr make_instr(const token &t)
 	{
-		auto kind = lang_spec::get().get_tt_spec(t.get_type())->kind;
+		auto kind = t.get_type_spec()->kind;
 		switch (t.get_type()) {
 			case tt::NAME:
 				return instr(instr_kind::ID, type_desc(basic_type::UNDECIDED));

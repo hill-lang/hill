@@ -5,6 +5,10 @@
 
 namespace hill {
 
+	class internal_exception : std::exception {
+		const char *what() const noexcept override { return "Internal error"; }
+	};
+
 	class not_implemented_exception: std::exception {
 		const char *what() const noexcept override {return "Not implemented";}
 	};
