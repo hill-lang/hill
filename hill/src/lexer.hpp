@@ -18,19 +18,19 @@ namespace hill {
 
 		if (istr.eof()) return token(tt::END, "");
 
-		std::ostringstream texts;
+		std::ostringstream text;
 
 		auto ch = istr.get();
 
 		// Whitespace
 		if (std::isspace(ch)) {
 			while (std::isspace(ch)) {
-				texts.put(ch);
+				text.put(ch);
 				ch = istr.get();
 			}
 		
 			istr.unget();
-			return token(tt::WHITESPACE, texts.str());
+			return token(tt::WHITESPACE, text.str());
 		}
 
 		// String
@@ -45,26 +45,26 @@ namespace hill {
 
 		// Comments
 		if (ch=='/') {
-			texts.put(ch);
+			text.put(ch);
 			ch = istr.get();
 			if (ch=='/') {
-				texts.put(ch);
+				text.put(ch);
 				std::string rest;
 				std::getline(istr, rest);
-				texts<<rest;
-				return token(tt::COMMENT, texts.str());
+				text<<rest;
+				return token(tt::COMMENT, text.str());
 			} else if (ch=='*') {
-				texts.put(ch);
+				text.put(ch);
 				std::string rest;
 				while (!(rest.length()>0 && rest[rest.length()-1]=='*')) {
 					std::getline(istr, rest, '/');
-					texts<<rest<<'/';
+					text<<rest<<'/';
 				}
-				return token(tt::COMMENT, texts.str());
+				return token(tt::COMMENT, text.str());
 			} else {
-				ch = texts.str()[0];
-				texts.str("");
-				texts.clear();
+				ch = text.str()[0];
+				text.str("");
+				text.clear();
 				istr.unget();
 			}
 		}
@@ -72,27 +72,27 @@ namespace hill {
 		// Numbers
 		if (std::isdigit(ch)) {
 			while (std::isdigit(ch) || ch=='.' || ch=='_') {
-				texts.put(ch);
+				text.put(ch);
 				ch = istr.get();
 			}
 			while (std::isalpha(ch)) { // Type specifiers
-				texts.put(ch);
+				text.put(ch);
 				ch = istr.get();
 			}
 			istr.unget();
 
-			return token(tt::NUM, texts.str());
+			return token(tt::NUM, text.str());
 		}
 
 		// Names
 		if (std::isalpha(ch) || ch=='_') {
 			while (std::isalnum(ch) || ch=='_') {
-				texts.put(ch);
+				text.put(ch);
 				ch = istr.get();
 			}
 			istr.unget();
 
-			return token(tt::NAME, texts.str());
+			return token(tt::NAME, text.str());
 		}
 
 		// Operators etc.
@@ -103,14 +103,14 @@ namespace hill {
 			
 			auto found = ops.end();
 			while ((found=std::find_if(ops.begin(), ops.end(), [&match](auto &it){return it.first.starts_with(match);}))!=ops.end()) {
-				texts.put(ch);
+				text.put(ch);
 				tt = found->second;
 				ch = istr.get();
 				match += (char)ch;
 			}
 			istr.unget();
 
-			return token(tt, texts.str());
+			return token(tt, text.str());
 		}
 
 		// Failed to find a token
