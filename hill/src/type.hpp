@@ -7,6 +7,7 @@ namespace hill {
 
 	enum class basic_type {
 		UNDECIDED,
+		STR,
 		I,
 		I32,
 		F

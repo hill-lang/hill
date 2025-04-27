@@ -34,8 +34,22 @@ namespace hill {
 		}
 
 		// String
-		if (ch=='\"') {
-			throw not_implemented_exception();
+		if (ch=='"') {
+			while (istr.peek()!='"') {
+				switch (istr.peek()) {
+				case '\\': // Skip escaped character
+					istr.get();
+					break;
+				case '\n':
+				case '\0': // Unterminated string
+					throw not_implemented_exception();
+				default: break;
+				}
+					
+				text.put(istr.get());
+			}
+			istr.get();
+			return token(tt::STRING, text.str());
 		}
 
 		// Character

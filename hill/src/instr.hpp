@@ -21,7 +21,7 @@ namespace hill {
 	};
 
 	struct instr {
-		instr(instr_kind kind, type_desc type): kind(kind), type(type), val(0) {}
+		instr(instr_kind kind, type_desc type): kind(kind), type(type) {}
 		instr_kind kind;
 		type_desc type;
 		instr_val val;
@@ -41,6 +41,13 @@ namespace hill {
 		}
 	}
 
+	instr make_strval(const std::string &s)
+	{
+		auto i = instr(instr_kind::VAL, type_desc(basic_type::STR));
+		// TODO
+		return i;
+	}
+
 	instr make_instr(const token &t)
 	{
 		auto kind = t.get_type_spec()->kind;
@@ -50,6 +57,9 @@ namespace hill {
 				break;
 			case tt::NUM:
 				return make_numval(t.get_text());
+				break;
+			case tt::STRING:
+				return make_strval(t.get_text());
 				break;
 			default:
 				if (kind==tt_kind::OP) {
