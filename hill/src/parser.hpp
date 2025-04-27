@@ -117,6 +117,8 @@ namespace hill {
 								&& t.has_arity(tt_arity::BINARY)) {
 							t.set_actual_arity(tt_arity::BINARY);
 							parse_token(std::move(t));
+
+							// TODO: Could be right unary also
 						} else {
 							if (t.has_arity(tt_arity::RUNARY)) {
 								t.set_actual_arity(tt_arity::RUNARY);
