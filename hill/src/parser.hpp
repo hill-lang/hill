@@ -141,8 +141,6 @@ namespace hill {
 					t.set_actual_arity(tt_arity::NULLARY);
 					parse_token(std::move(t));
 				}
-
-				//prev_t = std::move(t); // Use after move, no good
 			}
 
 			parse_token(token(tt::END, ""));
