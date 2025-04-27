@@ -71,7 +71,7 @@ namespace hill {
 
 		// Numbers
 		if (std::isdigit(ch)) {
-			while (std::isdigit(ch) || ch=='.' || ch=='_') {
+			while (std::isdigit(ch) || ch=='.' || ch=='\'') {
 				text.put(ch);
 				ch = istr.get();
 			}
