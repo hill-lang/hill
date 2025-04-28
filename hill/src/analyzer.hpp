@@ -8,12 +8,7 @@
 #include "instr.hpp"
 #include "block.hpp"
 
-#include <cstdlib>
 #include <memory>
-#include <stack>
-#include <iostream>
-#include <map>
-#include <vector>
 #include <cstdint>
 
 namespace hill {
