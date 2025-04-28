@@ -50,7 +50,7 @@ namespace hill {
 		{
 			auto instr = make_instr(t);
 
-			switch (t.get_actual_arity()) {
+			switch (t.get_arity()) {
 			case tt_arity::NULLARY:
 				break;
 			case tt_arity::LUNARY: throw not_implemented_exception();

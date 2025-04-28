@@ -76,7 +76,7 @@ namespace hill {
 					}
 				}
 
-				if (t.get_actual_arity()==tt_arity::RUNARY) put_token(std::move(t));
+				if (t.get_arity()==tt_arity::RUNARY) put_token(std::move(t));
 				else op_stack.push(std::move(t));
 
 				// TODO: Handle short circuit
@@ -117,13 +117,13 @@ namespace hill {
 
 						if ((next_t->vbegin() || next_t->has_arity(tt_arity::LUNARY))
 								&& t.has_arity(tt_arity::BINARY)) {
-							t.set_actual_arity(tt_arity::BINARY);
+							t.select_op_spec(tt_arity::BINARY);
 							parse_token(std::move(t));
 
 							// TODO: Could be right unary also
 						} else {
 							if (t.has_arity(tt_arity::RUNARY)) {
-								t.set_actual_arity(tt_arity::RUNARY);
+								t.select_op_spec(tt_arity::RUNARY);
 								parse_token(std::move(t));
 							} else error_token(std::move(t));
 						}
@@ -131,14 +131,14 @@ namespace hill {
 						prev_t = t.clone();
 
 						if (t.has_arity(tt_arity::LUNARY)) {
-							t.set_actual_arity(tt_arity::LUNARY);
+							t.select_op_spec(tt_arity::LUNARY);
 							parse_token(std::move(t));
 						} else error_token(std::move(t));
 					}
 				} else {
 					prev_t = t.clone();
 
-					t.set_actual_arity(tt_arity::NULLARY);
+					t.select_op_spec(tt_arity::NULLARY);
 					parse_token(std::move(t));
 				}
 			}
