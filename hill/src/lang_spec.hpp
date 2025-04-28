@@ -109,7 +109,7 @@ namespace hill {
 
 		const std::map<std::string, tt> &get_tt_patterns() const {return tt_patterns;}
 		const tt_spec &get_tt_spec(tt type) const {return this->tt_specs.at(type);}
-		
+
 	private:
 		const std::map<tt, tt_spec> tt_specs = {
 			{tt::START, {tt_kind::NO, "START", "", {}}},
