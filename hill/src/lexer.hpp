@@ -124,9 +124,6 @@ namespace hill {
 			}
 			istr.unget();
 
-			// TODO: This will become an issue with tokens that have multiple specs
-			// Maybe we don't assign a 'token type spec' at this time?
-			// See token constructor
 			return token(tt, text.str());
 		}
 
