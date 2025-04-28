@@ -53,10 +53,14 @@ static void run_tests()
 	int ix;
 
 	for (ix = 0; ix<sizeof tests/sizeof tests[0]; ++ix) {
+		std::cout << tests[ix].src_fname << ":\n";
+
 		std::ifstream istr(tests[ix].src_fname);
 		hill::parser parser;
 
 		parser.parse(istr);
+
+		std::cout << '\n';
 	}
 }
 

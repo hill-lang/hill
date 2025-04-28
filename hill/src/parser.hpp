@@ -43,8 +43,6 @@ namespace hill {
 
 		void put_token(token t)
 		{
-			std::cout << t.str() << '\n';
-
 			analyzer.analyze_token(t);
 		}
 
