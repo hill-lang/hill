@@ -9,10 +9,6 @@
 #include <iostream>
 #include <stack>
 
-void error(const char *msg)
-{
-}
-
 namespace hill {
 
 	template<typename T>
@@ -100,7 +96,7 @@ namespace hill {
 
 			while (!(t = queue.pull_token(istr)).end()) {
 				if (t.error()) {
-					error("Lexing failed");
+					throw internal_exception();
 				}
 
 				const auto &next_t = &queue.peek_token();
