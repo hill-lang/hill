@@ -17,7 +17,7 @@
 
 namespace hill {
 
-	struct frame { // Actual data storage
+	struct frame_def { // Actual data storage
 		std::vector<std::uint64_t> data;
 		size_t alloc(size_t n)
 		{
@@ -32,14 +32,14 @@ namespace hill {
 	};
 
 	struct val { // Data ref
-		frame *frame;
+		frame_def *frame;
 		size_t frame_ix;
 		const type_desc *type;
 	};
 
 	struct scope { // The names and values
 		std::map<std::string, val> ids;
-		frame frame;
+		frame_def frame;
 	};
 
 	struct block { // The code
