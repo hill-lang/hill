@@ -1,5 +1,8 @@
 #include "lexer.hpp"
 #include "parser.hpp"
+#include "analyzer.hpp"
+#include "evaluator.hpp"
+#include "hill.hpp"
 
 #include <cstdlib>
 #include <fstream>
@@ -34,7 +37,7 @@ static void test_parser()
 
 	hill::parser parser;
 
-	parser.parse(istr);
+	parser.parse(istr, hill::get_token);
 }
 
 struct {
@@ -56,9 +59,14 @@ static void run_tests()
 		std::cout << tests[ix].src_fname << ":\n";
 
 		std::ifstream istr(tests[ix].src_fname);
-		hill::parser parser;
+		hill::parser p;
+		hill::analyzer a;
+		hill::evaluator e;
+		hill::hill(istr, hill::get_token, p, a, e);
+		//parser.parse(istr);
 
-		parser.parse(istr);
+		//hill(get_token, parser, analyzer, {opt1,opt2}, evaluator);
+		//hill(get_token, parser, analyzer, {opt1,opt2}, csharp_code_gen);
 
 		std::cout << '\n';
 	}

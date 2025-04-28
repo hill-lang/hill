@@ -89,6 +89,8 @@ namespace hill {
 	struct analyzer {
 		analyzer() {}
 
+		std::vector<instr> instrs;
+
 		block main;
 
 		void analyze_token(const token &t)
@@ -118,6 +120,18 @@ namespace hill {
 		void run()
 		{
 			run(main);
+		}
+
+		void analyze(const std::vector<token> &rpn)
+		{
+			for (auto &t: rpn) {
+				analyze_token(t);
+			}
+		}
+
+		const std::vector<instr> &get_instrs()
+		{
+			return instrs;
 		}
 	};
 

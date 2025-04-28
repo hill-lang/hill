@@ -1,9 +1,6 @@
 #ifndef PARSER_HPP_INCLUDED
 #define PARSER_HPP_INCLUDED
 
-#include "lexer.hpp"
-#include "analyzer.hpp"
-
 #include <memory>
 #include <istream>
 #include <iostream>
@@ -20,7 +17,7 @@ namespace hill {
 	}
 
 	struct token_queue {
-		token pull_token(std::istream &istr)
+		template<typename LFT> token pull_token(std::istream &istr, LFT get_token)
 		{
 			token curr = std::move(this->next_token);
 			while ((this->next_token = get_token(istr)).ws());
@@ -35,11 +32,12 @@ namespace hill {
 
 	struct parser {
 		std::stack<token> op_stack;
-		analyzer analyzer;
+
+		std::vector<token> rpn;
 
 		void put_token(token t)
 		{
-			analyzer.analyze_token(t);
+			rpn.emplace_back(std::move(t));
 		}
 
 		void parse_token(token t)
@@ -87,14 +85,14 @@ namespace hill {
 			std::exit(EXIT_FAILURE); // TODO: Handle errors properly
 		}
 
-		void parse(std::istream &istr)
+		template<typename LFT> void parse(std::istream &istr, LFT get_token)
 		{
 			token_queue queue;
 
 			token prev_t = token(tt::START, "");
 			token t;
 
-			while (!(t = queue.pull_token(istr)).end()) {
+			while (!(t = queue.pull_token(istr, get_token)).end()) {
 				if (t.error()) {
 					throw internal_exception();
 				}
@@ -138,8 +136,11 @@ namespace hill {
 			}
 
 			parse_token(token(tt::END, ""));
+		}
 
-			analyzer.run();
+		const std::vector<token> &get_rpn() const
+		{
+			return rpn;
 		}
 	};
 }
