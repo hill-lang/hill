@@ -17,8 +17,6 @@ namespace hill {
 	struct analyzer {
 		analyzer() {}
 
-		std::vector<instr> instrs;
-
 		block main;
 
 		void analyze_token(const token &t)
@@ -28,23 +26,6 @@ namespace hill {
 			main.add(t);
 		}
 
-		void run(block b)
-		{
-			// TODO: Move this into separate module
-			for (const auto &instr: b.instrs) {
-				switch (instr.kind) {
-				case instr_kind::VAL:
-					main.scope.frame.push(instr.val.i32);
-					break;
-				case instr_kind::ID:
-					break;
-				case instr_kind::OP:
-					break;
-				default: throw not_implemented_exception();
-				}
-			}
-		}
-
 		void analyze(const std::vector<token> &rpn)
 		{
 			for (auto &t: rpn) {
@@ -52,9 +33,9 @@ namespace hill {
 			}
 		}
 
-		const std::vector<instr> &get_instrs()
+		const block &get_main_block()
 		{
-			return instrs;
+			return main;
 		}
 	};
 

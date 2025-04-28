@@ -3,7 +3,7 @@
 
 namespace hill {
 	struct evaluator {
-		void evaluate(const std::vector<instr> &instrs)
+		void evaluate(const block &b)
 		{
 		}
 	};

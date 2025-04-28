@@ -14,7 +14,7 @@ namespace hill {
 
 		analyzer.analyze(parser.get_rpn());
 
-		evaluator.evaluate(analyzer.get_instrs());
+		evaluator.evaluate(analyzer.get_main_block());
 	}
 }
 
