@@ -28,7 +28,7 @@ namespace hill {
 		instr_val val;
 	};
 
-	instr make_numval(const std::string &s)
+	instr make_numval_instr(const std::string &s)
 	{
 		char *endp;
 		if (s.find('.')!=std::string::npos) { // floating point
@@ -42,7 +42,7 @@ namespace hill {
 		}
 	}
 
-	instr make_strval(const std::string &s)
+	instr make_strval_instr(const std::string &s)
 	{
 		auto i = instr(instr_kind::VAL, type_desc(basic_type::STR));
 		// TODO
@@ -57,10 +57,10 @@ namespace hill {
 				return instr(instr_kind::ID, type_desc(basic_type::UNDECIDED));
 				break;
 			case tt::NUM:
-				return make_numval(t.get_text());
+				return make_numval_instr(t.get_text());
 				break;
 			case tt::STRING:
-				return make_strval(t.get_text());
+				return make_strval_instr(t.get_text());
 				break;
 			default:
 				if (kind==tt_kind::OP) {
