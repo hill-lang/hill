@@ -9,9 +9,10 @@
 namespace hill {
 
 	enum class instr_kind {
-		ID,
-		VAL,
-		OP
+		ID, // Unbinded identifier
+		VAL, // Value (literal or calculated by analyzer/optimizer)
+		OP, // Operation (op-code)
+		FRREF // Frame value reference (frame ref and frame index)
 	};
 
 	union instr_val {
