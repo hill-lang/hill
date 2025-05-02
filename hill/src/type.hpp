@@ -2,6 +2,7 @@
 #define TYPE_HPP_INCLUDED
 
 #include <string>
+#include <map>
 
 namespace hill {
 
@@ -13,6 +14,10 @@ namespace hill {
 		F
 	};
 
+	static std::map<basic_type, size_t> type_sizes = {
+		{basic_type::I32, 4u}
+	};
+
 	struct data_type {
 		data_type(basic_type basic_type): basic_type(basic_type), mut(false) {}
 		bool operator==(const data_type &other) {return this->basic_type==other.basic_type;}
@@ -22,6 +27,11 @@ namespace hill {
 		}
 		basic_type basic_type;
 		bool mut;
+
+		size_t size() const
+		{
+			return type_sizes[basic_type];
+		}
 	};
 }
 
