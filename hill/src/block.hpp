@@ -17,19 +17,38 @@ namespace hill {
 		}
 	};
 
-	struct val { // Data ref
+	struct val_ref { // Data ref
 		frame_def *frame;
 		size_t frame_ix;
 		const data_type *type;
 	};
 
 	struct scope { // The names and values
-		std::map<std::string, val> ids;
+		std::map<std::string, val_ref> ids;
 		frame_def frame;
+	};
+
+	struct literal_values {
+		std::vector<uint8_t> mem;
+
+		template<typename VT> size_t add(VT val)
+		{
+			mem.resize(mem.size() + mem.size() % alignof(VT) + sizeof val);
+			size_t ix = mem.size() - sizeof val;
+			*((VT *)mem.data() + ix) = val;
+
+			return ix;
+		}
+
+		template<typename VT> VT get(size_t ix)
+		{
+			return *((VT *)mem.data() + ix);
+		}
 	};
 
 	struct block { // The code
 		scope scope;
+
 		std::vector<instr> instrs;
 
 		void add(const token &t)
@@ -68,7 +87,7 @@ namespace hill {
 					if (t.get_type()==tt::OP_COLON_EQ) {
 						if (scope.ids.contains(t.get_text())) throw semantic_error_exception();
 
-						val v = {
+						val_ref v = {
 							.frame = &scope.frame,
 							.frame_ix = scope.frame.alloc(1), // TODO: Handle larger objects
 							.type = &res_type,
