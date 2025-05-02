@@ -13,10 +13,10 @@ namespace hill {
 		F
 	};
 
-	struct type_desc {
-		type_desc(basic_type basic_type): basic_type(basic_type), mut(false) {}
-		bool operator==(const type_desc &other) {return this->basic_type==other.basic_type;}
-		bool operator<(const type_desc &other) const
+	struct data_type {
+		data_type(basic_type basic_type): basic_type(basic_type), mut(false) {}
+		bool operator==(const data_type &other) {return this->basic_type==other.basic_type;}
+		bool operator<(const data_type &other) const
 		{
 			return this->basic_type < other.basic_type;
 		}

@@ -8,13 +8,13 @@
 
 namespace hill {
 
-	inline const std::map<const type_desc, std::map<const type_desc, const type_desc>> &get_conversions()
+	inline const std::map<const data_type, std::map<const data_type, const data_type>> &get_conversions()
 	{
-		static std::map<const type_desc, std::map<const type_desc, const type_desc>> conversions = {
-			{type_desc(basic_type::UNDECIDED),
+		static std::map<const data_type, std::map<const data_type, const data_type>> conversions = {
+			{data_type(basic_type::UNDECIDED),
 				{
-					{type_desc(basic_type::I), type_desc(basic_type::I32)},
-					{type_desc(basic_type::I32), type_desc(basic_type::I32)}
+					{data_type(basic_type::I), data_type(basic_type::I32)},
+					{data_type(basic_type::I32), data_type(basic_type::I32)}
 				},
 			}
 		};
@@ -22,15 +22,15 @@ namespace hill {
 		return conversions;
 	}
 
-	inline const type_desc convert(const type_desc &target, const type_desc &src)
+	inline const data_type convert(const data_type &target, const data_type &src)
 	{
-		if (target==type_desc(basic_type::UNDECIDED)) {
-			if (src==type_desc(basic_type::I) || src==type_desc(basic_type::I32)) return type_desc(basic_type::I32);
+		if (target==data_type(basic_type::UNDECIDED)) {
+			if (src==data_type(basic_type::I) || src==data_type(basic_type::I32)) return data_type(basic_type::I32);
 			else return target;
 		} else return target;
 	}
 
-	inline const type_desc convert_binary(tt op, const type_desc &left, const type_desc &right)
+	inline const data_type convert_binary(tt op, const data_type &left, const data_type &right)
 	{
 		switch (op) {
 		case tt::OP_COLON_EQ:

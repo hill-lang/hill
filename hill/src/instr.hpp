@@ -9,7 +9,7 @@
 namespace hill {
 
 	enum class instr_kind {
-		ID, // Unbinded identifier
+		ID, // Unbound identifier
 		VAL, // Value (literal or calculated by analyzer/optimizer)
 		OP, // Operation (op-code)
 		FRREF // Frame value reference (frame ref and frame index)
@@ -19,12 +19,13 @@ namespace hill {
 		long long i;
 		long double f;
 		int32_t i32;
+		uint32_t u32;
 	};
 
 	struct instr {
-		instr(instr_kind kind, type_desc type): kind(kind), type(type) {}
+		instr(instr_kind kind, data_type dt): kind(kind), dt(dt) {}
 		instr_kind kind;
-		type_desc type;
+		data_type dt;
 		instr_val val;
 	};
 
@@ -32,11 +33,11 @@ namespace hill {
 	{
 		char *endp;
 		if (s.find('.')!=std::string::npos) { // floating point
-			auto i = instr(instr_kind::VAL, type_desc(basic_type::F));
+			auto i = instr(instr_kind::VAL, data_type(basic_type::F));
 			i.val.f = std::strtold(s.c_str(), &endp);
 			return i;
 		} else { // integral
-			auto i = instr(instr_kind::VAL, type_desc(basic_type::I));
+			auto i = instr(instr_kind::VAL, data_type(basic_type::I));
 			i.val.i = std::strtoll(s.c_str(), &endp, 10);
 			return i;
 		}
@@ -44,7 +45,7 @@ namespace hill {
 
 	instr make_strval_instr(const std::string &s)
 	{
-		auto i = instr(instr_kind::VAL, type_desc(basic_type::STR));
+		auto i = instr(instr_kind::VAL, data_type(basic_type::STR));
 		// TODO
 		return i;
 	}
@@ -54,7 +55,7 @@ namespace hill {
 		auto kind = t.get_type_spec()->kind;
 		switch (t.get_type()) {
 			case tt::NAME:
-				return instr(instr_kind::ID, type_desc(basic_type::UNDECIDED));
+				return instr(instr_kind::ID, data_type(basic_type::UNDECIDED));
 				break;
 			case tt::NUM:
 				return make_numval_instr(t.get_text());
@@ -64,7 +65,7 @@ namespace hill {
 				break;
 			default:
 				if (kind==tt_kind::OP) {
-					return instr(instr_kind::OP, type_desc(basic_type::UNDECIDED));
+					return instr(instr_kind::OP, data_type(basic_type::UNDECIDED));
 				} else throw not_implemented_exception();
 		}
 	}

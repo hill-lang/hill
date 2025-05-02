@@ -20,7 +20,7 @@ namespace hill {
 	struct val { // Data ref
 		frame_def *frame;
 		size_t frame_ix;
-		const type_desc *type;
+		const data_type *type;
 	};
 
 	struct scope { // The names and values
@@ -34,6 +34,20 @@ namespace hill {
 
 		void add(const token &t)
 		{
+			switch (t.get_type()) {
+			case tt::NAME:
+				// Create unbound id instruction
+				break;
+			case tt::NUM:
+				// Create value instruction
+				break;
+			case tt::OP_COLON_EQ:
+				// Allocate space for right side value on the stack frame
+				// Bind id instruction on left side to the value
+				// Create load value to stack instruction
+				break;
+			}
+
 			auto instr = make_instr(t);
 
 			switch (t.get_arity()) {
@@ -47,8 +61,8 @@ namespace hill {
 				size_t right_ix = instrs.size()-1;
 				const auto &res_type = convert_binary(
 					t.get_type(),
-					instrs[left_ix].type,
-					instrs[right_ix].type);
+					instrs[left_ix].dt,
+					instrs[right_ix].dt);
 
 				if (instrs[left_ix].kind==instr_kind::ID) {
 					if (t.get_type()==tt::OP_COLON_EQ) {
@@ -63,7 +77,7 @@ namespace hill {
 					}
 				} else throw semantic_error_exception();
 				
-				instr.type = res_type;
+				instr.dt = res_type;
 
 				break;
 			}
