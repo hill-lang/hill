@@ -4,7 +4,8 @@
 namespace hill {
 
 	struct val_ref {
-		// TODO: Refer to literal_values, og calculated ones
+		//val_ref(bool l, size_t ix, data_type dt): literal_ref(l), ix(ix), dt(dt) {}
+
 		bool literal_ref;
 		size_t ix;
 		data_type dt;
@@ -73,6 +74,7 @@ namespace hill {
 					last().dt);
 
 				// Bind id instruction on left side to the value (possibly converting to new type)
+				//scope.ids[t.str()] = val_ref(true, last().vix, last().dt);
 				
 				 
 				// Create load value to stack instruction

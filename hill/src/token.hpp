@@ -25,7 +25,7 @@ namespace hill {
 		token(token &&other) noexcept:
 			type(other.type),
 			type_spec(other.type_spec),
-			op_type_spec(nullptr),
+			op_type_spec(other.op_type_spec),
 			text(std::move(other.text))
 		{}
 
@@ -75,6 +75,21 @@ namespace hill {
 		const std::string &get_text() const {return this->text;}
 		/*std::string_view view_text() const {return this->text;}*/ /* Maybe we want this? */
 		std::string str() const {return this->type_spec->name + " (" + this->text + ")";}
+		std::string to_str() const
+		{
+			if (this->op_type_spec) {
+				std::string arity =
+					this->op_type_spec->arity==tt_arity::NULLARY ? "Nullary"
+					: this->op_type_spec->arity==tt_arity::LUNARY ? "Left unary"
+					: this->op_type_spec->arity==tt_arity::RUNARY ? "Right unary"
+					: this->op_type_spec->arity==tt_arity::BINARY ? "Binary"
+					: "<UNKNOWN>";
+				return this->str() + " - " + arity;
+			} else {
+				return this->str();
+			}
+		}
+
 
 		bool end() const {return this->type==tt::END || this->type==tt::ERROR;}
 		bool error() const {return this->type==tt::ERROR;}

@@ -21,7 +21,7 @@ namespace hill {
 
 		void analyze_token(const token &t)
 		{
-			std::cout<<"analyzer: "<< t.str() <<'\n';
+			std::cout<<"analyzer: "<< t.to_str() <<'\n';
 
 			main.add(t);
 		}
