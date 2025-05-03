@@ -22,8 +22,7 @@ namespace hill {
 		{
 			mem.resize(mem.size() + mem.size() % alignof(VT) + sizeof val);
 			size_t ix = mem.size() - sizeof val;
-			*((VT *)mem.data() + ix) = val;
-
+			*((VT *)(mem.data() + ix)) = val;
 			return ix;
 		}
 
