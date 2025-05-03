@@ -28,7 +28,7 @@ namespace hill {
 
 		template<typename VT> VT get(size_t ix)
 		{
-			return *((VT *)mem.data() + ix);
+			return *((VT *)(mem.data() + ix));
 		}
 	};
 
