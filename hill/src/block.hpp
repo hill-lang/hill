@@ -76,7 +76,6 @@ namespace hill {
 				// Bind id instruction on left side to the value (possibly converting to new type)
 				//scope.ids[t.str()] = val_ref(true, last().vix, last().dt);
 				
-				 
 				// Create load value to stack instruction
 				break;
 			}

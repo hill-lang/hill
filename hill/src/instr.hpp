@@ -15,13 +15,6 @@ namespace hill {
 		FRREF // Frame value reference (frame ref and frame index)
 	};
 
-	union instr_val {
-		long long i;
-		long double f;
-		int32_t i32;
-		uint32_t u32;
-	};
-
 	struct instr {
 		instr(instr_kind kind, data_type dt, size_t vix=SIZE_MAX): kind(kind), dt(dt), vix(vix) {}
 		instr_kind kind;

@@ -13,7 +13,6 @@
 
 namespace hill {
 
-
 	struct analyzer {
 		analyzer() {}
 
@@ -33,7 +32,7 @@ namespace hill {
 			}
 		}
 
-		const block &get_main_block()
+		const block &get_main_block() const
 		{
 			return main;
 		}

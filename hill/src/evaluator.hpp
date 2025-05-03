@@ -2,6 +2,7 @@
 #define EVALUATOR_HPP_INCLUDED
 
 namespace hill {
+
 	struct evaluator {
 		void evaluate(const block &b)
 		{
@@ -9,4 +10,4 @@ namespace hill {
 	};
 }
 
-#endif
+#endif /* EVALUATOR_HPP_INCLUDED */
