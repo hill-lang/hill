@@ -37,10 +37,10 @@ namespace hill {
 		token &operator=(token &&other) noexcept
 		{
 			if (this != &other) {
-				type = other.type;
-				type_spec = other.type_spec;
-				op_type_spec = other.op_type_spec;
-				text = std::move(other.text);
+				this->type = other.type;
+				this->type_spec = other.type_spec;
+				this->op_type_spec = other.op_type_spec;
+				this->text = std::move(other.text);
 			}
 			return *this;
 		}
