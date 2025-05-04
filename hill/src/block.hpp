@@ -52,10 +52,10 @@ namespace hill {
 				char *endp;
 				if (t.str().find('.')!=std::string::npos) { // floating point
 					auto vix = values.add(std::strtold(t.str().c_str(), &endp));
-					instrs.push_back(instr(op_code::VAL, val_ref(mem_type::STACK, vix, data_type(basic_type::F))));
+					instrs.push_back(instr(op_code::VAL, val_ref(mem_type::LITERAL, vix, data_type(basic_type::F))));
 				} else { // integral
 					auto vix = values.add(std::strtoll(t.str().c_str(), &endp, 10));
-					instrs.push_back(instr(op_code::VAL, val_ref(mem_type::STACK, vix, data_type(basic_type::I))));
+					instrs.push_back(instr(op_code::VAL, val_ref(mem_type::LITERAL, vix, data_type(basic_type::I))));
 				}
 				break;
 			case tt::OP_COLON_EQ:

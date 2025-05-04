@@ -25,7 +25,7 @@ namespace hill {
 	};
 
 	struct frame_def {
-		size_t ix;
+		size_t ix=0u;
 
 		size_t add(size_t size, size_t cnt)
 		{
