@@ -71,7 +71,7 @@ namespace hill {
 			}
 
 			ss << ':';
-			if (mt!=mem_type::UNDECIDED) ss << ix;
+			if (mt!=mem_type::UNDECIDED && mt!=mem_type::RESULT) ss << ix;
 			ss << ":dt:" << dt.to_str();
 
 			return ss.str();
