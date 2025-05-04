@@ -38,7 +38,8 @@ namespace hill {
 	enum class mem_type {
 		UNDECIDED,
 		LITERAL,
-		STACK
+		STACK,
+		RESULT
 	};
 
 	struct val_ref {
@@ -62,6 +63,9 @@ namespace hill {
 				break;
 			case mem_type::STACK:
 				ss << "mt:STACK";
+				break;
+			case mem_type::RESULT:
+				ss << "mt:RESULT";
 				break;
 			default:;
 			}

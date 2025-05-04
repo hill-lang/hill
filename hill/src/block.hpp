@@ -76,7 +76,7 @@ namespace hill {
 				// TODO: Optimization: Do not copy if immutable variable and right side is immutable
 				
 				// Create load value to stack instruction
-				instrs.push_back(instr(op_code::COPY, val_ref(), last().res, val));
+				instrs.push_back(instr(op_code::COPY, val_ref(mem_type::RESULT, 0u, last().res_dt()), last().res, val));
 				break;
 			}
 		}
