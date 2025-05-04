@@ -1,36 +1,17 @@
 #ifndef BLOCK_HPP_INCLUDED
 #define BLOCK_HPP_INCLUDED
 
+#include "val_ref.hpp"
+
+#include <string>
+#include <vector>
+#include <map>
+
 namespace hill {
-
-	struct val_ref {
-		//val_ref(bool l, size_t ix, data_type dt): literal_ref(l), ix(ix), dt(dt) {}
-
-		bool literal_ref;
-		size_t ix;
-		data_type dt;
-	};
 
 	struct scope { // The names and values
 		std::map<std::string, val_ref> ids;
-		// frame_def frame;
-	};
-
-	struct literal_values {
-		std::vector<uint8_t> mem;
-
-		template<typename VT> size_t add(VT val)
-		{
-			mem.resize(mem.size() + mem.size() % alignof(VT) + sizeof val);
-			size_t ix = mem.size() - sizeof val;
-			*((VT *)(mem.data() + ix)) = val;
-			return ix;
-		}
-
-		template<typename VT> VT get(size_t ix)
-		{
-			return *((VT *)(mem.data() + ix));
-		}
+		frame_def frame;
 	};
 
 	struct block { // The code
@@ -38,6 +19,16 @@ namespace hill {
 
 		literal_values values;
 		std::vector<instr> instrs;
+
+		std::string to_str()
+		{
+			std::stringstream ss;
+			for (auto &instr: instrs) {
+				ss << instr.to_str() << '\n';
+			}
+
+			return ss.str();
+		}
 
 		instr last()
 		{
@@ -55,28 +46,37 @@ namespace hill {
 		{
 			switch (t.get_type()) {
 			case tt::NAME:
-				instrs.push_back(instr(instr_kind::ID, data_type(basic_type::UNDECIDED)));
+				instrs.push_back(instr(op_code::ID));
 				break;
 			case tt::NUM:
 				char *endp;
 				if (t.str().find('.')!=std::string::npos) { // floating point
 					auto vix = values.add(std::strtold(t.str().c_str(), &endp));
-					instrs.push_back(instr(instr_kind::VAL, data_type(basic_type::F), vix));
+					instrs.push_back(instr(op_code::VAL, val_ref(mem_type::STACK, vix, data_type(basic_type::F))));
 				} else { // integral
 					auto vix = values.add(std::strtoll(t.str().c_str(), &endp, 10));
-					instrs.push_back(instr(instr_kind::VAL, data_type(basic_type::I), vix));
+					instrs.push_back(instr(op_code::VAL, val_ref(mem_type::STACK, vix, data_type(basic_type::I))));
 				}
 				break;
 			case tt::OP_COLON_EQ:
 				const auto &res_type = convert_binary(
 					t.get_type(),
-					second_last().dt,
-					last().dt);
+					second_last().res_dt(),
+					last().res_dt());
 
-				// Bind id instruction on left side to the value (possibly converting to new type)
-				//scope.ids[t.str()] = val_ref(true, last().vix, last().dt);
+				// TODO: Decide new datatype
+
+				// "Copy" value to stack
+				size_t ix = scope.frame.add(last().res_dt().size(), 1);
+
+				// Bind id instruction on left side to the value
+				auto val = val_ref(mem_type::STACK, ix, last().res_dt());
+				scope.ids[t.str()] = val;
+
+				// TODO: Optimization: Do not copy if immutable variable and right side is immutable
 				
 				// Create load value to stack instruction
+				instrs.push_back(instr(op_code::COPY, val_ref(), last().res, val));
 				break;
 			}
 		}

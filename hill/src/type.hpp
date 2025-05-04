@@ -35,6 +35,7 @@ namespace hill {
 	}
 
 	struct data_type {
+		data_type(): basic_type(basic_type::UNDECIDED), mut(false) {}
 		data_type(basic_type basic_type): basic_type(basic_type), mut(false) {}
 		bool operator==(const data_type &other) {return this->basic_type==other.basic_type;}
 		bool operator<(const data_type &other) const
@@ -43,6 +44,15 @@ namespace hill {
 		}
 		basic_type basic_type;
 		bool mut;
+
+		std::string to_str() const
+		{
+			std::stringstream ss;
+
+			ss << (int)basic_type;
+
+			return ss.str();
+		}
 
 		size_t size() const
 		{

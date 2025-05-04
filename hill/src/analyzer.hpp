@@ -30,6 +30,8 @@ namespace hill {
 			for (auto &t: rpn) {
 				analyze_token(t);
 			}
+
+			std::cout << main.to_str();
 		}
 
 		const block &get_main_block() const
