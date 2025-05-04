@@ -24,7 +24,7 @@ namespace hill {
 		val_ref arg1;
 		val_ref arg2;
 
-		std::string to_str()
+		std::string to_str() const
 		{
 			std::stringstream ss;
 
@@ -42,9 +42,9 @@ namespace hill {
 				ss<<"<UNKNOWN>";
 			}
 
-			ss << ' '<<res.to_str();
-			ss << ' '<<arg1.to_str();
-			ss << ' '<<arg2.to_str();
+			ss << " res:" <<res.to_str();
+			ss << " arg1:" <<arg1.to_str();
+			ss << " arg2:" <<arg2.to_str();
 
 			return ss.str();
 		}

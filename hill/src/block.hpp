@@ -20,7 +20,7 @@ namespace hill {
 		literal_values values;
 		std::vector<instr> instrs;
 
-		std::string to_str()
+		std::string to_str() const
 		{
 			std::stringstream ss;
 			for (auto &instr: instrs) {

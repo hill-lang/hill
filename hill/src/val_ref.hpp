@@ -66,7 +66,8 @@ namespace hill {
 			default:;
 			}
 
-			if (mt!=mem_type::UNDECIDED) ss << ':' << ix;
+			ss << ':';
+			if (mt!=mem_type::UNDECIDED) ss << ix;
 			ss << ":dt:" << dt.to_str();
 
 			return ss.str();
