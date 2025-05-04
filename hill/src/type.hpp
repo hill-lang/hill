@@ -8,24 +8,25 @@ namespace hill {
 	enum class basic_type {
 		UNDECIDED,
 		STR,
-		I, I8, I16, I32, I64, I128,
-		U, U8, U16, U32, U64, U128,
+		I, I8, I16, I32, I64,
+		U, U8, U16, U32, U64,
 		F, F32, F64, F128,
 	};
 
 	static constexpr size_t get_type_size(basic_type t)
 	{
 		switch (t) {
+		case basic_type::I: return 8u;
 		case basic_type::I8: return 1u;
 		case basic_type::I16: return 2u;
 		case basic_type::I32: return 4u;
 		case basic_type::I64: return 8u;
-		case basic_type::I128: return 16u;
+		case basic_type::U: return 8u;
 		case basic_type::U8: return 1u;
 		case basic_type::U16: return 2u;
 		case basic_type::U32: return 4u;
 		case basic_type::U64: return 8u;
-		case basic_type::U128: return 16u;
+		case basic_type::F: return 8u;
 		case basic_type::F32: return 4u;
 		case basic_type::F64: return 8u;
 		case basic_type::F128: return 16u;
