@@ -54,7 +54,6 @@ namespace hill {
 		{
 			s.push_alloc(b.scope.frame.ix); // Allocate stack frame
 
-			val_ref current_val;
 			for (auto &instr: b.instrs) {
 				switch (instr.op) {
 				case op_code::END:
