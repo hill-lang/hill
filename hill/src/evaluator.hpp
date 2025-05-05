@@ -58,7 +58,7 @@ namespace hill {
 			for (auto &instr: b.instrs) {
 				switch (instr.op) {
 				case op_code::END:
-					std::cout << "Result -"
+					std::cout << "END"
 						<< " dt:" << instr.res_dt.to_str()
 						<< " val:" << *(int *)s.top(instr.res_dt.size())
 						<< '\n';
@@ -69,14 +69,27 @@ namespace hill {
 					copy_to_stack(b.values, instr.load.ix, instr.res_dt.size());
 					break;
 				case op_code::COPY:
-					// TODO: Type conversion?
-					//instr.copy.arg2_dt
-					const uint8_t *src = s.top(instr.copy.arg2_dt.size());
-					uint8_t *dst = s.data() + instr.copy.ix;
-					memcpy(dst, src, instr.copy.arg2_dt.size());
-					s.pop(instr.copy.arg2_dt.size());
-					s.push(instr.copy.arg2_dt.size(), dst);
-					break;
+					{
+						// TODO: Type conversion?
+						const uint8_t *src = s.top(instr.copy.arg2_dt.size());
+						uint8_t *dst = s.data() + instr.copy.ix;
+						memcpy(dst, src, instr.copy.arg2_dt.size());
+						s.pop(instr.copy.arg2_dt.size());
+						s.push(instr.copy.arg2_dt.size(), dst);
+						break;
+					}
+				case op_code::ADD:
+					{
+						// TODO: Type conversion?
+						// TODO: Data types?
+						int64_t left = *(int64_t *)s.top(instr.normal.arg1_dt.size());
+						s.pop(instr.normal.arg1_dt.size());
+						int64_t right = *(int64_t *)s.top(instr.normal.arg2_dt.size());
+						s.pop(instr.normal.arg2_dt.size());
+						int64_t res = left + right;
+						s.push(sizeof res, (uint8_t *)&res);
+						break;
+					}
 				}
 			}
 		}

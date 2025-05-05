@@ -57,38 +57,51 @@ namespace hill {
 					data_type(basic_type::UNDECIDED)));
 				break;
 			case tt::NUM:
-				char *endp;
-				if (t.str().find('.')!=std::string::npos) { // floating point
-					auto vix = values.add(std::strtold(t.get_text().c_str(), &endp));
-					instrs.push_back(instr(op_code::LOAD, data_type(basic_type::F), vix));
-				} else { // integral
-					auto vix = values.add(std::strtoll(t.get_text().c_str(), &endp, 10));
-					instrs.push_back(instr(op_code::LOAD, data_type(basic_type::I), vix));
+				{
+					char *endp;
+					if (t.str().find('.')!=std::string::npos) { // floating point
+						auto vix = values.add(std::strtold(t.get_text().c_str(), &endp));
+						instrs.push_back(instr(op_code::LOAD, data_type(basic_type::F), vix));
+					} else { // integral
+						auto vix = values.add(std::strtoll(t.get_text().c_str(), &endp, 10));
+						instrs.push_back(instr(op_code::LOAD, data_type(basic_type::I), vix));
+					}
+					break;
 				}
-				break;
+			case tt::OP_PLUS:
+				{
+					/*const auto res_type = convert_binary(
+						t.get_type(),
+						second_last().res_dt,
+						last().res_dt);*/
+
+					data_type res_dt = last().res_dt;
+					instrs.push_back(instr(op_code::ADD, res_dt, second_last().res_dt, last().res_dt));
+					break;
+				}
 			case tt::OP_COLON_EQ:
-				/*const auto res_type = convert_binary(
-					t.get_type(),
-					second_last().res_dt,
-					last().res_dt);*/
+				{
+					/*const auto res_type = convert_binary(
+						t.get_type(),
+						second_last().res_dt,
+						last().res_dt);*/
 
-				data_type res_dt = last().res_dt;
+					data_type res_dt = last().res_dt;
 
-				// TODO: Decide new datatype
+					// "Copy" value to stack
+					// Bind id instruction on left side to the value
+					auto val = val_ref(
+						mem_type::STACK,
+						scope.frame.add(res_dt.size(), 1),
+						res_dt);
+					scope.ids[t.str()] = val;
 
-				// "Copy" value to stack
-				// Bind id instruction on left side to the value
-				auto val = val_ref(
-					mem_type::STACK,
-					scope.frame.add(res_dt.size(), 1),
-					res_dt);
-				scope.ids[t.str()] = val;
-
-				// TODO: Optimization: Do not copy if immutable variable and right side is immutable
+					// TODO: Optimization: Do not copy if immutable variable and right side is immutable
 				
-				// Create load value to stack instruction
-				instrs.push_back(instr(op_code::COPY, val.dt, val.ix, last().res_dt));
-				break;
+					// Create load value to stack instruction
+					instrs.push_back(instr(op_code::COPY, val.dt, val.ix, last().res_dt));
+					break;
+				}
 			}
 		}
 	};

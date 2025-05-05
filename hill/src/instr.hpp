@@ -13,7 +13,8 @@ namespace hill {
 		END, // End of program
 		ID, // Unbound identifier
 		LOAD, // Value (literal or calculated by analyzer/optimizer)
-		COPY, // Bind identifier to memory
+		COPY, // Bind identifier to memory,
+		ADD, // Arithmic add
 	};
 
 	struct instr {
