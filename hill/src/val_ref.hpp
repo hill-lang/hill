@@ -4,6 +4,7 @@
 #include "type.hpp"
 
 #include <vector>
+#include <string.h>
 
 namespace hill {
 
@@ -18,9 +19,14 @@ namespace hill {
 			return start_ix;
 		}
 
-		template<typename VT> VT get(size_t ix)
+		template<typename VT> VT get(size_t ix) const
 		{
 			return *((VT *)(mem.data() + ix));
+		}
+
+		void copy(size_t ix, uint8_t *dst, size_t size) const
+		{
+			memcpy(dst, mem.data() + ix, size);
 		}
 	};
 
@@ -38,8 +44,7 @@ namespace hill {
 	enum class mem_type {
 		UNDECIDED,
 		LITERAL,
-		STACK,
-		RESULT
+		STACK
 	};
 
 	struct val_ref {
@@ -64,14 +69,11 @@ namespace hill {
 			case mem_type::STACK:
 				ss << "mt:STACK";
 				break;
-			case mem_type::RESULT:
-				ss << "mt:RESULT";
-				break;
 			default:;
 			}
 
 			ss << ':';
-			if (mt!=mem_type::UNDECIDED && mt!=mem_type::RESULT) ss << ix;
+			if (mt!=mem_type::UNDECIDED) ss << ix;
 			ss << ":dt:" << dt.to_str();
 
 			return ss.str();
