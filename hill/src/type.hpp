@@ -13,7 +13,7 @@ namespace hill {
 		F, F32, F64, F128,
 	};
 
-	static constexpr size_t get_type_size(basic_type t)
+	constexpr size_t basic_type_size(basic_type t)
 	{
 		switch (t) {
 		case basic_type::I: return 8u;
@@ -34,6 +34,29 @@ namespace hill {
 		}
 	}
 
+	constexpr const char *basic_type_str(basic_type t)
+	{
+		switch (t) {
+		case basic_type::UNDECIDED: return "UNDECIDED";
+		case basic_type::STR: return "STR";
+		case basic_type::I: return "I";
+		case basic_type::I8: return "I8";
+		case basic_type::I16: return "I16";
+		case basic_type::I32: return "I32";
+		case basic_type::I64: return "I64";
+		case basic_type::U: return "U";
+		case basic_type::U8: return "U8";
+		case basic_type::U16: return "U16";
+		case basic_type::U32: return "U32";
+		case basic_type::U64: return "U64";
+		case basic_type::F: return "F";
+		case basic_type::F32: return "F32";
+		case basic_type::F64: return "F64";
+		case basic_type::F128: return "F128";
+		default: return "<UNKNOWN>";
+		}
+	}
+
 	struct data_type {
 		data_type(): basic_type(basic_type::UNDECIDED), mut(false) {}
 		data_type(basic_type basic_type): basic_type(basic_type), mut(false) {}
@@ -42,21 +65,18 @@ namespace hill {
 		{
 			return this->basic_type < other.basic_type;
 		}
+
 		basic_type basic_type;
 		bool mut;
 
 		std::string to_str() const
 		{
-			std::stringstream ss;
-
-			ss << (int)basic_type;
-
-			return ss.str();
+			return basic_type_str(this->basic_type);
 		}
 
 		size_t size() const
 		{
-			return get_type_size(basic_type);
+			return basic_type_size(this->basic_type);
 		}
 	};
 }
