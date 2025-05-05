@@ -10,6 +10,7 @@
 namespace hill {
 
 	enum class op_code {
+		END, // End of program
 		ID, // Unbound identifier
 		LOAD, // Value (literal or calculated by analyzer/optimizer)
 		COPY, // Bind identifier to memory
@@ -18,16 +19,25 @@ namespace hill {
 	struct instr {
 		instr(op_code op, data_type res_dt, data_type arg1_dt, data_type arg2_dt):
 			op(op), res_dt(res_dt), normal({.arg1_dt=arg1_dt, .arg2_dt=arg2_dt}) {}
-		instr(op_code op, size_t ix, data_type dt):
+		instr(op_code op, data_type res_dt, size_t ix, data_type arg2_dt):
+			op(op), res_dt(res_dt), copy({.ix=ix, .arg2_dt=arg2_dt}) {}
+		instr(op_code op, data_type dt, size_t ix):
 			op(op), res_dt(dt), load({.ix=ix}) {}
+
 		op_code op;
 
 		data_type res_dt;
+
 		union {
 			struct {
 				data_type arg1_dt;
 				data_type arg2_dt;
 			} normal;
+
+			struct {
+				size_t ix;
+				data_type arg2_dt;
+			} copy;
 
 			struct {
 				size_t ix;

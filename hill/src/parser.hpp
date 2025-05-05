@@ -76,6 +76,7 @@ namespace hill {
 				while (!op_stack.empty()) {
 					put_token(std::move(pop_mv(op_stack)));
 				}
+				put_token(std::move(t));
 			}
 		}
 

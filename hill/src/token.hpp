@@ -73,7 +73,6 @@ namespace hill {
 	public:
 		tt get_type() const {return this->type;}
 		const std::string &get_text() const {return this->text;}
-		/*std::string_view view_text() const {return this->text;}*/ /* Maybe we want this? */
 		std::string str() const {return this->type_spec->name + " (" + this->text + ")";}
 		std::string to_str() const
 		{

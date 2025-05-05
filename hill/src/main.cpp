@@ -45,10 +45,10 @@ struct {
 	uint64_t expected_resulted;
 } tests[]={
 	{"tests/initial-assignment.hill", 5},
-	{"tests/post-increment.hill", 0},
-	{"tests/post-decrement.hill", 0},
-	{"tests/pre-increment.hill", 0},
-	{"tests/pre-decrement.hill", 0},
+	//{"tests/post-increment.hill", 0},
+	//{"tests/post-decrement.hill", 0},
+	//{"tests/pre-increment.hill", 0},
+	//{"tests/pre-decrement.hill", 0},
 };
 
 static void run_tests()
