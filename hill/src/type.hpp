@@ -10,7 +10,7 @@ namespace hill {
 		STR,
 		I, I8, I16, I32, I64,
 		U, U8, U16, U32, U64,
-		F, F32, F64, F128,
+		F, F32, F64, /*F128,*/
 	};
 
 	constexpr size_t basic_type_size(basic_type t)
@@ -29,7 +29,7 @@ namespace hill {
 		case basic_type::F: return 8u;
 		case basic_type::F32: return 4u;
 		case basic_type::F64: return 8u;
-		case basic_type::F128: return 16u;
+		//case basic_type::F128: return 16u;
 		default: return 0u;
 		}
 	}
@@ -52,7 +52,7 @@ namespace hill {
 		case basic_type::F: return "F";
 		case basic_type::F32: return "F32";
 		case basic_type::F64: return "F64";
-		case basic_type::F128: return "F128";
+		//case basic_type::F128: return "F128";
 		default: return "<UNKNOWN>";
 		}
 	}

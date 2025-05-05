@@ -14,7 +14,8 @@ namespace hill {
 		ID, // Unbound identifier
 		LOAD, // Value (literal or calculated by analyzer/optimizer)
 		COPY, // Bind identifier to memory,
-		ADD, // Arithmic add
+		ADD, // Arithmetic addition
+		SUB, // Arithmetic subtraction
 	};
 
 	struct instr {

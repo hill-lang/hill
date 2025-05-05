@@ -23,9 +23,10 @@ namespace hill {
 		std::string to_str() const
 		{
 			std::stringstream ss;
-			for (auto &instr: instrs) {
+			for (auto &instr : instrs) {
 				ss << instr.to_str() << '\n';
 			}
+			ss << values.to_str();
 			return ss.str();
 		}
 
@@ -66,8 +67,8 @@ namespace hill {
 						auto vix = values.add(std::strtoll(t.get_text().c_str(), &endp, 10));
 						instrs.push_back(instr(op_code::LOAD, data_type(basic_type::I), vix));
 					}
-					break;
 				}
+				break;
 			case tt::OP_PLUS:
 				{
 					/*const auto res_type = convert_binary(
@@ -77,8 +78,19 @@ namespace hill {
 
 					data_type res_dt = last().res_dt;
 					instrs.push_back(instr(op_code::ADD, res_dt, second_last().res_dt, last().res_dt));
-					break;
 				}
+				break;
+			case tt::OP_MINUS:
+				{
+					/*const auto res_type = convert_binary(
+						t.get_type(),
+						second_last().res_dt,
+						last().res_dt);*/
+
+					data_type res_dt = last().res_dt;
+					instrs.push_back(instr(op_code::SUB, res_dt, second_last().res_dt, last().res_dt));
+				}
+				break;
 			case tt::OP_COLON_EQ:
 				{
 					/*const auto res_type = convert_binary(
@@ -100,8 +112,8 @@ namespace hill {
 				
 					// Create load value to stack instruction
 					instrs.push_back(instr(op_code::COPY, val.dt, val.ix, last().res_dt));
-					break;
 				}
+				break;
 			}
 		}
 	};

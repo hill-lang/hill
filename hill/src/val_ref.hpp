@@ -3,8 +3,10 @@
 
 #include "type.hpp"
 
-#include <vector>
+#include <iomanip>
+#include <string>
 #include <string.h>
+#include <vector>
 
 namespace hill {
 
@@ -19,6 +21,23 @@ namespace hill {
 			return start_ix;
 		}
 
+		size_t add(const char *str)
+		{
+			size_t size = strlen(str) + 1;
+			size_t start_ix = mem.size();
+			mem.resize(start_ix + size);
+			memcpy(mem.data() + start_ix, str, size);
+			return start_ix;
+		}
+
+		size_t add(std::string str)
+		{
+			size_t start_ix = mem.size();
+			mem.resize(start_ix + str.length() + 1);
+			memcpy(mem.data() + start_ix, str.c_str(), str.length() + 1);
+			return start_ix;
+		}
+
 		template<typename VT> VT get(size_t ix) const
 		{
 			return *((VT *)(mem.data() + ix));
@@ -28,10 +47,81 @@ namespace hill {
 		{
 			memcpy(dst, mem.data() + ix, size);
 		}
+
+		std::string to_str() const
+		{
+			const size_t col_cnt = 16;
+
+			std::stringstream ss;
+
+			ss << std::left
+				<< std::setfill(' ')
+				<< std::setw(11)
+				<< "Literals";
+
+			ss << std::right
+				<< std::hex
+				<< std::uppercase
+				<< std::setfill('0');
+			for (size_t i=0; i<col_cnt; ++i) {
+				ss << " " << std::setw(2) << i;
+			}
+			ss << '\n';
+
+			for (size_t i=0; i<mem.size(); ++i) {
+				if (i % col_cnt == 0) {
+					ss << "0x"
+						<< std::hex
+						<< std::uppercase
+						<< std::setw(8)
+						<< i << ":";
+				}
+				ss << " "
+					<< std::hex
+					<< std::uppercase
+					<< std::setfill('0')
+					<< std::setw(2)
+					<< +mem[i];
+				if ((i+1) % col_cnt == 0) {
+					ss << "  ";
+					for (size_t ii=0; ii<col_cnt; ++ii) {
+						uint8_t val = mem[i + ii + 1 - col_cnt];
+						if (std::isprint(val)) {
+							ss << " " << std::nouppercase << val;
+						} else {
+							ss << " .";
+						}
+					}
+					ss << '\n';
+				}
+			}
+
+			size_t remailing = col_cnt - (mem.size() % col_cnt);
+			if (remailing!=col_cnt) {
+				ss << std::setfill(' ') << std::setw(remailing * 3) << "";
+				ss << "  ";
+				for (size_t ii = 0; ii<remailing; ++ii) {
+					uint8_t val = mem[mem.size() + ii - col_cnt];
+					if (std::isprint(val)) {
+						ss << " " << std::nouppercase << val;
+					} else {
+						ss << " .";
+					}
+				}
+				ss << '\n';
+			}
+
+			return ss.str();
+		}
 	};
 
 	struct frame_def {
 		size_t ix=0u;
+
+		size_t size() const
+		{
+			return ix;
+		}
 
 		size_t add(size_t size, size_t cnt)
 		{

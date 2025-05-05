@@ -39,57 +39,116 @@ namespace hill {
 		{
 			mem.resize(mem.size() - size);
 		}
+
+		template<typename T> T pop()
+		{
+			T ret = *(T *)top(sizeof(T));
+			pop(sizeof(T));
+			return ret;
+		}
 	};
 
 	struct evaluator {
 		stack s;
 
-		void copy_to_stack(const literal_values &values, size_t literal_ix, size_t size)
-		{
-			uint8_t *p = s.push_alloc(size);
-			values.copy(literal_ix, p, size);
-		}
-
 		void evaluate(const block &b)
 		{
-			s.push_alloc(b.scope.frame.ix); // Allocate stack frame
+			s.push_alloc(b.scope.frame.size()); // Allocate stack frame
 
-			for (auto &instr: b.instrs) {
-				switch (instr.op) {
-				case op_code::END:
-					std::cout << "END"
-						<< " dt:" << instr.res_dt.to_str()
-						<< " val:" << *(int *)s.top(instr.res_dt.size())
-						<< '\n';
-					break;
-				case op_code::ID:
-					break;
-				case op_code::LOAD:
-					copy_to_stack(b.values, instr.load.ix, instr.res_dt.size());
-					break;
-				case op_code::COPY:
-					{
-						// TODO: Type conversion?
-						const uint8_t *src = s.top(instr.copy.arg2_dt.size());
-						uint8_t *dst = s.data() + instr.copy.ix;
-						memcpy(dst, src, instr.copy.arg2_dt.size());
-						s.pop(instr.copy.arg2_dt.size());
-						s.push(instr.copy.arg2_dt.size(), dst);
-						break;
-					}
-				case op_code::ADD:
-					{
-						// TODO: Type conversion?
-						// TODO: Data types?
-						int64_t left = *(int64_t *)s.top(instr.normal.arg1_dt.size());
-						s.pop(instr.normal.arg1_dt.size());
-						int64_t right = *(int64_t *)s.top(instr.normal.arg2_dt.size());
-						s.pop(instr.normal.arg2_dt.size());
-						int64_t res = left + right;
-						s.push(sizeof res, (uint8_t *)&res);
-						break;
-					}
+			for (auto &ins : b.instrs) {
+				switch (ins.op) {
+				case op_code::END: end(ins); break;
+				case op_code::ID: break;
+				case op_code::LOAD: load(ins, b.values); break;
+				case op_code::COPY: copy(ins); break;
+				case op_code::ADD: add(ins); break;
+				case op_code::SUB: sub(ins); break;
 				}
+			}
+		}
+
+	private:
+		void end(const instr &ins)
+		{
+			std::cout << "END"
+				<< " dt:" << ins.res_dt.to_str()
+				<< " val:" << *(int64_t *)s.top(ins.res_dt.size())
+				<< '\n';
+		}
+
+		void load(const instr &ins, const literal_values &values)
+		{
+			uint8_t *p = s.push_alloc(ins.res_dt.size());
+			values.copy(ins.load.ix, p, ins.res_dt.size());
+		}
+
+		void copy(const instr &ins)
+		{
+			// TODO: Type conversion?
+			const uint8_t *src = s.top(ins.copy.arg2_dt.size());
+			uint8_t *dst = s.data() + ins.copy.ix;
+			memcpy(dst, src, ins.copy.arg2_dt.size());
+			s.pop(ins.copy.arg2_dt.size());
+			s.push(ins.copy.arg2_dt.size(), dst);
+		}
+
+		template<typename T> void add()
+		{
+			T right = s.pop<T>();
+			T left = s.pop<T>();
+			T res = left + right;
+			s.push(sizeof res, (uint8_t *)&res);
+		}
+		void add(const instr &ins)
+		{
+			// TODO: Type conversion?
+			// Maybe type conversion is its own instruction and handled by the analizer?
+
+			switch (ins.res_dt.basic_type) {
+			case basic_type::I8: add<int8_t>(); break;
+			case basic_type::I16: add<int16_t>(); break;
+			case basic_type::I32: add<int32_t>(); break;
+			case basic_type::I64:
+			case basic_type::I: add<int64_t>(); break;
+			case basic_type::U8: add<uint8_t>(); break;
+			case basic_type::U16: add<uint16_t>(); break;
+			case basic_type::U32: add<uint32_t>(); break;
+			case basic_type::U64:
+			case basic_type::U: add<uint64_t>(); break;
+			case basic_type::F32: add<float>(); break;
+			case basic_type::F64:
+			case basic_type::F: add<double>(); break;
+			default: break; /* Throw? Look for custom implemetation? */
+			}
+		}
+
+		template<typename T> void sub()
+		{
+			T right = s.pop<T>();
+			T left = s.pop<T>();
+			T res = left - right;
+			s.push(sizeof res, (uint8_t *)&res);
+		}
+		void sub(const instr &ins)
+		{
+			// TODO: Type conversion?
+			// Maybe type conversion is its own instruction and handled by the analizer?
+
+			switch (ins.res_dt.basic_type) {
+			case basic_type::I8: sub<int8_t>(); break;
+			case basic_type::I16: sub<int16_t>(); break;
+			case basic_type::I32: sub<int32_t>(); break;
+			case basic_type::I64:
+			case basic_type::I: sub<int64_t>(); break;
+			case basic_type::U8: sub<uint8_t>(); break;
+			case basic_type::U16: sub<uint16_t>(); break;
+			case basic_type::U32: sub<uint32_t>(); break;
+			case basic_type::U64:
+			case basic_type::U: sub<uint64_t>(); break;
+			case basic_type::F32: sub<float>(); break;
+			case basic_type::F64:
+			case basic_type::F: sub<double>(); break;
+			default: break; /* Throw? Look for custom implemetation? */
 			}
 		}
 	};
