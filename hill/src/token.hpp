@@ -5,6 +5,7 @@
 #include "exceptions.hpp"
 
 #include <string>
+#include <sstream>
 #include <ranges>
 
 namespace hill {
@@ -14,19 +15,25 @@ namespace hill {
 			type(tt::END),
 			type_spec(&lang_spec::get().get_tt_spec(tt::END)),
 			op_type_spec(nullptr),
-			text("")
+			text(""),
+			lix(-1),
+			cix(-1)
 		{}
-		token(tt token_type, const std::string &text):
+		token(tt token_type, const std::string &text, int lix, int cix):
 			type(token_type),
 			type_spec(&lang_spec::get().get_tt_spec(token_type)),
 			op_type_spec(nullptr),
-			text(text)
+			text(text),
+			lix(lix),
+			cix(cix)
 		{}
 		token(token &&other) noexcept:
 			type(other.type),
 			type_spec(other.type_spec),
 			op_type_spec(other.op_type_spec),
-			text(std::move(other.text))
+			text(std::move(other.text)),
+			lix(other.lix),
+			cix(other.cix)
 		{}
 
 		token(token &) = delete;
@@ -41,6 +48,8 @@ namespace hill {
 				this->type_spec = other.type_spec;
 				this->op_type_spec = other.op_type_spec;
 				this->text = std::move(other.text);
+				this->lix = other.lix;
+				this->cix = other.cix;
 			}
 			return *this;
 		}
@@ -52,14 +61,17 @@ namespace hill {
 			t.type_spec = this->type_spec;
 			t.op_type_spec = this->op_type_spec;
 			t.text = this->text;
+			t.lix = this->lix;
+			t.cix = this-> cix;
 			return t;
 		}
 
-	private:
+//	private:
 		tt type;
 		const tt_spec *type_spec;
 		const ot_spec *op_type_spec;
 		std::string text;
+		int lix, cix;
 
 		template<typename FN> bool op_check(FN fn) const
 		{
@@ -76,6 +88,8 @@ namespace hill {
 		std::string str() const {return this->type_spec->name + " (" + this->text + ")";}
 		std::string to_str() const
 		{
+			std::stringstream pos_ss;
+			pos_ss << ((lix>=0) ? lix+1 : 0) << ':' << ((cix>=0) ? cix+1 : 0);
 			if (this->op_type_spec) {
 				std::string arity =
 					this->op_type_spec->arity==tt_arity::NULLARY ? "Nullary"
@@ -83,9 +97,9 @@ namespace hill {
 					: this->op_type_spec->arity==tt_arity::RUNARY ? "Right unary"
 					: this->op_type_spec->arity==tt_arity::BINARY ? "Binary"
 					: "<UNKNOWN>";
-				return this->str() + " - " + arity;
+				return pos_ss.str() + " - " + this->str() + " - " + arity;
 			} else {
-				return this->str();
+				return pos_ss.str() + " - " + this->str();
 			}
 		}
 

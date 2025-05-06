@@ -10,8 +10,8 @@
 namespace hill {
 
 	namespace concepts {
-		template<typename PT, typename LFT>
-		concept parser = requires(PT p, std::istream &istr, LFT lexer) {
+		template<typename PT, typename LT>
+		concept parser = requires(PT p, std::istream &istr, LT &lexer) {
 			{p.parse(istr, lexer)};
 			{p.get_rpn()};
 		};
@@ -28,11 +28,11 @@ namespace hill {
 		};
 	}
 
-	template<typename LFT, typename PT, typename AT, typename ET>
-	requires concepts::parser<PT, LFT>
+	template<typename LT, typename PT, typename AT, typename ET>
+	requires concepts::parser<PT, LT>
 		&& concepts::analyzer<AT>
 		&& concepts::evaluator<ET>
-	void hill(std::istream &istr, LFT lexer, PT &parser, AT &analyzer, ET &evaluator)
+	void hill(std::istream &istr, LT &lexer, PT &parser, AT &analyzer, ET &evaluator)
 	{
 		parser.parse(istr, lexer);
 		analyzer.analyze(parser.get_rpn());

@@ -17,17 +17,17 @@ namespace hill {
 	}
 
 	struct token_queue {
-		template<typename LFT> token pull_token(std::istream &istr, LFT get_token)
+		template<typename LT> token pull_token(std::istream &istr, LT &lexer)
 		{
 			token curr = std::move(this->next_token);
-			while ((this->next_token = get_token(istr)).ws());
+			while ((this->next_token = lexer.get_token(istr)).ws());
 			return curr;
 		}
 
 		const token &peek_token() const {return this->next_token;}
 
 	private:
-		token next_token = token(tt::START, "");
+		token next_token = token(tt::START, "", -1, -1);
 	};
 
 	struct parser {
@@ -86,14 +86,14 @@ namespace hill {
 			std::exit(EXIT_FAILURE); // TODO: Handle errors properly
 		}
 
-		template<typename LFT> void parse(std::istream &istr, LFT get_token)
+		template<typename LT> void parse(std::istream &istr, LT &lexer)
 		{
 			token_queue queue;
 
-			token prev_t = token(tt::START, "");
+			token prev_t = token(tt::START, "", -1, -1);
 			token t;
 
-			while (!(t = queue.pull_token(istr, get_token)).end()) {
+			while (!(t = queue.pull_token(istr, lexer)).end()) {
 				if (t.error()) {
 					throw internal_exception();
 				}
@@ -101,7 +101,7 @@ namespace hill {
 				const auto &next_t = &queue.peek_token();
 
 				if (prev_t.vend() && t.vbegin()) {
-					parse_token(token(tt::CALL, ""));
+					parse_token(token(tt::CALL, "", next_t->lix, next_t->cix));
 				}
 
 				if (t.op()) {
@@ -136,7 +136,7 @@ namespace hill {
 				}
 			}
 
-			parse_token(token(tt::END, ""));
+			parse_token(token(tt::END, "", -1, -1));
 		}
 
 		const std::vector<token> &get_rpn() const

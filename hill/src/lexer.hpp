@@ -12,124 +12,158 @@
 
 namespace hill {
 
-	token get_token(std::istream &istr)
-	{
-		auto &ops = lang_spec::get().get_tt_patterns();
+	struct lexer {
+		int lix = 0, cix = 0;
+		int last = -1;
 
-		if (istr.eof()) return token(tt::END, "");
+		int get(std::istream &istr)
+		{
+			int ch = istr.get();
 
-		std::ostringstream text;
-
-		auto ch = istr.get();
-
-		// Whitespace
-		if (std::isspace(ch)) {
-			while (std::isspace(ch)) {
-				text.put(ch);
-				ch = istr.get();
+			if (ch=='\n') {
+				++lix;
+				cix = 0;
+			} else {
+				++cix;
 			}
-		
+
+			last = ch;
+
+			return ch;
+		}
+
+		int peek(std::istream &istr)
+		{
+			return istr.peek();
+		}
+
+		void unget(std::istream &istr)
+		{
+			if (last=='\n') {
+				--lix;
+			} else {
+				--cix;
+			}
 			istr.unget();
-			return token(tt::WHITESPACE, text.str());
 		}
 
-		// String
-		if (ch=='"') {
-			while (istr.peek()!='"') {
-				switch (istr.peek()) {
-				case '\\': // Skip escaped character
-					istr.get();
-					break;
-				case '\n':
-				case '\0': // Unterminated string
-					throw not_implemented_exception();
-				default: break;
+		token get_token(std::istream &istr)
+		{
+			auto &ops = lang_spec::get().get_tt_patterns();
+
+			if (istr.eof()) return token(tt::END, "", lix, cix);
+
+			std::ostringstream text;
+
+			auto ch = get(istr);
+
+			// Whitespace
+			if (std::isspace(ch)) {
+				while (std::isspace(peek(istr))) {
+					text.put(get(istr));
 				}
-					
-				text.put(istr.get());
+		
+				return token(tt::WHITESPACE, text.str(), lix, cix);
 			}
-			istr.get();
-			return token(tt::STRING, text.str());
-		}
 
-		// Character
-		if (ch=='\'') {
-			throw not_implemented_exception();
-		}
+			// String
+			if (ch=='"') {
+				while (peek(istr)!='"') {
+					switch (peek(istr)) {
+					case '\\': // Skip escaped character
+						get(istr);
+						break;
+					case '\n':
+					case '\0': // Unterminated string
+						throw not_implemented_exception();
+					default: break;
+					}
+					
+					text.put(get(istr));
+				}
+				get(istr);
+				return token(tt::STRING, text.str(), lix, cix);
+			}
 
-		// Comments
-		if (ch=='/') {
-			text.put(ch);
-			ch = istr.get();
+			// Character
+			if (ch=='\'') {
+				throw not_implemented_exception();
+			}
+
+			// Comments
 			if (ch=='/') {
 				text.put(ch);
-				std::string rest;
-				std::getline(istr, rest);
-				text<<rest;
-				return token(tt::COMMENT, text.str());
-			} else if (ch=='*') {
-				text.put(ch);
-				std::string rest;
-				while (!(rest.length()>0 && rest[rest.length()-1]=='*')) {
-					std::getline(istr, rest, '/');
-					text<<rest<<'/';
+				ch = get(istr);
+				if (ch=='/') {
+					text.put(ch);
+					std::string rest;
+					std::getline(istr, rest);
+					text<<rest;
+					return token(tt::COMMENT, text.str(), lix, cix);
+				} else if (ch=='*') {
+					text.put(ch);
+					std::string rest;
+					while (!(rest.length()>0 && rest[rest.length()-1]=='*')) {
+						std::getline(istr, rest, '/');
+						text<<rest<<'/';
+					}
+					return token(tt::COMMENT, text.str(), lix, cix);
+				} else {
+					ch = text.str()[0];
+					text.str("");
+					text.clear();
+					//unget(istr);
 				}
-				return token(tt::COMMENT, text.str());
-			} else {
-				ch = text.str()[0];
-				text.str("");
-				text.clear();
-				istr.unget();
 			}
-		}
 
-		// Numbers
-		if (std::isdigit(ch)) {
-			while (std::isdigit(ch) || ch=='.' || ch=='\'') {
-				text.put(ch);
-				ch = istr.get();
+			// Numbers
+			if (std::isdigit(ch)) {
+				while (std::isdigit(ch) || ch=='.' || ch=='\'') {
+					text.put(ch);
+					ch = get(istr);
+				}
+				while (std::isalpha(ch)) { // Type specifiers
+					text.put(ch);
+					ch = get(istr);
+				}
+				unget(istr);
+
+				return token(tt::NUM, text.str(), lix, cix);
 			}
-			while (std::isalpha(ch)) { // Type specifiers
-				text.put(ch);
-				ch = istr.get();
+
+			// Names
+			if (std::isalpha(ch) || ch=='_') {
+				while (std::isalnum(ch) || ch=='_') {
+					text.put(ch);
+					ch = get(istr);
+				}
+				unget(istr);
+
+				return token(tt::NAME, text.str(), lix, cix);
 			}
-			istr.unget();
 
-			return token(tt::NUM, text.str());
-		}
+			// Operators etc.
+			if (std::ispunct(ch)) {
+				std::string match((size_t)1, (char)ch);
 
-		// Names
-		if (std::isalpha(ch) || ch=='_') {
-			while (std::isalnum(ch) || ch=='_') {
-				text.put(ch);
-				ch = istr.get();
-			}
-			istr.unget();
-
-			return token(tt::NAME, text.str());
-		}
-
-		// Operators etc.
-		if (std::ispunct(ch)) {
-			std::string match((size_t)1, (char)ch);
-
-			tt tt = tt::END;
+				tt tt = tt::END;
 			
-			auto found = ops.end();
-			while ((found=std::find_if(ops.begin(), ops.end(), [&match](auto &it){return it.first.starts_with(match);}))!=ops.end()) {
-				text.put(ch);
-				tt = found->second;
-				ch = istr.get();
-				match += (char)ch;
+				auto found = ops.end();
+				while ((found=std::find_if(ops.begin(), ops.end(), [&match](auto &it){return it.first.starts_with(match);}))!=ops.end()) {
+					text.put(ch);
+					tt = found->second;
+					ch = get(istr);
+					match += (char)ch;
+				}
+				unget(istr);
+
+				return token(tt, text.str(), lix, cix);
 			}
-			istr.unget();
 
-			return token(tt, text.str());
+			// Failed to find a token
+			return token(tt::END, "", lix, cix);
 		}
-
-		// Failed to find a token
-		return token(tt::END, "");
-	}
+	};
 }
 
 #endif /* LEXER_HPP_INCLUDED */

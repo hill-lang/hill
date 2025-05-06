@@ -26,7 +26,8 @@ a b;
 )");
 
 	hill::token token;
-	while (!(token=std::move(hill::get_token(istr))).end()) {
+	hill::lexer lexer;
+	while (!(token=std::move(lexer.get_token(istr))).end()) {
 		std::cout << token.str();
 	}
 }
@@ -35,9 +36,10 @@ static void test_parser()
 {
 	std::istringstream istr("\r\na:=5\r\n\r\n");
 
+	hill::lexer lexer;
 	hill::parser parser;
 
-	parser.parse(istr, hill::get_token);
+	parser.parse(istr, lexer);
 }
 
 struct {
@@ -62,10 +64,11 @@ static void run_tests()
 		std::cout << tests[ix].src_fname << ":\n";
 
 		std::ifstream istr(tests[ix].src_fname);
+		hill::lexer l;
 		hill::parser p;
 		hill::analyzer a;
 		hill::evaluator e;
-		hill::hill(istr, hill::get_token, p, a, e);
+		hill::hill(istr, l, p, a, e);
 		//parser.parse(istr);
 
 		//hill(get_token, parser, analyzer, {opt1,opt2}, evaluator);
