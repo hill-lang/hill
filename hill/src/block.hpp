@@ -114,6 +114,8 @@ namespace hill {
 					instrs.push_back(instr(op_code::COPY, val.dt, val.ix, last().res_dt));
 				}
 				break;
+			default:
+				break;
 			}
 		}
 	};
