@@ -13,9 +13,9 @@ namespace hill {
 		F, F32, F64, /*F128,*/
 	};
 
-	constexpr size_t basic_type_size(basic_type t)
+	constexpr size_t basic_type_size(basic_type bt)
 	{
-		switch (t) {
+		switch (bt) {
 		case basic_type::I: return 8u;
 		case basic_type::I8: return 1u;
 		case basic_type::I16: return 2u;
@@ -34,9 +34,9 @@ namespace hill {
 		}
 	}
 
-	constexpr const char *basic_type_str(basic_type t)
+	constexpr const char *basic_type_str(basic_type bt)
 	{
-		switch (t) {
+		switch (bt) {
 		case basic_type::UNDECIDED: return "UNDECIDED";
 		case basic_type::STR: return "STR";
 		case basic_type::I: return "I";
@@ -58,25 +58,25 @@ namespace hill {
 	}
 
 	struct data_type {
-		data_type(): basic_type(basic_type::UNDECIDED), mut(false) {}
-		data_type(basic_type basic_type): basic_type(basic_type), mut(false) {}
-		bool operator==(const data_type &other) {return this->basic_type==other.basic_type;}
+		data_type(): bt(basic_type::UNDECIDED), mut(false) {}
+		data_type(basic_type bt): bt(bt), mut(false) {}
+		bool operator==(const data_type &other) {return this->bt ==other.bt;}
 		bool operator<(const data_type &other) const
 		{
-			return this->basic_type < other.basic_type;
+			return this->bt < other.bt;
 		}
 
-		basic_type basic_type;
+		basic_type bt;
 		bool mut;
 
 		std::string to_str() const
 		{
-			return basic_type_str(this->basic_type);
+			return basic_type_str(this->bt);
 		}
 
 		size_t size() const
 		{
-			return basic_type_size(this->basic_type);
+			return basic_type_size(this->bt);
 		}
 	};
 }

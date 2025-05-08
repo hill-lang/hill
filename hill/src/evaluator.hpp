@@ -104,7 +104,7 @@ namespace hill {
 			// TODO: Type conversion?
 			// Maybe type conversion is its own instruction and handled by the analizer?
 
-			switch (ins.res_dt.basic_type) {
+			switch (ins.res_dt.bt) {
 			case basic_type::I8: add<int8_t>(); break;
 			case basic_type::I16: add<int16_t>(); break;
 			case basic_type::I32: add<int32_t>(); break;
@@ -134,7 +134,7 @@ namespace hill {
 			// TODO: Type conversion?
 			// Maybe type conversion is its own instruction and handled by the analizer?
 
-			switch (ins.res_dt.basic_type) {
+			switch (ins.res_dt.bt) {
 			case basic_type::I8: sub<int8_t>(); break;
 			case basic_type::I16: sub<int16_t>(); break;
 			case basic_type::I32: sub<int32_t>(); break;
