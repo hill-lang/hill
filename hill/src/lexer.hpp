@@ -14,11 +14,17 @@ namespace hill {
 
 	struct lexer {
 		int lix = 0, cix = 0;
-		int last = -1;
+		int plix = -1, pcix = -1;
 
 		int get(std::istream &istr)
 		{
+			if (istr.eof()) {
+				return 0;
+			}
 			int ch = istr.get();
+
+			plix = lix;
+			pcix = cix;
 
 			if (ch=='\n') {
 				++lix;
@@ -26,8 +32,6 @@ namespace hill {
 			} else {
 				++cix;
 			}
-
-			last = ch;
 
 			return ch;
 		}
@@ -39,11 +43,11 @@ namespace hill {
 
 		void unget(std::istream &istr)
 		{
-			if (last=='\n') {
-				--lix;
-			} else {
-				--cix;
-			}
+			lix = plix;
+			plix = -1;
+			cix = pcix;
+			pcix = -1;
+
 			istr.unget();
 		}
 
@@ -51,9 +55,9 @@ namespace hill {
 		{
 			auto &ops = lang_spec::get().get_tt_patterns();
 
-			int s_lix = lix, s_cix = cix;
+			int slix = lix, scix = cix;
 
-			if (istr.eof()) return token(tt::END, "", s_lix, s_cix);
+			if (istr.eof()) return token(tt::END, "", slix, scix);
 
 			std::ostringstream text;
 
@@ -66,7 +70,7 @@ namespace hill {
 					get(istr);
 				}
 		
-				return token(tt::WHITESPACE, text.str(), s_lix, s_cix);
+				return token(tt::WHITESPACE, text.str(), slix, scix);
 			}
 
 			// String
@@ -87,7 +91,7 @@ namespace hill {
 					get(istr);
 				}
 				//get(istr);
-				return token(tt::STRING, text.str(), s_lix, s_cix);
+				return token(tt::STRING, text.str(), slix, scix);
 			}
 
 			// Character
@@ -99,29 +103,30 @@ namespace hill {
 			if (ch=='/') {
 				text.put(ch);
 				get(istr);
+				ch=peek(istr);
 
 				if (ch=='/') {
-					text.put(ch);
-					std::string rest;
-					std::getline(istr, rest);
-					text<<rest;
-					return token(tt::COMMENT, text.str(), s_lix, s_cix);
-				} else if (ch=='*') {
-					text.put(ch);
-					std::string rest;
-					while (!(rest.length()>0 && rest[rest.length()-1]=='*')) {
-						std::getline(istr, rest, '/');
-						text<<rest<<'/';
+					get(istr);
+					while (ch && ch!='\n') {
+						text.put(ch);
+						ch = get(istr);
 					}
-					return token(tt::COMMENT, text.str(), s_lix, s_cix);
+					return token(tt::COMMENT, text.str(), slix, scix);
+				} else if (ch=='*') {
+					get(istr);
+					int prev=-1;
+					while (ch && (text.tellp()<3 || prev!='*' || ch!='/')) {
+						text.put(ch);
+						prev = ch;
+						ch = get(istr);
+					}
+					text.put(ch);
+					return token(tt::COMMENT, text.str(), slix, scix);
 				} else {
 					ch = text.str()[0];
 					text.str("");
 					text.clear();
 					unget(istr);
-					// unget() cant correctly hande line/column indexes:
-					lix = s_lix;
-					cix = s_cix;
 				}
 			}
 
@@ -139,7 +144,7 @@ namespace hill {
 				}
 				//unget(istr);
 
-				return token(tt::NUM, text.str(), s_lix, s_cix);
+				return token(tt::NUM, text.str(), slix, scix);
 			}
 
 			// Names
@@ -151,7 +156,7 @@ namespace hill {
 				}
 				//unget(istr);
 
-				return token(tt::NAME, text.str(), s_lix, s_cix);
+				return token(tt::NAME, text.str(), slix, scix);
 			}
 
 			// Operators etc.
@@ -170,11 +175,11 @@ namespace hill {
 				}
 				//unget(istr);
 
-				return token(tt, text.str(), s_lix, s_cix);
+				return token(tt, text.str(), slix, scix);
 			}
 
 			// Failed to find a token
-			return token(tt::END, "", s_lix, s_cix);
+			return token(tt::END, "", slix, scix);
 		}
 	};
 }

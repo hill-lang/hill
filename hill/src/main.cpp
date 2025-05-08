@@ -23,12 +23,14 @@ total := 100'000L;
 PI: = 3.1415f;
 
 a b;
+/*/
+*/
 )");
 
 	hill::token token;
 	hill::lexer lexer;
 	while (!(token=std::move(lexer.get_token(istr))).end()) {
-		std::cout << token.str() << '\n';
+		std::cout << token.to_str() << '\n';
 	}
 }
 
