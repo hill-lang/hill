@@ -1,4 +1,4 @@
-name: windows-vs2022-msc
+name: windows-vs2019-msc
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ["master"]
 
 jobs:
-  windows-vs2022-msc:
+  windows-vs2019-msc:
     runs-on: windows-latest
 
     steps:
@@ -22,8 +22,8 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v2
 
-    - name: gen projects vs2022 msc
-      run: premake5 vs2022
+    - name: gen projects vs2019 msc
+      run: premake5 vs2019
       shell: bash
 
     - name: build debug
