@@ -15,7 +15,7 @@ namespace hill {
 	};
 
 	struct block { // The code
-		scope scope;
+		scope s;
 
 		literal_values values;
 		std::vector<instr> instrs;
@@ -104,9 +104,9 @@ namespace hill {
 					// Bind id instruction on left side to the value
 					auto val = val_ref(
 						mem_type::STACK,
-						scope.frame.add(res_dt.size(), 1),
+						s.frame.add(res_dt.size(), 1),
 						res_dt);
-					scope.ids[t.str()] = val;
+					s.ids[t.str()] = val;
 
 					// TODO: Optimization: Do not copy if immutable variable and right side is immutable
 

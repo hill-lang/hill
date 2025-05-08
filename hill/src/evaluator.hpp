@@ -53,7 +53,7 @@ namespace hill {
 
 		void evaluate(const block &b)
 		{
-			s.push_alloc(b.scope.frame.size()); // Allocate stack frame
+			s.push_alloc(b.s.frame.size()); // Allocate stack frame
 
 			for (auto &ins : b.instrs) {
 				switch (ins.op) {
