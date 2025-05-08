@@ -5,6 +5,7 @@
 #include "lang_spec.hpp"
 #include "exceptions.hpp"
 
+#include <algorithm>
 #include <istream>
 #include <string>
 #include <string_view>
