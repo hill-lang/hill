@@ -19,6 +19,9 @@ jobs:
       with:
           repository: premake/premake-core
 
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
     - name: gen projects vs2022 msc
       run: premake5 vs2022
       shell: bash

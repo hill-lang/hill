@@ -24,11 +24,11 @@ jobs:
       shell: bash
 
     - name: build debug
-      run: make -C hill --config=debug
+      run: make config=debug
       shell: bash
     - name: build release
-      run: make -C hill --config=release
+      run: make config=release
       shell: bash
     - name: build dist
-      run: make -C hill --config=dist
+      run: make config=dist
       shell: bash
