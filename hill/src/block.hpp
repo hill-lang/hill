@@ -109,7 +109,7 @@ namespace hill {
 					scope.ids[t.str()] = val;
 
 					// TODO: Optimization: Do not copy if immutable variable and right side is immutable
-				
+
 					// Create load value to stack instruction
 					instrs.push_back(instr(op_code::COPY, val.dt, val.ix, last().res_dt));
 				}

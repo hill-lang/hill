@@ -70,7 +70,7 @@ namespace hill {
 					text.put(ch);
 					get(istr);
 				}
-		
+
 				return token(tt::WHITESPACE, text.str(), slix, scix);
 			}
 
@@ -87,7 +87,7 @@ namespace hill {
 						throw not_implemented_exception();
 					default: break;
 					}
-					
+
 					text.put(ch);
 					get(istr);
 				}
@@ -165,7 +165,7 @@ namespace hill {
 				std::string match((size_t)1, (char)ch);
 
 				tt tt = tt::END;
-			
+
 				auto found = ops.end();
 				while ((found=std::find_if(ops.begin(), ops.end(), [&match](auto &it){return it.first.starts_with(match);}))!=ops.end()) {
 					text.put(ch);
