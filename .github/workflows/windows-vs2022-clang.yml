@@ -14,24 +14,22 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: install premake5
+    - name: Install premake5
       uses: ./.github/actions/install-premake5
-      with:
-          repository: premake/premake-core
 
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v2
 
-    - name: gen projects vs2022 clang
+    - name: Generate vs2022 clang
       run: premake5 vs2022 --cc=clang
       shell: bash
 
-    - name: build debug
+    - name: Build debug
       run: msbuild hill.sln /p:Configuration=Debug
       shell: cmd
-    - name: build release
+    - name: Build release
       run: msbuild hill.sln /p:Configuration=Release
       shell: cmd
-    - name: build dist
+    - name: Build dist
       run: msbuild hill.sln /p:Configuration=Dist
       shell: cmd

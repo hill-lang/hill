@@ -14,21 +14,19 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: install premake5
+    - name: Install premake5
       uses: ./.github/actions/install-premake5
-      with:
-          repository: premake/premake-core
 
-    - name: gen projects
+    - name: Generate make files
       run: premake5 gmake --shell=posix
       shell: bash
 
-    - name: build debug
+    - name: Build debug
       run: make config=debug
       shell: bash
-    - name: build release
+    - name: Build release
       run: make config=release
       shell: bash
-    - name: build dist
+    - name: Build dist
       run: make config=dist
       shell: bash

@@ -14,20 +14,18 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: install premake5
+    - name: Install premake5
       uses: ./.github/actions/install-premake5
-      with:
-          repository: premake/premake-core
 
     - name: make --version
       run: make --version
 
-    - name: gen projects gcc
+    - name: Generate make files (gcc)
       run: premake5 gmake --cc=gcc
 
-    - name: build debug
+    - name: Build debug
       run: make config=debug
-    - name: build release
+    - name: Build release
       run: make config=release
-    - name: build dist
+    - name: Build dist
       run: make config=dist
