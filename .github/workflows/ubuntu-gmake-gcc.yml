@@ -1,0 +1,33 @@
+name: ubuntu-gmake-gcc
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  ubuntu-gmake-gcc:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: install premake5
+      uses: ./.github/actions/install-premake5
+      with:
+          repository: premake/premake-core
+
+    - name: make --version
+      run: make --version
+
+    - name: gen projects gcc
+      run: premake5 projects gmake --cc=gcc
+
+    - name: build debug
+      run: make config=debug
+    - name: build release
+      run: make config=release
+    - name: build dist
+      run: make config=dist

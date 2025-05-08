@@ -1,0 +1,33 @@
+name: ubuntu-gmake-clang
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  ubuntu-gmake-clang:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: install premake5
+      uses: ./.github/actions/install-premake5
+      with:
+          repository: premake/premake-core
+
+    - name: make --version
+      run: make --version
+
+    - name: gen projects clang
+      run: premake5 projects gmake --cc=clang
+
+    - name: build debug
+      run: make config=debug
+    - name: build release
+      run: make config=release
+    - name: build dist
+      run: make config=dist
