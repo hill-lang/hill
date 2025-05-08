@@ -23,7 +23,7 @@ jobs:
       run: make --version
 
     - name: gen projects clang
-      run: premake5 projects gmake --cc=clang
+      run: premake5 gmake --cc=clang
 
     - name: build debug
       run: make config=debug

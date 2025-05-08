@@ -23,7 +23,7 @@ jobs:
       run: make --version
 
     - name: gen projects gcc
-      run: premake5 projects gmake --cc=gcc
+      run: premake5 gmake --cc=gcc
 
     - name: build debug
       run: make config=debug
