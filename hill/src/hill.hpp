@@ -2,6 +2,7 @@
 #define HILL_HPP_INCLUDED
 
 #include "parser.hpp"
+#include "serializer.hpp"
 
 #include <concepts>
 #include <iostream>
@@ -36,6 +37,13 @@ namespace hill {
 	{
 		parser.parse(istr, lexer);
 		analyzer.analyze(parser.get_rpn());
+
+		// Debug only!
+		serializer s(serializer_mode::ASCII);
+		s.serialize("./output.hill_c.txt", analyzer.get_main_block());
+		s = serializer(serializer_mode::BIN);
+		s.serialize("./output.hill_c", analyzer.get_main_block());
+
 		evaluator.evaluate(analyzer.get_main_block());
 	}
 }

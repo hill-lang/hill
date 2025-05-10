@@ -101,7 +101,7 @@ namespace hill {
 				ss << std::setfill(' ') << std::setw(remailing * 3) << "";
 				ss << "  ";
 				for (size_t ii = 0; ii<remailing; ++ii) {
-					uint8_t val = mem[mem.size() + ii - col_cnt];
+					uint8_t val = mem[mem.size() + ii - std::min(col_cnt, mem.size())];
 					if (std::isprint(val)) {
 						ss << " " << std::nouppercase << val;
 					} else {

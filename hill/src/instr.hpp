@@ -18,6 +18,19 @@ namespace hill {
 		SUB, // Arithmetic subtraction
 	};
 
+	inline const char *op_code_str(op_code op)
+	{
+		switch (op) {
+		case op_code::END: return "END";
+		case op_code::ID: return "ID";
+		case op_code::LOAD: return "LOAD";
+		case op_code::COPY: return "COPY";
+		case op_code::ADD: return "ADD";
+		case op_code::SUB: return "SUB";
+		default: return "<UNKNOWN";
+		}
+	}
+
 	struct instr {
 		instr(op_code op, data_type res_dt, data_type arg1_dt, data_type arg2_dt):
 			op(op), res_dt(res_dt), normal({.arg1_dt=arg1_dt, .arg2_dt=arg2_dt}) {}
@@ -50,26 +63,17 @@ namespace hill {
 		{
 			std::stringstream ss;
 
-			switch (op) {
-			case op_code::ID:
-				ss<<"ID";
-				break;
-			case op_code::LOAD:
-				ss<<"LOAD";
-				break;
-			case op_code::COPY:
-				ss<<"COPY";
-				break;
-			default:
-				ss<<"<UNKNOWN>";
-			}
+			ss << op_code_str(op);
 
 			ss << " res_dt:" << res_dt.to_str();
 			if (op==op_code::LOAD) {
-				ss << " ix:" << load.ix;
+				ss << " ix:" << this->load.ix;
+			} else if (this->op==op_code::COPY) {
+				ss << " ix:" << this->copy.ix;
+				ss << " arg2_dt:" << this->normal.arg2_dt.to_str();
 			} else {
-				ss << " arg1_dt:" << normal.arg1_dt.to_str();
-				ss << " arg2_dt:" << normal.arg2_dt.to_str();
+				ss << " arg1_dt:" << this->normal.arg1_dt.to_str();
+				ss << " arg2_dt:" << this->normal.arg2_dt.to_str();
 			}
 
 			return ss.str();

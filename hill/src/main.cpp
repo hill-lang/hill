@@ -48,9 +48,9 @@ struct {
 	const char *src_fname;
 	uint64_t expected_resulted;
 } tests[]={
-	//{"tests/initial-assignment.hill", 5},
+	{"tests/initial-assignment.hill", 5},
 	//{"tests/add.hill", 7},
-	{"tests/sub.hill", 5},
+	//{"tests/sub.hill", 5},
 	//{"tests/add-assign.hill", 5},
 	//{"tests/post-increment.hill", 0},
 	//{"tests/post-decrement.hill", 0},
