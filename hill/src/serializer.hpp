@@ -74,7 +74,7 @@ namespace hill {
 
 		template<typename T> static void write_bin(T v, std::ofstream &ofs)
 		{
-			ofs.write((const uint8_t *)&v, sizeof v);
+			ofs.write((const char *)&v, sizeof v);
 		}
 
 		static void data_type_ascii(const data_type &dt, std::ofstream &ofs)
