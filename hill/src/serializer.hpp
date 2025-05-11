@@ -20,10 +20,10 @@ namespace hill {
 
 	inline const char *file_version_str(file_version v)
 	{
-		switch (v) { // MAX 7 characters!
+		switch (v) { // MAX 9 characters!
 		case file_version::NONE: return "NONE";
 		case file_version::V0_1: return "0.1";
-		default: return "UNKNOW";
+		default: return "UNKNOWN";
 		}
 	}
 
@@ -74,7 +74,7 @@ namespace hill {
 
 		template<typename T> static void write_bin(T v, std::ofstream &ofs)
 		{
-			ofs.write(reinterpret_cast<const char *>(&v), sizeof v);
+			ofs.write((const uint8_t *)&v, sizeof v);
 		}
 
 		static void data_type_ascii(const data_type &dt, std::ofstream &ofs)
@@ -179,13 +179,14 @@ namespace hill {
 
 			ofs << std::setfill('\0');
 
-			// Header (64 bytes)
-			ofs << std::left << "%HILL"; // 6 bytes (Magic)
+			// Header (16 bytes)
+			ofs << std::left << "HILL";
 			ofs << '-'
 				<< std::setw(9)
 				<< std::left
 				<< file_version_str(file_version::V0_1)
-				<< std::right; // 10 bytes (Version str)
+				<< std::right // 10 bytes (Version str)
+				<< '\n';
 
 			write_bin((uint16_t)file_version::V0_1, ofs); // 2 bytes (File version)
 			for (size_t i=0; i<38; ++i) { // x bytes (Reserved)
