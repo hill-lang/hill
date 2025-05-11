@@ -11,3 +11,7 @@ This project uses [Premake](https://premake.github.io) to generate build files. 
 ```bash
 premake5 vs2022
 ```
+
+## GCC
+
+This project depends on functionality that is not available in GCC versions prior to 13.
