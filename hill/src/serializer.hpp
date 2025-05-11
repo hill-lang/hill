@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <iomanip>
 #include <stdint.h>
