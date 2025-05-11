@@ -1,0 +1,31 @@
+name: macos-clang
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  macos-clang:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install premake5
+      uses: ./.github/actions/install-premake5
+
+    - name: make --version
+      run: make --version
+
+    - name: Generate make files (clang)
+      run: premake5 gmake --cc=clang
+
+    - name: Build debug
+      run: make config=debug
+    - name: Build release
+      run: make config=release
+    - name: Build dist
+      run: make config=dist
