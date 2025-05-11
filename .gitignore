@@ -11,3 +11,6 @@ Makefile
 bin/
 bin-int/
 Debug/
+
+output.hill_c
+output.hill_c.txt
