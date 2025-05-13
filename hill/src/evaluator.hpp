@@ -79,17 +79,17 @@ namespace hill {
 		void load(const instr &ins, const literal_values &values)
 		{
 			uint8_t *p = s.push_alloc(ins.res_dt.size());
-			values.copy(ins.load.ix, p, ins.res_dt.size());
+			values.copy(ins.ix, p, ins.res_dt.size());
 		}
 
 		void copy(const instr &ins)
 		{
 			// TODO: Type conversion?
-			const uint8_t *src = s.top(ins.copy.arg2_dt.size());
-			uint8_t *dst = s.data() + ins.copy.ix;
-			memcpy(dst, src, ins.copy.arg2_dt.size());
-			s.pop(ins.copy.arg2_dt.size());
-			s.push(ins.copy.arg2_dt.size(), dst);
+			const uint8_t *src = s.top(ins.arg2_dt.size());
+			uint8_t *dst = s.data() + ins.ix;
+			memcpy(dst, src, ins.arg2_dt.size());
+			s.pop(ins.arg2_dt.size());
+			s.push(ins.arg2_dt.size(), dst);
 		}
 
 		template<typename T> void add()

@@ -73,12 +73,12 @@ namespace hill {
 
 	struct type_spec {
 		type_spec() {}
-		type_spec(basic_type bt): types{bt} {}
+		explicit type_spec(basic_type bt): types{bt} {}
 		type_spec(const std::vector<basic_type> &bts): types(bts) {}
-		type_spec(const type_spec &other): types(other.types) {}
-		bool operator==(const type_spec &other) const {return this->types == other.types;}
-		bool operator<(const type_spec &other) const {return this->types < other.types;}
-
+		//type_spec(const type_spec &other): types(other.types) {}
+		//bool operator==(const type_spec &other) const {return this->types == other.types;}
+		//bool operator<(const type_spec &other) const {return this->types < other.types;}
+		
 		std::vector<basic_type> types;
 
 		std::string to_str() const
@@ -103,8 +103,6 @@ namespace hill {
 	struct data_type {
 		data_type(): bt(basic_type::UNDECIDED), mut(false) {}
 		data_type(basic_type bt): bt(bt), mut(false) {}
-		//data_type(std::vector<data_type> tuple_types): bt(basic_type::TUPLE), tuple_types(tuple_types), mut(false) {}
-		data_type(const data_type &other): bt(other.bt), tuple_types(other.tuple_types), mut(other.mut) {}
 		bool operator==(const data_type &other) {return this->bt==other.bt;}
 		bool operator<(const data_type &other) const
 		{
@@ -112,7 +110,6 @@ namespace hill {
 		}
 
 		basic_type bt;
-		std::vector<data_type> tuple_types;
 		bool mut;
 
 		std::string to_str() const

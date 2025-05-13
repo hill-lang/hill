@@ -139,11 +139,12 @@ namespace hill {
 
 	struct val_ref {
 		val_ref(): mt(mem_type::UNDECIDED), ix(SIZE_MAX), dt(data_type()) {}
-		val_ref(mem_type mt, size_t ix, data_type dt): mt(mt), ix(ix), dt(dt) {}
+		val_ref(mem_type mt, size_t ix, data_type dt, type_spec ts): mt(mt), ix(ix), dt(dt), ts(ts) {}
 
 		mem_type mt;
 		size_t ix;
 		data_type dt;
+		type_spec ts;
 
 		std::string to_str() const
 		{
@@ -165,6 +166,7 @@ namespace hill {
 			ss << ':';
 			if (mt!=mem_type::UNDECIDED) ss << ix;
 			ss << ":dt:" << dt.to_str();
+			ss << ":ts:" << ts.to_str();
 
 			return ss.str();
 		}

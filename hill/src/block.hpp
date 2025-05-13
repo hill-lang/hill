@@ -30,13 +30,13 @@ namespace hill {
 			return ss.str();
 		}
 
-		instr last()
+		const instr &last() const
 		{
 			if (instrs.size()<1) throw semantic_error_exception();
 			return instrs[instrs.size()-1];
 		}
 
-		instr second_last()
+		const instr &second_last() const
 		{
 			if (instrs.size()<2) throw semantic_error_exception();
 			return instrs[instrs.size()-2];
@@ -46,26 +46,32 @@ namespace hill {
 		{
 			switch (t.get_type()) {
 			case tt::END:
-				instrs.push_back(instr(op_code::END,
+				instrs.emplace_back(op_code::END,
 					last().res_dt,
+					last().res_ts,
 					data_type(basic_type::UNDECIDED),
-					data_type(basic_type::UNDECIDED)));
+					type_spec(),
+					data_type(basic_type::UNDECIDED),
+					type_spec());
 				break;
 			case tt::NAME:
-				instrs.push_back(instr(op_code::ID,
+				instrs.emplace_back(op_code::ID,
 					data_type(basic_type::UNDECIDED),
+					type_spec(),
 					data_type(basic_type::UNDECIDED),
-					data_type(basic_type::UNDECIDED)));
+					type_spec(),
+					data_type(basic_type::UNDECIDED),
+					type_spec());
 				break;
 			case tt::NUM:
 				{
 					char *endp;
 					if (t.str().find('.')!=std::string::npos) { // floating point
 						auto vix = values.add(std::strtold(t.get_text().c_str(), &endp));
-						instrs.push_back(instr(op_code::LOAD, data_type(basic_type::F), vix));
+						instrs.emplace_back(op_code::LOAD, data_type(basic_type::F), type_spec(basic_type::F), vix);
 					} else { // integral
 						auto vix = values.add(std::strtoll(t.get_text().c_str(), &endp, 10));
-						instrs.push_back(instr(op_code::LOAD, data_type(basic_type::I), vix));
+						instrs.emplace_back(op_code::LOAD, data_type(basic_type::I), type_spec(basic_type::I), vix);
 					}
 				}
 				break;
@@ -77,7 +83,8 @@ namespace hill {
 						last().res_dt);*/
 
 					data_type res_dt = last().res_dt;
-					instrs.push_back(instr(op_code::ADD, res_dt, second_last().res_dt, last().res_dt));
+					type_spec res_ts = last().res_ts;
+					instrs.emplace_back(op_code::ADD, res_dt, res_ts, second_last().res_dt, second_last().res_ts, last().res_dt, last().res_ts);
 				}
 				break;
 			case tt::OP_MINUS:
@@ -88,7 +95,8 @@ namespace hill {
 						last().res_dt);*/
 
 					data_type res_dt = last().res_dt;
-					instrs.push_back(instr(op_code::SUB, res_dt, second_last().res_dt, last().res_dt));
+					type_spec res_ts = last().res_ts;
+					instrs.emplace_back(op_code::SUB, res_dt, res_ts, second_last().res_dt, second_last().res_ts, last().res_dt, last().res_ts);
 				}
 				break;
 			case tt::OP_COLON_EQ:
@@ -99,19 +107,21 @@ namespace hill {
 						last().res_dt);*/
 
 					data_type res_dt = last().res_dt;
+					type_spec res_ts = last().res_ts;
 
 					// "Copy" value to stack
 					// Bind id instruction on left side to the value
 					auto val = val_ref(
 						mem_type::STACK,
 						s.frame.add(res_dt.size(), 1),
-						res_dt);
+						res_dt,
+						res_ts);
 					s.ids[t.str()] = val;
 
 					// TODO: Optimization: Do not copy if immutable variable and right side is immutable
 
 					// Create load value to stack instruction
-					instrs.push_back(instr(op_code::COPY, val.dt, val.ix, last().res_dt));
+					instrs.emplace_back(op_code::COPY, val.dt, val.ts, val.ix, last().res_dt, last().res_ts);
 				}
 				break;
 /*			case tt::OP_COMMA:

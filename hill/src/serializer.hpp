@@ -104,15 +104,15 @@ namespace hill {
 			case op_code::END:
 				break;
 			case op_code::LOAD:
-				ofs << ' ' << ins.load.ix;
+				ofs << ' ' << ins.ix;
 				break;
 			case op_code::COPY:
-				ofs << ' ' << ins.copy.ix;
-				data_type_ascii(ins.copy.arg2_dt, ofs);
+				ofs << ' ' << ins.ix;
+				data_type_ascii(ins.arg2_dt, ofs);
 				break;
 			default:
-				data_type_ascii(ins.normal.arg1_dt, ofs);
-				data_type_ascii(ins.normal.arg2_dt, ofs);
+				data_type_ascii(ins.arg1_dt, ofs);
+				data_type_ascii(ins.arg2_dt, ofs);
 				break;
 			}
 			ofs << '\n';
@@ -126,17 +126,17 @@ namespace hill {
 
 			switch (ins.op) {
 			case op_code::LOAD:
-				write_bin(static_cast<uint64_t>(ins.load.ix), ofs);
+				write_bin(static_cast<uint64_t>(ins.ix), ofs);
 				write_bin<uint32_t>(0u, ofs);
 				write_bin<uint32_t>(0u, ofs);
 				break;
 			case op_code::COPY:
-				write_bin(static_cast<uint64_t>(ins.copy.ix), ofs);
-				data_type_bin(ins.copy.arg2_dt, ofs);
+				write_bin(static_cast<uint64_t>(ins.ix), ofs);
+				data_type_bin(ins.arg2_dt, ofs);
 				break;
 			default:
-				data_type_bin(ins.normal.arg1_dt, ofs);
-				data_type_bin(ins.normal.arg2_dt, ofs);
+				data_type_bin(ins.arg1_dt, ofs);
+				data_type_bin(ins.arg2_dt, ofs);
 				break;
 			}
 		}
