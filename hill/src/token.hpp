@@ -54,7 +54,7 @@ namespace hill {
 			return *this;
 		}
 
-		token clone()
+		token clone() const
 		{
 			token t;
 			t.type = this->type;
