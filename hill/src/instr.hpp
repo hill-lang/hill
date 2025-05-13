@@ -27,7 +27,7 @@ namespace hill {
 		case op_code::COPY: return "COPY";
 		case op_code::ADD: return "ADD";
 		case op_code::SUB: return "SUB";
-		default: return "<UNKNOWN";
+		default: return "<UNKNOWN>";
 		}
 	}
 
@@ -38,6 +38,9 @@ namespace hill {
 			op(op), res_dt(res_dt), copy({.ix=ix, .arg2_dt=arg2_dt}) {}
 		instr(op_code op, data_type dt, size_t ix):
 			op(op), res_dt(dt), load({.ix=ix}) {}
+		instr(const instr &other) {
+		}
+		~instr() {}
 
 		op_code op;
 

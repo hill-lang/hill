@@ -2,6 +2,7 @@
 #define TYPE_HPP_INCLUDED
 
 #include <string>
+#include <vector>
 
 namespace hill {
 
@@ -11,6 +12,7 @@ namespace hill {
 		I, I8, I16, I32, I64,
 		U, U8, U16, U32, U64,
 		F, F32, F64, /*F128,*/
+		TUPLE,
 	};
 
 	constexpr size_t basic_type_size(basic_type bt)
@@ -60,13 +62,16 @@ namespace hill {
 	struct data_type {
 		data_type(): bt(basic_type::UNDECIDED), mut(false) {}
 		data_type(basic_type bt): bt(bt), mut(false) {}
-		bool operator==(const data_type &other) {return this->bt ==other.bt;}
+		data_type(std::vector<data_type> tuple_types): bt(basic_type::TUPLE), tuple_types(tuple_types), mut(false) {}
+		data_type(const data_type &other): bt(other.bt), tuple_types(other.tuple_types), mut(other.mut) {}
+		bool operator==(const data_type &other) {return this->bt==other.bt;}
 		bool operator<(const data_type &other) const
 		{
 			return this->bt < other.bt;
 		}
 
 		basic_type bt;
+		std::vector<data_type> tuple_types;
 		bool mut;
 
 		std::string to_str() const

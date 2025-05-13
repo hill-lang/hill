@@ -114,6 +114,18 @@ namespace hill {
 					instrs.push_back(instr(op_code::COPY, val.dt, val.ix, last().res_dt));
 				}
 				break;
+/*			case tt::OP_COMMA:
+				{
+					// TODO: Build tuple operation
+
+					if (second_last().res_dt.bt==basic_type::TUPLE) {
+						auto t = last().res_dt.tuple_types;
+						t.push_back(last().res_dt);
+					}
+
+					;;
+				}
+				break;*/
 			default:
 				break;
 			}
