@@ -14,6 +14,7 @@ namespace hill {
 		U, U8, U16, U32, U64,
 		F, F32, F64, /*F128,*/
 		ARRAY,
+		START,
 		END,
 	};
 
@@ -57,10 +58,17 @@ namespace hill {
 		case basic_type::F32: return "@f32";
 		case basic_type::F64: return "@f64";
 		//case basic_type::F128: return "@f128";
+		case basic_type::START: return "(";
 		case basic_type::ARRAY: return "@array";
 		case basic_type::END: return ")";
 		default: return "<UNKNOWN>";
 		}
+	}
+
+	inline std::ostream &operator<<(std::ostream &os, const basic_type &bt)
+	{
+		os << basic_type_str(bt);
+		return os;
 	}
 
 	struct type_spec {
@@ -78,9 +86,7 @@ namespace hill {
 			std::ostringstream ss;
 
 			ss << '(';
-			for (auto &bt: types) {
-				ss << basic_type_str(bt);
-			}
+			std::copy(types.begin(), types.end(), std::ostream_iterator<basic_type>(ss, ",")); 
 			return ss.str();
 		}
 
