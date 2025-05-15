@@ -79,7 +79,7 @@ namespace hill {
 			if (right.types.size()>1) {
 				this->types = left.types;
 				this->types.push_back(basic_type::START);
-				this->types.append_range(right.types);
+				this->types.insert(this->types.end(), right.types.cbegin(), right.types.cend());
 				this->types.push_back(basic_type::END);
 			} else {
 				this->types = left.types;
