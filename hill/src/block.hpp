@@ -114,18 +114,25 @@ namespace hill {
 					instrs.emplace_back(op_code::COPY, val.ts, val.ix, last().res_ts);
 				}
 				break;
-/*			case tt::OP_COMMA:
+			case tt::OP_COMMA:
 				{
-					// TODO: Build tuple operation
+					/*const auto res_type = convert_binary(
+						t.get_type(),
+						second_last().res_dt,
+						last().res_dt);*/
 
-					if (second_last().res_dt.bt==basic_type::TUPLE) {
-						auto t = last().res_dt.tuple_types;
-						t.push_back(last().res_dt);
-					}
+					type_spec res_ts = type_spec(second_last().res_ts, last().res_ts);
 
-					;;
+					auto val = val_ref(
+						mem_type::STACK,
+						s.frame.add(res_ts.size(), 1),
+						res_ts);
+					s.ids[t.str()] = val;
+
+					instrs.emplace_back(op_code::TUPLE, val.ts, val.ix);
+
 				}
-				break;*/
+				break;
 			default:
 				break;
 			}

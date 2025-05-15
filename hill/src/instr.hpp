@@ -16,6 +16,7 @@ namespace hill {
 		COPY, // Bind identifier to memory,
 		ADD, // Arithmetic addition
 		SUB, // Arithmetic subtraction
+		TUPLE, // Build tuple
 	};
 
 	inline const char *op_code_str(op_code op)

@@ -13,7 +13,7 @@ namespace hill {
 		I, I8, I16, I32, I64,
 		U, U8, U16, U32, U64,
 		F, F32, F64, /*F128,*/
-		ARRAY,
+//		ARRAY,
 		START,
 		END,
 	};
@@ -59,7 +59,7 @@ namespace hill {
 		case basic_type::F64: return "@f64";
 		//case basic_type::F128: return "@f128";
 		case basic_type::START: return "(";
-		case basic_type::ARRAY: return "@array";
+		//case basic_type::ARRAY: return "@array";
 		case basic_type::END: return ")";
 		default: return "<UNKNOWN>";
 		}
@@ -75,6 +75,17 @@ namespace hill {
 		type_spec() {}
 		explicit type_spec(basic_type bt): types{bt} {}
 		type_spec(const std::vector<basic_type> &bts): types(bts) {}
+		type_spec(const type_spec &left, const type_spec &right) {
+			if (right.types.size()>1) {
+				this->types = left.types;
+				this->types.push_back(basic_type::START);
+				this->types.append_range(right.types);
+				this->types.push_back(basic_type::END);
+			} else {
+				this->types = left.types;
+				this->types.push_back(right.types[0]);
+			}
+		}
 		//type_spec(const type_spec &other): types(other.types) {}
 		bool operator==(const type_spec &other) const {return this->types == other.types;}
 		bool operator<(const type_spec &other) const {return this->types < other.types;}

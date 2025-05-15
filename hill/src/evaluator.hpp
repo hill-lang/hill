@@ -63,6 +63,7 @@ namespace hill {
 				case op_code::COPY: copy(ins); break;
 				case op_code::ADD: add(ins); break;
 				case op_code::SUB: sub(ins); break;
+				case op_code::TUPLE: tuple(ins); break;
 				}
 			}
 		}
@@ -73,6 +74,7 @@ namespace hill {
 			std::cout << "END"
 				<< " ts:" << ins.res_ts.to_str()
 				<< " val:" << *(int64_t *)s.top(ins.res_ts.size())
+				<< " val:" << *(int64_t *)s.top(ins.res_ts.size()/2)
 				<< '\n';
 		}
 
@@ -150,6 +152,19 @@ namespace hill {
 			case basic_type::F: sub<double>(); break;
 			default: break; /* Throw? Look for custom implemetation? */
 			}
+		}
+
+		void tuple(const instr &ins)
+		{
+/*			const uint8_t *right = s.top(ins.arg2_ts.size());
+			s.pop(ins.arg2_ts.size());
+			const uint8_t *left = s.top(ins.arg1_ts.size());
+			s.pop(ins.arg1_ts.size());
+
+			uint8_t *p = s.push_alloc(ins.res_ts.size());*/
+
+			// Make tuple
+			// The top of the stack already looks like a tuple
 		}
 	};
 }
