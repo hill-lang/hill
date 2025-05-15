@@ -6,8 +6,58 @@
 #include <stddef.h>
 #include <algorithm>
 #include <string.h>
+#include <sstream>
 
 namespace hill {
+	template <typename VT> std::string dump_value(const uint8_t *p)
+	{
+		std::stringstream ss;
+
+		ss << *(VT *)p;
+
+		return ss.str();
+	}
+
+	inline std::string dump_value(const type_spec &ts, const uint8_t *p)
+	{
+		std::stringstream ss;
+
+		if (ts.types.size()>1) {
+			ss << '(';
+		}
+
+		int ix = 0;
+		for (auto t: ts.types) {
+			if (ix++>0) {
+				ss << ',';
+			}
+			switch (t) {
+			case basic_type::I8: ss << dump_value<int8_t>(p); break;
+			case basic_type::I16: ss << dump_value<int16_t>(p); break;
+			case basic_type::I32: ss << dump_value<int32_t>(p); break;
+			case basic_type::I64:
+			case basic_type::I: ss << dump_value<int64_t>(p); break;
+			case basic_type::U8: ss << dump_value<uint8_t>(p); break;
+			case basic_type::U16: ss << dump_value<uint16_t>(p); break;
+			case basic_type::U32: ss << dump_value<uint32_t>(p); break;
+			case basic_type::U64:
+			case basic_type::U: ss << dump_value<uint64_t>(p); break;
+			case basic_type::F32: ss << dump_value<float>(p); break;
+			case basic_type::F64:
+			case basic_type::F: ss << dump_value<double>(p); break;
+			//case basic_type::START: ss << dump_value(nts, p); break;
+			default: break; /* Throw? Look for custom implemetation? */
+			}
+
+			p += basic_type_size(t);
+		}
+
+		if (ts.types.size()>1) {
+			ss << ')';
+		}
+
+		return ss.str();
+	}
 
 	struct stack {
 		std::vector<uint8_t> mem;
@@ -73,8 +123,7 @@ namespace hill {
 		{
 			std::cout << "END"
 				<< " ts:" << ins.res_ts.to_str()
-				<< " val:" << *(int64_t *)s.top(ins.res_ts.size())
-				<< " val:" << *(int64_t *)s.top(ins.res_ts.size()/2)
+				<< " val:" << dump_value(ins.res_ts, s.top(ins.res_ts.size()))
 				<< '\n';
 		}
 
