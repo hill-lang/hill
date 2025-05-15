@@ -76,8 +76,8 @@ namespace hill {
 		explicit type_spec(basic_type bt): types{bt} {}
 		type_spec(const std::vector<basic_type> &bts): types(bts) {}
 		//type_spec(const type_spec &other): types(other.types) {}
-		//bool operator==(const type_spec &other) const {return this->types == other.types;}
-		//bool operator<(const type_spec &other) const {return this->types < other.types;}
+		bool operator==(const type_spec &other) const {return this->types == other.types;}
+		bool operator<(const type_spec &other) const {return this->types < other.types;}
 		
 		std::vector<basic_type> types;
 
@@ -86,7 +86,12 @@ namespace hill {
 			std::ostringstream ss;
 
 			ss << '(';
-			std::copy(types.begin(), types.end(), std::ostream_iterator<basic_type>(ss, ",")); 
+			int i=0;
+			for (auto &type: types) {
+				if (i++>0) ss << ',';
+				ss << type;
+			}
+			ss << ')';
 			return ss.str();
 		}
 
@@ -97,29 +102,6 @@ namespace hill {
 				types.end(),
 				(size_t)0,
 				[](size_t sum, auto &bt){return sum+basic_type_size(bt);});
-		}
-	};
-
-	struct data_type {
-		data_type(): bt(basic_type::UNDECIDED), mut(false) {}
-		data_type(basic_type bt): bt(bt), mut(false) {}
-		bool operator==(const data_type &other) {return this->bt==other.bt;}
-		bool operator<(const data_type &other) const
-		{
-			return this->bt < other.bt;
-		}
-
-		basic_type bt;
-		bool mut;
-
-		std::string to_str() const
-		{
-			return basic_type_str(this->bt);
-		}
-
-		size_t size() const
-		{
-			return basic_type_size(this->bt);
 		}
 	};
 }

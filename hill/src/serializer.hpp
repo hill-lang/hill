@@ -77,18 +77,18 @@ namespace hill {
 			ofs.write((const char *)&v, sizeof v);
 		}
 
-		static void data_type_ascii(const data_type &dt, std::ofstream &ofs)
+		static void data_type_ascii(const type_spec &ts, std::ofstream &ofs)
 		{
-			ofs << ' ' << basic_type_str(dt.bt);
-			ofs << ":mut=" << (dt.mut ? '1' : '0');
+/*			ofs << ' ' << basic_type_str(dt.bt);
+			ofs << ":mut=" << (dt.mut ? '1' : '0');*/
 		}
 
-		static void data_type_bin(const data_type &dt, std::ofstream &ofs)
+		static void data_type_bin(const type_spec &ts, std::ofstream &ofs)
 		{
-			uint16_t flags = (dt.mut ? (uint16_t)dt_flag::MUT : 0);
+/*			uint16_t flags = (dt.mut ? (uint16_t)dt_flag::MUT : 0);
 
 			write_bin(static_cast<uint16_t>(dt.bt), ofs);
-			write_bin(flags, ofs);
+			write_bin(flags, ofs);*/
 		}
 
 		static void instr_ascii(const instr &ins, std::ofstream &ofs)
@@ -98,7 +98,7 @@ namespace hill {
 			}
 
 			ofs << op_code_str(ins.op);
-			data_type_ascii(ins.res_dt, ofs);
+			data_type_ascii(ins.res_ts, ofs);
 
 			switch (ins.op) {
 			case op_code::END:
@@ -108,11 +108,11 @@ namespace hill {
 				break;
 			case op_code::COPY:
 				ofs << ' ' << ins.ix;
-				data_type_ascii(ins.arg2_dt, ofs);
+				data_type_ascii(ins.arg2_ts, ofs);
 				break;
 			default:
-				data_type_ascii(ins.arg1_dt, ofs);
-				data_type_ascii(ins.arg2_dt, ofs);
+				data_type_ascii(ins.arg1_ts, ofs);
+				data_type_ascii(ins.arg2_ts, ofs);
 				break;
 			}
 			ofs << '\n';
@@ -122,7 +122,7 @@ namespace hill {
 		{
 			write_bin(static_cast<uint16_t>(ins.op), ofs);
 
-			data_type_bin(ins.res_dt, ofs);
+			data_type_bin(ins.res_ts, ofs);
 
 			switch (ins.op) {
 			case op_code::LOAD:
@@ -132,11 +132,11 @@ namespace hill {
 				break;
 			case op_code::COPY:
 				write_bin(static_cast<uint64_t>(ins.ix), ofs);
-				data_type_bin(ins.arg2_dt, ofs);
+				data_type_bin(ins.arg2_ts, ofs);
 				break;
 			default:
-				data_type_bin(ins.arg1_dt, ofs);
-				data_type_bin(ins.arg2_dt, ofs);
+				data_type_bin(ins.arg1_ts, ofs);
+				data_type_bin(ins.arg2_ts, ofs);
 				break;
 			}
 		}

@@ -71,25 +71,25 @@ namespace hill {
 		void end(const instr &ins)
 		{
 			std::cout << "END"
-				<< " dt:" << ins.res_dt.to_str()
-				<< " val:" << *(int64_t *)s.top(ins.res_dt.size())
+				<< " ts:" << ins.res_ts.to_str()
+				<< " val:" << *(int64_t *)s.top(ins.res_ts.size())
 				<< '\n';
 		}
 
 		void load(const instr &ins, const literal_values &values)
 		{
-			uint8_t *p = s.push_alloc(ins.res_dt.size());
-			values.copy(ins.ix, p, ins.res_dt.size());
+			uint8_t *p = s.push_alloc(ins.res_ts.size());
+			values.copy(ins.ix, p, ins.res_ts.size());
 		}
 
 		void copy(const instr &ins)
 		{
 			// TODO: Type conversion?
-			const uint8_t *src = s.top(ins.arg2_dt.size());
+			const uint8_t *src = s.top(ins.arg2_ts.size());
 			uint8_t *dst = s.data() + ins.ix;
-			memcpy(dst, src, ins.arg2_dt.size());
-			s.pop(ins.arg2_dt.size());
-			s.push(ins.arg2_dt.size(), dst);
+			memcpy(dst, src, ins.arg2_ts.size());
+			s.pop(ins.arg2_ts.size());
+			s.push(ins.arg2_ts.size(), dst);
 		}
 
 		template<typename T> void add()
@@ -104,7 +104,7 @@ namespace hill {
 			// TODO: Type conversion?
 			// Maybe type conversion is its own instruction and handled by the analizer?
 
-			switch (ins.res_dt.bt) {
+			switch (ins.res_ts.types[0]) {
 			case basic_type::I8: add<int8_t>(); break;
 			case basic_type::I16: add<int16_t>(); break;
 			case basic_type::I32: add<int32_t>(); break;
@@ -134,7 +134,7 @@ namespace hill {
 			// TODO: Type conversion?
 			// Maybe type conversion is its own instruction and handled by the analizer?
 
-			switch (ins.res_dt.bt) {
+			switch (ins.res_ts.types[0]) {
 			case basic_type::I8: sub<int8_t>(); break;
 			case basic_type::I16: sub<int16_t>(); break;
 			case basic_type::I32: sub<int32_t>(); break;
