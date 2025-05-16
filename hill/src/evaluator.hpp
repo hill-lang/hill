@@ -9,12 +9,11 @@
 #include <sstream>
 
 namespace hill {
-	template <typename VT> std::string dump_value(const uint8_t *p)
+
+	template<typename VT> std::string dump_value(const uint8_t *p)
 	{
 		std::stringstream ss;
-
 		ss << *(VT *)p;
-
 		return ss.str();
 	}
 
@@ -110,6 +109,7 @@ namespace hill {
 				case op_code::END: end(ins); break;
 				case op_code::ID: break;
 				case op_code::LOAD: load(ins, b.values); break;
+				case op_code::LOADI: loadi(ins); break;
 				case op_code::COPY: copy(ins); break;
 				case op_code::ADD: add(ins); break;
 				case op_code::SUB: sub(ins); break;
@@ -130,14 +130,39 @@ namespace hill {
 		void load(const instr &ins, const literal_values &values)
 		{
 			uint8_t *p = s.push_alloc(ins.res_ts.size());
-			values.copy(ins.ix, p, ins.res_ts.size());
+			values.copy(ins.val.ix, p, ins.res_ts.size());
+		}
+
+		/**
+		 * @brief Load immediate
+		 */
+		void loadi(const instr &ins)
+		{
+			uint8_t *p = s.push_alloc(ins.res_ts.size());
+			
+			switch (ins.res_ts.types[0]) {
+			case basic_type::I8: *(int8_t *)p = ins.val.imm_i8; break;
+			case basic_type::I16: *(int16_t *)p = ins.val.imm_i16; break;
+			case basic_type::I32: *(int32_t *)p = ins.val.imm_i32; break;
+			case basic_type::I64:
+			case basic_type::I: *(int64_t *)p = ins.val.imm_i64; break;
+			case basic_type::U8: *(uint8_t *)p = ins.val.imm_u8; break;
+			case basic_type::U16: *(uint16_t *)p = ins.val.imm_u16; break;
+			case basic_type::U32: *(uint32_t *)p = ins.val.imm_u32; break;
+			case basic_type::U64:
+			case basic_type::U: *(uint64_t *)p = ins.val.imm_u64; break;
+			case basic_type::F32: *(float *)p = ins.val.imm_f32; break;
+			case basic_type::F64:
+			case basic_type::F: *(double *)p = ins.val.imm_f64; break;
+			default: break; /* Throw? Look for custom implemetation? */
+			}
 		}
 
 		void copy(const instr &ins)
 		{
 			// TODO: Type conversion?
 			const uint8_t *src = s.top(ins.arg2_ts.size());
-			uint8_t *dst = s.data() + ins.ix;
+			uint8_t *dst = s.data() + ins.val.ix;
 			memcpy(dst, src, ins.arg2_ts.size());
 			s.pop(ins.arg2_ts.size());
 			s.push(ins.arg2_ts.size(), dst);

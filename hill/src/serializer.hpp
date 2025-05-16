@@ -104,10 +104,29 @@ namespace hill {
 			case op_code::END:
 				break;
 			case op_code::LOAD:
-				ofs << ' ' << ins.ix;
+				ofs << ' ' << ins.val.ix;
+				break;
+			case op_code::LOADI:
+				ofs << ' ';
+				switch (ins.res_ts.types[0]) {
+				case basic_type::I8: ofs << ins.val.imm_i8; break;
+				case basic_type::I16: ofs << ins.val.imm_i16; break;
+				case basic_type::I32: ofs << ins.val.imm_i32; break;
+				case basic_type::I64:
+				case basic_type::I: ofs << ins.val.imm_i64; break;
+				case basic_type::U8: ofs << ins.val.imm_u8; break;
+				case basic_type::U16: ofs << ins.val.imm_u16; break;
+				case basic_type::U32: ofs << ins.val.imm_u32; break;
+				case basic_type::U64:
+				case basic_type::U: ofs << ins.val.imm_u64; break;
+				case basic_type::F32: ofs << ins.val.imm_f32; break;
+				case basic_type::F64:
+				case basic_type::F: ofs << ins.val.imm_f64; break;
+				default: ofs << "ERR"; break;
+				}
 				break;
 			case op_code::COPY:
-				ofs << ' ' << ins.ix;
+				ofs << ' ' << ins.val.ix;
 				data_type_ascii(ins.arg2_ts, ofs);
 				break;
 			default:
@@ -125,13 +144,33 @@ namespace hill {
 			data_type_bin(ins.res_ts, ofs);
 
 			switch (ins.op) {
+			case op_code::END:
+				break;
 			case op_code::LOAD:
-				write_bin(static_cast<uint64_t>(ins.ix), ofs);
+				write_bin(static_cast<uint64_t>(ins.val.ix), ofs);
 				write_bin<uint32_t>(0u, ofs);
 				write_bin<uint32_t>(0u, ofs);
 				break;
+			case op_code::LOADI:
+				switch (ins.res_ts.types[0]) {
+				case basic_type::I8: write_bin(static_cast<uint64_t>(ins.val.imm_i8), ofs); break;
+				case basic_type::I16: write_bin(static_cast<uint16_t>(ins.val.imm_i16), ofs); break;
+				case basic_type::I32: write_bin(static_cast<uint32_t>(ins.val.imm_i32), ofs); break;
+				case basic_type::I64:
+				case basic_type::I: write_bin(static_cast<uint64_t>(ins.val.imm_i64), ofs); break;
+				case basic_type::U8: write_bin(static_cast<uint8_t>(ins.val.imm_u8), ofs); break;
+				case basic_type::U16: write_bin(static_cast<uint16_t>(ins.val.imm_u16), ofs); break;
+				case basic_type::U32: write_bin(static_cast<uint32_t>(ins.val.imm_u32), ofs); break;
+				case basic_type::U64:
+				case basic_type::U: write_bin(static_cast<uint64_t>(ins.val.imm_u64), ofs); break;
+				case basic_type::F32: write_bin(static_cast<float>(ins.val.imm_f32), ofs); break;
+				case basic_type::F64:
+				case basic_type::F: write_bin(static_cast<double>(ins.val.imm_f64), ofs); break;
+				default: break; /* TODO: Thorw? */
+				}
+				break;
 			case op_code::COPY:
-				write_bin(static_cast<uint64_t>(ins.ix), ofs);
+				write_bin(static_cast<uint64_t>(ins.val.ix), ofs);
 				data_type_bin(ins.arg2_ts, ofs);
 				break;
 			default:
