@@ -2,6 +2,7 @@
 #define VAL_REF_HPP_INCLUDED
 
 #include "type.hpp"
+#include "utils/print.hpp"
 
 #include <iomanip>
 #include <string>
@@ -50,68 +51,7 @@ namespace hill {
 
 		std::string to_str() const
 		{
-			const size_t col_cnt = 16;
-
-			std::stringstream ss;
-
-			ss << std::left
-				<< std::setfill(' ')
-				<< std::setw(11)
-				<< "Literals";
-
-			ss << std::right
-				<< std::hex
-				<< std::uppercase
-				<< std::setfill('0');
-			for (size_t i=0; i<col_cnt; ++i) {
-				ss << " " << std::setw(2) << i;
-			}
-			ss << '\n';
-
-			for (size_t i=0; i<mem.size(); ++i) {
-				if (i % col_cnt == 0) {
-					ss << "0x"
-						<< std::hex
-						<< std::uppercase
-						<< std::setw(8)
-						<< i << ":";
-				}
-				ss << " "
-					<< std::hex
-					<< std::uppercase
-					<< std::setfill('0')
-					<< std::setw(2)
-					<< +mem[i];
-				if ((i+1) % col_cnt == 0) {
-					ss << "  ";
-					for (size_t ii=0; ii<col_cnt; ++ii) {
-						uint8_t val = mem[i + ii + 1 - col_cnt];
-						if (std::isprint(val)) {
-							ss << " " << std::nouppercase << val;
-						} else {
-							ss << " .";
-						}
-					}
-					ss << '\n';
-				}
-			}
-
-			size_t remailing = col_cnt - (mem.size() % col_cnt);
-			if (remailing!=col_cnt) {
-				ss << std::setfill(' ') << std::setw(remailing * 3) << "";
-				ss << "  ";
-				for (size_t ii = 0; ii<remailing; ++ii) {
-					uint8_t val = mem[mem.size() + ii - std::min(col_cnt, mem.size())];
-					if (std::isprint(val)) {
-						ss << " " << std::nouppercase << val;
-					} else {
-						ss << " .";
-					}
-				}
-				ss << '\n';
-			}
-
-			return ss.str();
+			return utils::bintostr(mem.data(), mem.size(), 16u, "Literals", true);
 		}
 	};
 
@@ -171,5 +111,4 @@ namespace hill {
 	};
 }
 
-#endif
-
+#endif /* VAL_REF_HPP_INCLUDED */
