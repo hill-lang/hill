@@ -98,6 +98,8 @@ namespace hill {
 	};
 
 	struct evaluator {
+		evaluator() = default;
+
 		stack s;
 
 		void evaluate(const block &b)

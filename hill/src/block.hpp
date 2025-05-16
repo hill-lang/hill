@@ -46,12 +46,12 @@ namespace hill {
 		{
 			switch (t.get_type()) {
 			case tt::END:
-				instrs.emplace_back(instr{
+				instrs.push_back(instr{
 					.op = op_code::END,
 					.res_ts = last().res_ts});
 				break;
 			case tt::NAME:
-				instrs.emplace_back(instr{.op = op_code::ID});
+				instrs.push_back(instr{.op = op_code::ID});
 				break;
 			case tt::NUM:
 				{

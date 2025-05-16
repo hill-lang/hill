@@ -55,8 +55,8 @@ namespace hill {
 			float imm_f32;
 			double imm_f64;
 		} val;
-		type_spec arg1_ts = type_spec();
-		type_spec arg2_ts = type_spec();
+		type_spec arg1_ts;
+		type_spec arg2_ts;
 
 		std::string to_str() const
 		{

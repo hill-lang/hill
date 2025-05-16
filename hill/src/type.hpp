@@ -21,19 +21,23 @@ namespace hill {
 	constexpr size_t basic_type_size(basic_type bt)
 	{
 		switch (bt) {
-		case basic_type::I: return 8u;
-		case basic_type::I8: return 1u;
-		case basic_type::I16: return 2u;
-		case basic_type::I32: return 4u;
-		case basic_type::I64: return 8u;
-		case basic_type::U: return 8u;
-		case basic_type::U8: return 1u;
-		case basic_type::U16: return 2u;
-		case basic_type::U32: return 4u;
-		case basic_type::U64: return 8u;
-		case basic_type::F: return 8u;
-		case basic_type::F32: return 4u;
-		case basic_type::F64: return 8u;
+		case basic_type::I8:
+		case basic_type::U8:
+			return 1u;
+		case basic_type::I16:
+		case basic_type::U16:
+			return 2u;
+		case basic_type::I32:
+		case basic_type::U32:
+		case basic_type::F32:
+			return 4u;
+		case basic_type::I:
+		case basic_type::I64:
+		case basic_type::U:
+		case basic_type::U64:
+		case basic_type::F:
+		case basic_type::F64:
+			return 8u;
 		//case basic_type::F128: return 16u;
 		default: return 0u;
 		}
@@ -72,10 +76,10 @@ namespace hill {
 	}
 
 	struct type_spec {
-		type_spec() {}
+		type_spec() = default;
 		explicit type_spec(basic_type bt): types{bt} {}
-		type_spec(const std::vector<basic_type> &bts): types(bts) {}
-		type_spec(const type_spec &left, const type_spec &right) {
+		explicit type_spec(const std::vector<basic_type> &bts): types(bts) {}
+		explicit type_spec(const type_spec &left, const type_spec &right) {
 			if (right.types.size()>1) {
 				this->types = left.types;
 				this->types.push_back(basic_type::START);

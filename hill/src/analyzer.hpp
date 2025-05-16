@@ -1,7 +1,6 @@
 #ifndef ANALYZER_HPP_INCLUDED
 #define ANALYZER_HPP_INCLUDED
 
-#include "lang_spec.hpp"
 #include "lexer.hpp"
 #include "type.hpp"
 #include "type_conversion.hpp"
@@ -14,7 +13,7 @@
 namespace hill {
 
 	struct analyzer {
-		analyzer() {}
+		analyzer() = default;
 
 		block main;
 

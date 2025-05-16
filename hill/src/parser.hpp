@@ -8,8 +8,7 @@
 
 namespace hill {
 
-	template<typename T>
-	static T pop_mv(std::stack<T> &stack)
+	template<typename T> T pop_mv(std::stack<T> &stack)
 	{
 		T t = std::move(stack.top());
 		stack.pop();
@@ -31,8 +30,9 @@ namespace hill {
 	};
 
 	struct parser {
-		std::stack<token> op_stack;
+		parser() = default;
 
+		std::stack<token> op_stack;
 		std::vector<token> rpn;
 
 		void put_token(token t)

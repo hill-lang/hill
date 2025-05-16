@@ -18,12 +18,12 @@ namespace hill {
 		V0_1,
 	};
 
-	inline const char *file_version_str(file_version v)
+	constexpr const char *file_version_str(file_version v)
 	{
-		switch (v) { // MAX 9 characters!
+		switch (v) { // MAX 9 characters excluding the null terminator
 		case file_version::NONE: return "NONE";
 		case file_version::V0_1: return "0.1";
-		default: return "UNKNOWN";
+		default: return "<UNKNOWN>";
 		}
 	}
 
@@ -34,6 +34,7 @@ namespace hill {
 	};
 
 	struct serializer {
+		serializer() = default;
 
 		serializer_mode mode;
 
@@ -72,18 +73,18 @@ namespace hill {
 			INSTRUCTIONS,
 		};
 
-		template<typename T> static void write_bin(T v, std::ofstream &ofs)
+		template<typename T> void write_bin(T v, std::ofstream &ofs)
 		{
 			ofs.write((const char *)&v, sizeof v);
 		}
 
-		static void data_type_ascii(const type_spec &ts, std::ofstream &ofs)
+		void type_spec_ascii(const type_spec &ts, std::ofstream &ofs)
 		{
 /*			ofs << ' ' << basic_type_str(dt.bt);
 			ofs << ":mut=" << (dt.mut ? '1' : '0');*/
 		}
 
-		static void data_type_bin(const type_spec &ts, std::ofstream &ofs)
+		void type_spec_bin(const type_spec &ts, std::ofstream &ofs)
 		{
 /*			uint16_t flags = (dt.mut ? (uint16_t)dt_flag::MUT : 0);
 
@@ -91,14 +92,14 @@ namespace hill {
 			write_bin(flags, ofs);*/
 		}
 
-		static void instr_ascii(const instr &ins, std::ofstream &ofs)
+		void instr_ascii(const instr &ins, std::ofstream &ofs)
 		{
 			if (ins.op == op_code::ID) {
 				return;
 			}
 
 			ofs << op_code_str(ins.op);
-			data_type_ascii(ins.res_ts, ofs);
+			type_spec_ascii(ins.res_ts, ofs);
 
 			switch (ins.op) {
 			case op_code::END:
@@ -127,21 +128,21 @@ namespace hill {
 				break;
 			case op_code::COPY:
 				ofs << ' ' << ins.val.ix;
-				data_type_ascii(ins.arg2_ts, ofs);
+				type_spec_ascii(ins.arg2_ts, ofs);
 				break;
 			default:
-				data_type_ascii(ins.arg1_ts, ofs);
-				data_type_ascii(ins.arg2_ts, ofs);
+				type_spec_ascii(ins.arg1_ts, ofs);
+				type_spec_ascii(ins.arg2_ts, ofs);
 				break;
 			}
 			ofs << '\n';
 		}
 
-		static void instr_bin(const instr &ins, std::ofstream &ofs)
+		void instr_bin(const instr &ins, std::ofstream &ofs)
 		{
 			write_bin(static_cast<uint16_t>(ins.op), ofs);
 
-			data_type_bin(ins.res_ts, ofs);
+			type_spec_bin(ins.res_ts, ofs);
 
 			switch (ins.op) {
 			case op_code::END:
@@ -171,17 +172,17 @@ namespace hill {
 				break;
 			case op_code::COPY:
 				write_bin(static_cast<uint64_t>(ins.val.ix), ofs);
-				data_type_bin(ins.arg2_ts, ofs);
+				type_spec_bin(ins.arg2_ts, ofs);
 				break;
 			default:
-				data_type_bin(ins.arg1_ts, ofs);
-				data_type_bin(ins.arg2_ts, ofs);
+				type_spec_bin(ins.arg1_ts, ofs);
+				type_spec_bin(ins.arg2_ts, ofs);
 				break;
 			}
 		}
 
 		// File extention .hill_c.txt?
-		static bool ascii(
+		bool ascii(
 			std::ofstream &ofs,
 			const block &b)
 		{
@@ -210,7 +211,7 @@ namespace hill {
 		}
 
 		// File extention .hill_c?
-		static bool bin(
+		bool bin(
 			std::ofstream &ofs,
 			const block &b)
 		{

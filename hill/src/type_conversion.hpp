@@ -2,7 +2,6 @@
 #define TYPE_CONVERSION_HPP_DEFINED
 
 #include "type.hpp"
-#include "lang_spec.hpp"
 
 #include <map>
 

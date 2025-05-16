@@ -54,18 +54,6 @@ namespace hill {
 			return *this;
 		}
 
-		token clone() const
-		{
-			token t;
-			t.type = this->type;
-			t.type_spec = this->type_spec;
-			t.op_type_spec = this->op_type_spec;
-			t.text = this->text;
-			t.lix = this->lix;
-			t.cix = this-> cix;
-			return t;
-		}
-
 //	private:
 		tt type;
 		const tt_spec *type_spec;
@@ -83,6 +71,18 @@ namespace hill {
 		}
 
 	public:
+		token clone() const
+		{
+			token t;
+			t.type = this->type;
+			t.type_spec = this->type_spec;
+			t.op_type_spec = this->op_type_spec;
+			t.text = this->text;
+			t.lix = this->lix;
+			t.cix = this->cix;
+			return t;
+		}
+
 		tt get_type() const {return this->type;}
 		const std::string &get_text() const {return this->text;}
 		std::string str() const {return this->type_spec->name + " (" + this->text + ")";}
@@ -103,18 +103,19 @@ namespace hill {
 			}
 		}
 
-
 		bool end() const {return this->type==tt::END || this->type==tt::ERROR;}
 		bool error() const {return this->type==tt::ERROR;}
 
 		bool has_arity(tt_arity arity) const {return op_check([&arity](auto &op) {return op.arity==arity;});}
 
 		bool ws() const {return this->type_spec->kind==tt_kind::WS;}
-		bool vend() const {
+		bool vend() const
+		{
 			return this->type_spec->kind==tt_kind::RGROUP || this->type_spec->kind==tt_kind::VAL;
 			/* TODO: Same as vbegin() but inverted */
 		}
-		bool vbegin() const {
+		bool vbegin() const
+		{
 			return this->type_spec->kind==tt_kind::LGROUP
 				|| this->type_spec->kind==tt_kind::VAL
 				/*|| (this->type_spec->kind==tt_kind::OP && this->type_spec->arity==tt_arity::LUNARY)*/;

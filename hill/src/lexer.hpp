@@ -14,6 +14,8 @@
 namespace hill {
 
 	struct lexer {
+		lexer() = default;
+
 		int lix = 0, cix = 0;
 		int plix = -1, pcix = -1;
 

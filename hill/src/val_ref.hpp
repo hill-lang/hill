@@ -138,8 +138,8 @@ namespace hill {
 	};
 
 	struct val_ref {
-		val_ref(): mt(mem_type::UNDECIDED), ix(SIZE_MAX), ts(type_spec()) {}
-		val_ref(mem_type mt, size_t ix, type_spec ts): mt(mt), ix(ix), ts(ts) {}
+		val_ref(): mt(mem_type::UNDECIDED), ix(SIZE_MAX) {}
+		explicit val_ref(mem_type mt, size_t ix, type_spec ts): mt(mt), ix(ix), ts(ts) {}
 
 		mem_type mt;
 		size_t ix;
