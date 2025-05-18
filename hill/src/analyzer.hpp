@@ -38,7 +38,6 @@ namespace hill {
 			return main;
 		}
 	};
-
 }
 
 #endif /* ANALYZER_HPP_INCLUDED */

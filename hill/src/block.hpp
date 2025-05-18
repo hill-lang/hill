@@ -51,7 +51,9 @@ namespace hill {
 					.res_ts = last().res_ts});
 				break;
 			case tt::NAME:
-				instrs.push_back(instr{.op = op_code::ID});
+				instrs.push_back(instr{
+					.op = op_code::ID,
+					.res_ts = last().res_ts});
 				break;
 			case tt::NUM:
 				{
@@ -62,9 +64,7 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
 							.res_ts = type_spec(basic_type::F),
-							.val = {.imm_f64 = (double)std::strtold(t.get_text().c_str(), &endp)},
-							.arg1_ts = type_spec(),
-							.arg2_ts = type_spec()});
+							.val = {.imm_f64 = (double)std::strtold(t.get_text().c_str(), &endp)}});
 #else
 						auto vix = values.add(std::strtold(t.get_text().c_str(), &endp));
 						//instrs.emplace_back(op_code::LOAD, type_spec(basic_type::F), vix);
@@ -78,9 +78,7 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
 							.res_ts = type_spec(basic_type::I),
-							.val = {.imm_i64 = std::strtoll(t.get_text().c_str(), &endp, 10)},
-							.arg1_ts = type_spec(),
-							.arg2_ts = type_spec()});
+							.val = {.imm_i64 = std::strtoll(t.get_text().c_str(), &endp, 10)}});
 #else
 						auto vix = values.add(std::strtoll(t.get_text().c_str(), &endp, 10));
 						//instrs.emplace_back(op_code::LOAD, type_spec(basic_type::I), vix);
@@ -159,19 +157,11 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
-					type_spec res_ts = type_spec(second_last().res_ts, last().res_ts);
+					type_spec res_ts(second_last().res_ts, last().res_ts);
 
-					auto val = val_ref(
-						mem_type::STACK,
-						s.frame.add(res_ts.size(), 1),
-						res_ts);
-					s.ids[t.str()] = val;
-
-					//instrs.emplace_back(op_code::TUPLE, val.ts, val.ix);
 					instrs.push_back(instr{
 						.op = op_code::TUPLE,
-						.res_ts = val.ts,
-						.val = {.ix = val.ix}});
+						.res_ts = res_ts});
 				}
 				break;
 			default:

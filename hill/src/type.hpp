@@ -100,13 +100,20 @@ namespace hill {
 		{
 			std::ostringstream ss;
 
-			ss << '(';
+			if (types.size()>1) {
+				ss << '(';
+			}
+
 			int i=0;
 			for (auto &type: types) {
 				if (i++>0) ss << ',';
 				ss << type;
 			}
-			ss << ')';
+
+			if (types.size()>1) {
+				ss << ')';
+			}
+
 			return ss.str();
 		}
 

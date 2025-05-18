@@ -77,6 +77,16 @@ namespace hill {
 		STACK
 	};
 
+	constexpr const char *mem_type_str(mem_type mt)
+	{
+		switch (mt) {
+		case mem_type::UNDECIDED: return "UNDECIDED";
+		case mem_type::LITERAL: return "LITERAL";
+		case mem_type::STACK: return "STACK";
+		default: return "<UNKNOWN>";
+		}
+	}
+
 	struct val_ref {
 		val_ref(): mt(mem_type::UNDECIDED), ix(SIZE_MAX) {}
 		explicit val_ref(mem_type mt, size_t ix, type_spec ts): mt(mt), ix(ix), ts(ts) {}
@@ -88,24 +98,9 @@ namespace hill {
 		std::string to_str() const
 		{
 			std::stringstream ss;
-
-			switch (mt) {
-			case mem_type::UNDECIDED:
-				ss << "mt:UNDECIDED";
-				break;
-			case mem_type::LITERAL:
-				ss << "mt:LITERAL";
-				break;
-			case mem_type::STACK:
-				ss << "mt:STACK";
-				break;
-			default:;
-			}
-
-			ss << ':';
-			if (mt!=mem_type::UNDECIDED) ss << ix;
+			ss << "mt:" << mem_type_str(mt);
+			if (mt!=mem_type::UNDECIDED) ss << ':' << ix;
 			ss << ":ts:" << ts.to_str();
-
 			return ss.str();
 		}
 	};

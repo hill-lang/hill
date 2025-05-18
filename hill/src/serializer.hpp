@@ -14,31 +14,26 @@
 namespace hill {
 
 	enum class file_version {
-		NONE = 0,
 		V0_1,
 	};
 
 	constexpr const char *file_version_str(file_version v)
 	{
 		switch (v) { // MAX 9 characters excluding the null terminator
-		case file_version::NONE: return "NONE";
 		case file_version::V0_1: return "0.1";
 		default: return "<UNKNOWN>";
 		}
 	}
 
 	enum class serializer_mode {
-		NONE,
 		BIN,
 		ASCII
 	};
 
 	struct serializer {
-		serializer() = default;
+		serializer(serializer_mode mode): mode(mode) {}
 
 		serializer_mode mode;
-
-		serializer(serializer_mode mode) : mode(mode) {}
 
 		bool serialize(
 			const std::filesystem::path &fpath,
@@ -64,10 +59,6 @@ namespace hill {
 		}
 
 	private:
-		enum class dt_flag {
-			MUT = 1 << 0,
-		};
-
 		enum class offset_table {
 			LITERALS,
 			INSTRUCTIONS,
@@ -80,16 +71,29 @@ namespace hill {
 
 		void type_spec_ascii(const type_spec &ts, std::ofstream &ofs)
 		{
-/*			ofs << ' ' << basic_type_str(dt.bt);
-			ofs << ":mut=" << (dt.mut ? '1' : '0');*/
+			ofs << ' ';
+
+			if (ts.types.size() > 1) {
+				ofs << ')';
+			}
+
+			int ix = 0;
+			for (auto &t: ts.types) {
+				if (ix++ > 0)ofs << ',';
+				ofs << basic_type_str(t);
+			}
+
+			if (ts.types.size() > 1) {
+				ofs << ')';
+			}
 		}
 
 		void type_spec_bin(const type_spec &ts, std::ofstream &ofs)
 		{
-/*			uint16_t flags = (dt.mut ? (uint16_t)dt_flag::MUT : 0);
-
-			write_bin(static_cast<uint16_t>(dt.bt), ofs);
-			write_bin(flags, ofs);*/
+			write_bin(static_cast<uint16_t>(ts.types.size()), ofs);
+			for (auto &t : ts.types) {
+				write_bin(static_cast<uint16_t>(t), ofs);
+			}
 		}
 
 		void instr_ascii(const instr &ins, std::ofstream &ofs)
@@ -103,6 +107,8 @@ namespace hill {
 
 			switch (ins.op) {
 			case op_code::END:
+			case op_code::ID:
+			case op_code::TUPLE:
 				break;
 			case op_code::LOAD:
 				ofs << ' ' << ins.val.ix;
@@ -146,6 +152,8 @@ namespace hill {
 
 			switch (ins.op) {
 			case op_code::END:
+			case op_code::ID:
+			case op_code::TUPLE:
 				break;
 			case op_code::LOAD:
 				write_bin(static_cast<uint64_t>(ins.val.ix), ofs);

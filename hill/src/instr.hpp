@@ -66,6 +66,9 @@ namespace hill {
 
 			ss << " res_ts:" << res_ts.to_str();
 			switch (op) {
+			case op_code::END:
+			case op_code::ID:
+			case op_code::TUPLE:
 			case op_code::LOAD:
 				ss << " ix:" << this->val.ix;
 				break;
