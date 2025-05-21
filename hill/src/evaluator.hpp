@@ -10,6 +10,7 @@
 
 namespace hill {
 
+#ifdef DUMP_VALUE
 	template<typename VT> std::string dump_value(const uint8_t *p)
 	{
 		std::stringstream ss;
@@ -58,6 +59,7 @@ namespace hill {
 
 		return ss.str();
 	}
+#endif /* DUMP_VALUE */
 
 	struct stack {
 		std::vector<uint8_t> mem;
@@ -133,11 +135,6 @@ namespace hill {
 	private:
 		void end(const instr &ins)
 		{
-			std::cout << "END"
-				<< " ts:" << ins.res_ts.to_str()
-				<< " val:" << dump_value(ins.res_ts, s.top(ins.res_ts.size()))
-				<< '\n';
-
 			this->result_ins = ins;
 		}
 
