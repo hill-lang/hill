@@ -102,8 +102,9 @@ namespace hill {
 		evaluator() = default;
 
 		stack s;
+		instr result_ins;
 
-		void evaluate(const block &b)
+		instr evaluate(const block &b)
 		{
 			s.push_alloc(b.s.frame.size()); // Allocate stack frame
 
@@ -119,6 +120,8 @@ namespace hill {
 				case op_code::TUPLE: tuple(ins); break;
 				}
 			}
+
+			return result_ins;
 		}
 
 	private:
@@ -128,6 +131,8 @@ namespace hill {
 				<< " ts:" << ins.res_ts.to_str()
 				<< " val:" << dump_value(ins.res_ts, s.top(ins.res_ts.size()))
 				<< '\n';
+
+			this->result_ins = ins;
 		}
 
 		void load(const instr &ins, const literal_values &values)

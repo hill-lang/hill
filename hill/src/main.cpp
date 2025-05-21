@@ -46,9 +46,11 @@ static void test_parser()
 
 struct {
 	const char *src_fname;
-	uint64_t expected_resulted;
+	//uint64_t expected_resulted;
+	const char *expected_type;
+	const char *expected_value;
 } tests[]={
-	//{"tests/initial-assignment.hill", 5},
+	//{"tests/initial-assignment.hill", "(@i)", "(5)"},
 	//{"tests/add.hill", 7},
 	//{"tests/sub.hill", 5},
 	//{"tests/add-assign.hill", 5},
@@ -56,9 +58,9 @@ struct {
 	//{"tests/post-decrement.hill", 0},
 	//{"tests/pre-increment.hill", 0},
 	//{"tests/pre-decrement.hill", 0},
-	//{"tests/tuple.hill", 0},
-	//{"tests/tuple-diff-types.hill", 0},
-	{"tests/tuple-in-tuple.hill", 0},
+	{"tests/tuple.hill", "(@i,@i)", "(1,2)"},
+	{"tests/tuple-diff-types.hill", "(@f,@i)", "(1.0,2)"},
+	{"tests/tuple-in-tuple.hill", "(@i,(@i,@i))", "(1,(2,3))"},
 };
 
 static void run_tests()
@@ -73,11 +75,16 @@ static void run_tests()
 		hill::parser p;
 		hill::analyzer a;
 		hill::evaluator e;
-		hill::hill(istr, l, p, a, e);
-		//parser.parse(istr);
+		auto ins = hill::hill(istr, l, p, a, e);
 
-		//hill(get_token, parser, analyzer, {opt1,opt2}, evaluator);
-		//hill(get_token, parser, analyzer, {opt1,opt2}, csharp_code_gen);
+		const char *expected_type = tests[ix].expected_type;
+		const char *actual_type = strdup(ins.res_ts.to_str().c_str());
+		std::cout << "Type test " << tests[ix].src_fname;
+		if (!strcmp(expected_type, actual_type)) {
+			std::cout << " PASSED\n";
+		} else {
+			std::cout << " FAILED: Expected type: " << expected_type << " - Got type: " << actual_type << '\n';
+		}
 
 		std::cout << '\n';
 	}

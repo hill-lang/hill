@@ -33,7 +33,7 @@ namespace hill {
 	requires concepts::parser<PT, LT>
 		&& concepts::analyzer<AT>
 		&& concepts::evaluator<ET>
-	void hill(std::istream &istr, LT &lexer, PT &parser, AT &analyzer, ET &evaluator)
+	instr hill(std::istream &istr, LT &lexer, PT &parser, AT &analyzer, ET &evaluator)
 	{
 		parser.parse(istr, lexer);
 		analyzer.analyze(parser.get_rpn());
@@ -44,7 +44,7 @@ namespace hill {
 		s = serializer(serializer_mode::BIN);
 		s.serialize("./output.hill_c", analyzer.get_main_block());
 
-		evaluator.evaluate(analyzer.get_main_block());
+		return evaluator.evaluate(analyzer.get_main_block());
 	}
 }
 
