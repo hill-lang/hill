@@ -61,6 +61,7 @@ struct {
 	{"tests/tuple.hill", "(@i,@i)", "(1,2)"},
 	{"tests/tuple-diff-types.hill", "(@f,@i)", "(1.0,2)"},
 	{"tests/tuple-in-tuple.hill", "(@i,(@i,@i))", "(1,(2,3))"},
+	{"tests/tuples-in-tuple.hill", "((@i,@i),(@i,@i))", "((1,2),(3,4))"},
 };
 
 static void run_tests()
