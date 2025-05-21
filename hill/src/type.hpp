@@ -80,7 +80,6 @@ namespace hill {
 		explicit type_spec(basic_type bt): types{bt} {}
 		explicit type_spec(const std::vector<basic_type> &bts): types(bts) {}
 		explicit type_spec(const type_spec &left, const type_spec &right) {
-			// TODO: Maybe always add begin and end so we don't have to do it here?
 			if (left.types.size()>1) {
 				this->types.push_back(basic_type::START);
 				this->types.insert(this->types.end(), left.types.begin(), left.types.end());
