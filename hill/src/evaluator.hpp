@@ -80,6 +80,12 @@ namespace hill {
 			memcpy(p, data, size);
 		}
 
+		template<typename T> void push(T val)
+		{
+			uint8_t *p = push_alloc(sizeof val);
+			*(T *)p = val;
+		}
+
 		const uint8_t *top(size_t size)
 		{
 			return mem.data() + mem.size() - size;
@@ -180,8 +186,7 @@ namespace hill {
 		{
 			T right = s.pop<T>();
 			T left = s.pop<T>();
-			T res = left + right;
-			s.push(sizeof res, (uint8_t *)&res);
+			s.push<T>(left + right);
 		}
 		void add(const instr &ins)
 		{
@@ -210,8 +215,7 @@ namespace hill {
 		{
 			T right = s.pop<T>();
 			T left = s.pop<T>();
-			T res = left - right;
-			s.push(sizeof res, (uint8_t *)&res);
+			s.push<T>(left - right);
 		}
 		void sub(const instr &ins)
 		{
