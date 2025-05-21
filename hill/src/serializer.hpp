@@ -71,19 +71,22 @@ namespace hill {
 
 		void type_spec_ascii(const type_spec &ts, std::ofstream &ofs)
 		{
+			size_t sz = ts.types.size();
 			ofs << ' ';
 
-			if (ts.types.size() > 1) {
-				ofs << ')';
+			if (sz>1 || sz==0) {
+				ofs << '(';
 			}
 
-			int ix = 0;
-			for (auto &t: ts.types) {
-				if (ix++ > 0)ofs << ',';
-				ofs << basic_type_str(t);
+			auto prev_type = basic_type::START;
+			for (auto &type : ts.types) {
+				if (prev_type != basic_type::START && type != basic_type::END) ofs << ',';
+				ofs << basic_type_str(type);
+
+				prev_type = type;
 			}
 
-			if (ts.types.size() > 1) {
+			if (sz>1 || sz==0) {
 				ofs << ')';
 			}
 		}

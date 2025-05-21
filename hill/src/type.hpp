@@ -106,8 +106,9 @@ namespace hill {
 		std::string to_str() const
 		{
 			std::ostringstream ss;
+			size_t sz = this->types.size();
 
-			if (types.size()>1) {
+			if (sz>1 || sz==0) {
 				ss << '(';
 			}
 
@@ -119,7 +120,7 @@ namespace hill {
 				prev_type = type;
 			}
 
-			if (types.size()>1) {
+			if (sz>1 || sz==0) {
 				ss << ')';
 			}
 
