@@ -49,7 +49,7 @@ struct {
 	uint64_t expected_resulted;
 } tests[]={
 	//{"tests/initial-assignment.hill", 5},
-	{"tests/add.hill", 7},
+	//{"tests/add.hill", 7},
 	//{"tests/sub.hill", 5},
 	//{"tests/add-assign.hill", 5},
 	//{"tests/post-increment.hill", 0},
@@ -58,6 +58,7 @@ struct {
 	//{"tests/pre-decrement.hill", 0},
 	//{"tests/tuple.hill", 0},
 	//{"tests/tuple-diff-types.hill", 0},
+	{"tests/tuple-in-tuple.hill", 0},
 };
 
 static void run_tests()

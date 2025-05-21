@@ -104,10 +104,12 @@ namespace hill {
 				ss << '(';
 			}
 
-			int i=0;
+			auto prev_type = basic_type::START;
 			for (auto &type: types) {
-				if (i++>0) ss << ',';
+				if (prev_type!=basic_type::START && type!=basic_type::END) ss << ',';
 				ss << type;
+
+				prev_type = type;
 			}
 
 			if (types.size()>1) {
