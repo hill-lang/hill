@@ -14,8 +14,29 @@ namespace hill {
 		frame_def frame;
 	};
 
+	struct type_stack {
+		std::vector<type_spec> types;
+
+		void push(const type_spec &ts)
+		{
+			types.push_back(ts);
+		}
+
+		const type_spec &top(size_t pos=0)
+		{
+			if (types.size() < (1+pos)) throw semantic_error_exception();
+			return types[types.size()-1-pos];
+		}
+
+		void pop(size_t size)
+		{
+			types.resize(types.size() - size);
+		}
+	};
+
 	struct block { // The code
 		scope s;
+		type_stack ts;
 
 		literal_values values;
 		std::vector<instr> instrs;
@@ -30,29 +51,16 @@ namespace hill {
 			return ss.str();
 		}
 
-		const instr &last() const
-		{
-			if (instrs.size()<1) throw semantic_error_exception();
-			return instrs[instrs.size()-1];
-		}
-
-		const instr &second_last() const
-		{
-			if (instrs.size()<2) throw semantic_error_exception();
-			return instrs[instrs.size()-2];
-		}
-
 		void add(const token &t)
 		{
 			switch (t.get_type()) {
 			case tt::END:
 				instrs.push_back(instr{
 					.op = op_code::END,
-					.res_ts = last().res_ts});
+					.res_ts = ts.top()});
 				break;
 			case tt::NAME:
-				instrs.push_back(instr{
-					.op = op_code::ID});
+				instrs.push_back(instr{.op = op_code::ID});
 				break;
 			case tt::NUM:
 				{
@@ -66,7 +74,6 @@ namespace hill {
 							.val = {.imm_f64 = (double)std::strtold(t.get_text().c_str(), &endp)}});
 #else
 						auto vix = values.add(std::strtold(t.get_text().c_str(), &endp));
-						//instrs.emplace_back(op_code::LOAD, type_spec(basic_type::F), vix);
 						instrs.push_back(instr{
 							.op = op_code::LOAD,
 							.res_ts = type_spec(basic_type::F),
@@ -80,7 +87,6 @@ namespace hill {
 							.val = {.imm_i64 = std::strtoll(t.get_text().c_str(), &endp, 10)}});
 #else
 						auto vix = values.add(std::strtoll(t.get_text().c_str(), &endp, 10));
-						//instrs.emplace_back(op_code::LOAD, type_spec(basic_type::I), vix);
 						instrs.push_back(instr{
 							.op = op_code::LOAD,
 							.res_ts = type_spec(basic_type::I),
@@ -96,13 +102,12 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
-					type_spec res_ts = last().res_ts;
-					//instrs.emplace_back(op_code::ADD, res_ts, second_last().res_ts, last().res_ts);
+					type_spec res_ts = ts.top();
 					instrs.push_back(instr{
 						.op = op_code::ADD,
 						.res_ts = res_ts,
-						.arg1_ts = second_last().res_ts,
-						.arg2_ts = last().res_ts});
+						.arg1_ts = ts.top(1),
+						.arg2_ts = ts.top()});
 				}
 				break;
 			case tt::OP_MINUS:
@@ -112,13 +117,12 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
-					type_spec res_ts = last().res_ts;
-					//instrs.emplace_back(op_code::SUB, res_ts, second_last().res_ts, last().res_ts);
+					type_spec res_ts = ts.top();
 					instrs.push_back(instr{
 						.op = op_code::SUB,
 						.res_ts = res_ts,
-						.arg1_ts = second_last().res_ts,
-						.arg2_ts = last().res_ts});
+						.arg1_ts = ts.top(1),
+						.arg2_ts = ts.top()});
 				}
 				break;
 			case tt::OP_COLON_EQ:
@@ -128,7 +132,7 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
-					type_spec res_ts = last().res_ts;
+					type_spec res_ts = ts.top();
 
 					// "Copy" value to stack
 					// Bind id instruction on left side to the value
@@ -141,12 +145,11 @@ namespace hill {
 					// TODO: Optimization: Do not copy if immutable variable and right side is immutable
 
 					// Create load value to stack instruction
-					//instrs.emplace_back(op_code::COPY, val.ts, val.ix, last().res_ts);
 					instrs.push_back(instr{
 						.op = op_code::COPY,
 						.res_ts = val.ts,
 						.val = {.ix=val.ix},
-						.arg2_ts = last().res_ts});
+						.arg2_ts = ts.top()});
 				}
 				break;
 			case tt::OP_COMMA:
@@ -156,7 +159,7 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
-					type_spec res_ts(second_last().res_ts, last().res_ts);
+					type_spec res_ts(ts.top(1), ts.top());
 
 					instrs.push_back(instr{
 						.op = op_code::TUPLE,
