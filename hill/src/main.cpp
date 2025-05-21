@@ -50,9 +50,9 @@ struct {
 	const char *expected_type;
 	const char *expected_value;
 } tests[]={
-	//{"tests/initial-assignment.hill", "(@i)", "(5)"},
-	//{"tests/add.hill", 7},
-	//{"tests/sub.hill", 5},
+	{"tests/initial-assignment.hill", "@i", "5"},
+	{"tests/add.hill", "@i", "7"},
+	{"tests/sub.hill", "@i", "-1"},
 	//{"tests/add-assign.hill", 5},
 	//{"tests/post-increment.hill", 0},
 	//{"tests/post-decrement.hill", 0},

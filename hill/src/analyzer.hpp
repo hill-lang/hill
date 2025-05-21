@@ -19,7 +19,7 @@ namespace hill {
 
 		void analyze_token(const token &t)
 		{
-			std::cout<<"analyzer: "<< t.to_str() <<'\n';
+			//std::cout<<"analyzer: "<< t.to_str() <<'\n';
 
 			main.add(t);
 		}
@@ -30,7 +30,7 @@ namespace hill {
 				analyze_token(t);
 			}
 
-			std::cout << main.to_str();
+			//std::cout << main.to_str();
 		}
 
 		const block &get_main_block() const

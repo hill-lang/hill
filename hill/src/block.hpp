@@ -52,8 +52,7 @@ namespace hill {
 				break;
 			case tt::NAME:
 				instrs.push_back(instr{
-					.op = op_code::ID,
-					.res_ts = last().res_ts});
+					.op = op_code::ID});
 				break;
 			case tt::NUM:
 				{
