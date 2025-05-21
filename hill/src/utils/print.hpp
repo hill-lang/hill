@@ -16,7 +16,7 @@ namespace hill::utils {
 	/// <param name="size">Size of data</param>
 	/// <param name="col_cnt">Amount of columns to print</param>
 	/// <param name="header">Header text, max 11 printable characters</param>
-	std::string bintostr(
+	inline std::string bintostr(
 		const uint8_t *p,
 		size_t size,
 		size_t col_cnt = 16u,
