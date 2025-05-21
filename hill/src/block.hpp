@@ -15,8 +15,6 @@ namespace hill {
 	};
 
 	struct type_stack {
-		std::vector<type_spec> types;
-
 		void push(const type_spec &ts)
 		{
 			types.push_back(ts);
@@ -28,10 +26,13 @@ namespace hill {
 			return types[types.size()-1-pos];
 		}
 
-		void pop(size_t size)
+		void pop()
 		{
-			types.resize(types.size() - size);
+			types.pop_back();
 		}
+
+	private:
+		std::vector<type_spec> types;
 	};
 
 	struct block { // The code
@@ -55,9 +56,13 @@ namespace hill {
 		{
 			switch (t.get_type()) {
 			case tt::END:
-				instrs.push_back(instr{
-					.op = op_code::END,
-					.res_ts = ts.top()});
+				{
+					type_spec res_ts = ts.top();
+					instrs.push_back(instr{
+						.op = op_code::END,
+						.res_ts = res_ts});
+					ts.push(res_ts);
+				}
 				break;
 			case tt::NAME:
 				instrs.push_back(instr{.op = op_code::ID});
@@ -67,31 +72,35 @@ namespace hill {
 					char *endp = nullptr;
 #define USE_LOAD_IMMEDIATE
 					if (t.str().find('.')!=std::string::npos) { // floating point
+						type_spec res_ts = type_spec(basic_type::F);
 #ifdef USE_LOAD_IMMEDIATE
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
-							.res_ts = type_spec(basic_type::F),
+							.res_ts = res_ts,
 							.val = {.imm_f64 = (double)std::strtold(t.get_text().c_str(), &endp)}});
 #else
 						auto vix = values.add(std::strtold(t.get_text().c_str(), &endp));
 						instrs.push_back(instr{
 							.op = op_code::LOAD,
-							.res_ts = type_spec(basic_type::F),
+							.res_ts = res_ts,
 							.val = {.ix = vix}});
 #endif /* USE_LOAD_IMMEDIATE */
+						ts.push(res_ts);
 					} else { // integral
+						type_spec res_ts = type_spec(basic_type::I);
 #ifdef USE_LOAD_IMMEDIATE
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
-							.res_ts = type_spec(basic_type::I),
+							.res_ts = res_ts,
 							.val = {.imm_i64 = std::strtoll(t.get_text().c_str(), &endp, 10)}});
 #else
 						auto vix = values.add(std::strtoll(t.get_text().c_str(), &endp, 10));
 						instrs.push_back(instr{
 							.op = op_code::LOAD,
-							.res_ts = type_spec(basic_type::I),
+							.res_ts = res_ts,
 							.val = {.ix = vix}});
 #endif /* USE_LOAD_IMMEDIATE */
+						ts.push(res_ts);
 					}
 				}
 				break;
@@ -108,6 +117,7 @@ namespace hill {
 						.res_ts = res_ts,
 						.arg1_ts = ts.top(1),
 						.arg2_ts = ts.top()});
+					ts.push(res_ts);
 				}
 				break;
 			case tt::OP_MINUS:
@@ -123,6 +133,7 @@ namespace hill {
 						.res_ts = res_ts,
 						.arg1_ts = ts.top(1),
 						.arg2_ts = ts.top()});
+					ts.push(res_ts);
 				}
 				break;
 			case tt::OP_COLON_EQ:
@@ -150,6 +161,7 @@ namespace hill {
 						.res_ts = val.ts,
 						.val = {.ix=val.ix},
 						.arg2_ts = ts.top()});
+					ts.push(res_ts);
 				}
 				break;
 			case tt::OP_COMMA:
@@ -164,6 +176,10 @@ namespace hill {
 					instrs.push_back(instr{
 						.op = op_code::TUPLE,
 						.res_ts = res_ts});
+
+					ts.pop();
+					ts.pop();
+					ts.push(res_ts);
 				}
 				break;
 			default:
