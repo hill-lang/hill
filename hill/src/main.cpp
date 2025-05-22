@@ -50,18 +50,19 @@ struct {
 	const char *expected_type;
 	const char *expected_value;
 } tests[]={
-	{"tests/initial-assignment.hill", "@i", "5"},
-	{"tests/add.hill", "@i", "7"},
-	{"tests/sub.hill", "@i", "-1"},
+	{":tests/initial-assignment.hill", "@i", "5"},
+	{":tests/add.hill", "@i", "7"},
+	{":tests/sub.hill", "@i", "-1"},
 	//{"tests/post-increment.hill", 0},
 	//{"tests/post-decrement.hill", 0},
 	//{"tests/pre-increment.hill", 0},
 	//{"tests/pre-decrement.hill", 0},
-	{"tests/tuple.hill", "(@i,@i)", "(1,2)"},
-	{"tests/tuple-diff-types.hill", "(@f,@i)", "(1.0,2)"},
-	{"tests/tuple-in-tuple.hill", "(@i,(@i,@i))", "(1,(2,3))"},
-	{"tests/tuples-in-tuple.hill", "((@i,@i),(@i,@i))", "((1,2),(3,4))"},
-	{"tests/pi.hill", "@f", "3.14"},
+	{":tests/tuple.hill", "(@i,@i)", "(1,2)"},
+	{":tests/tuple-diff-types.hill", "(@f,@i)", "(1.0,2)"},
+	{":tests/tuple-in-tuple.hill", "(@i,(@i,@i))", "(1,(2,3))"},
+	{":tests/tuples-in-tuple.hill", "((@i,@i),(@i,@i))", "((1,2),(3,4))"},
+	{":tests/pi.hill", "@f", "3.14"},
+	{"1+2", "@i", "3"}
 };
 
 static void run_tests()
@@ -69,7 +70,13 @@ static void run_tests()
 	int ix;
 
 	for (ix = 0; ix<sizeof tests/sizeof tests[0]; ++ix) {
-		std::ifstream istr(tests[ix].src_fname);
+		std::stringstream istr;
+		if (tests[ix].src_fname[0]==':') {
+			std::ifstream fstr(tests[ix].src_fname+1);
+			std::copy(std::istream_iterator<char>(fstr), std::istream_iterator<char>(), std::ostreambuf_iterator(istr));
+		} else {
+			istr << tests[ix].src_fname;
+		}
 		hill::lexer l;
 		hill::parser p;
 		hill::analyzer a;
