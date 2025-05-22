@@ -53,7 +53,6 @@ struct {
 	{"tests/initial-assignment.hill", "@i", "5"},
 	{"tests/add.hill", "@i", "7"},
 	{"tests/sub.hill", "@i", "-1"},
-	//{"tests/add-assign.hill", 5},
 	//{"tests/post-increment.hill", 0},
 	//{"tests/post-decrement.hill", 0},
 	//{"tests/pre-increment.hill", 0},
