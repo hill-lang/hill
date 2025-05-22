@@ -6,6 +6,7 @@
 #include "analyzer.hpp"
 #include "evaluator.hpp"
 #include "hill.hpp"
+#include "utils/console.hpp"
 
 #include <sstream>
 #include <fstream>
@@ -29,44 +30,62 @@ namespace hill {
 			{":tests/tuple-in-tuple.hill", "(@i,(@i,@i))", "(1,(2,3))"},
 			{":tests/tuples-in-tuple.hill", "((@i,@i),(@i,@i))", "((1,2),(3,4))"},
 			{":tests/pi.hill", "@f", "3.14"},
-			{"1+2", "@i", "3"}
+			{"1+2", "@i", "3"},
+			{"3-2", "@i", "1"},
 		};
 
-		static void evaluator()
+		inline void evaluator()
 		{
 			int ix;
 
 			for (ix = 0; ix<sizeof tests/sizeof tests[0]; ++ix) {
+				// TODO: Maybe make this into an enum and allow different types of tests?
+				bool isFileTest = tests[ix].src_fname[0] == ':';
+
 				std::stringstream istr;
-				if (tests[ix].src_fname[0]==':') {
+				if (isFileTest) {
 					std::ifstream fstr(tests[ix].src_fname+1);
 					std::copy(std::istream_iterator<char>(fstr), std::istream_iterator<char>(), std::ostreambuf_iterator(istr));
 				} else {
 					istr << tests[ix].src_fname;
 				}
+
 				hill::lexer l;
 				hill::parser p;
 				hill::analyzer a;
 				hill::evaluator e;
 				auto val = hill::hill(istr, l, p, a, e);
 
-				std::cout << "Type test " << tests[ix].src_fname;
+				std::cout << "Type test  ";
+				if (isFileTest) {std::cout << (tests[ix].src_fname+1);} else {std::cout << tests[ix].src_fname;}
 				if (!strcmp(tests[ix].expected_type, val.ts.to_str().c_str())) {
-					std::cout << " PASSED\n";
+					std::cout << utils::setcolor(utils::console_color::GREEN) << " PASSED\n" << utils::resetcolor();
 				} else {
-					std::cout << " FAILED: Expected: " << tests[ix].expected_type << " - Actual: " << val.ts.to_str() << '\n';
+					std::cout << ' '
+						<< utils::setcolor(utils::console_color::WHITE)
+						<< utils::setbgcolor(utils::console_color::RED)
+						<< "FAILED"
+						<< utils::resetcolor()
+						<< ": Expected: " << tests[ix].expected_type
+						<< " - Actual: " << val.to_str() << '\n';
 				}
 
-				std::cout << "Value test " << tests[ix].src_fname;
+				std::cout << "Value test ";
+				if (isFileTest) {std::cout << (tests[ix].src_fname+1);} else {std::cout << tests[ix].src_fname;}
 				if (!strcmp(tests[ix].expected_value, val.to_str().c_str())) {
-					std::cout << " PASSED\n";
+					std::cout << utils::setcolor(utils::console_color::GREEN) << " PASSED\n" << utils::resetcolor();
 				} else {
-					std::cout << " FAILED: Expected: " << tests[ix].expected_value << " - Actual: " << val.to_str() << '\n';
+					std::cout << ' '
+						<< utils::setcolor(utils::console_color::WHITE)
+						<< utils::setbgcolor(utils::console_color::RED)
+						<< "FAILED"
+						<< utils::resetcolor()
+						<< ": Expected: " << tests[ix].expected_value
+						<< " - Actual: " << val.to_str() << '\n';
 				}
 			}
 		}
 	}
 }
-
 
 #endif /* TEST_HPP_INCLUDED */
