@@ -16,37 +16,6 @@ namespace hill {
 		type_spec ts;
 		std::vector<uint8_t> data;
 
-	private:
-		template<typename VT> std::string dump_value(const uint8_t *p)
-		{
-			std::stringstream ss;
-			ss << *(VT *)p;
-			return ss.str();
-		}
-
-		std::string get_double_str(double val)
-		{
-			std::stringstream ss;
-			if (val == (int64_t)val) {
-				ss << std::setprecision(1) << std::fixed << val;
-			} else {
-				ss << val;
-			}
-
-			return ss.str();
-		}
-
-		template<> std::string dump_value<double>(const uint8_t *p)
-		{
-			return get_double_str(*(double *)p);
-		}
-
-		template<> std::string dump_value<float>(const uint8_t *p)
-		{
-			return get_double_str((double)*(float *)p);
-		}
-
-	public:
 		std::string to_str()
 		{
 			std::stringstream ss;
@@ -90,6 +59,32 @@ namespace hill {
 			}
 
 			return ss.str();
+		}
+
+	private:
+		static std::string get_double_str(double val)
+		{
+			std::stringstream ss;
+			if (val == (int64_t)val) {
+				ss << std::setprecision(1) << std::fixed << val;
+			} else {
+				ss << val;
+			}
+
+			return ss.str();
+		}
+
+		template<typename VT> static std::string dump_value(const uint8_t *p)
+		{
+			if constexpr (std::is_same_v<VT, double>) {
+				return get_double_str(*(double *)p);
+			} else if constexpr (std::is_same_v<VT, float>) {
+				return get_double_str((double)*(float *)p);
+			} else {
+				std::stringstream ss;
+				ss << *(VT *)p;
+				return ss.str();
+			}
 		}
 	};
 }
