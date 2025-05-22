@@ -1,6 +1,9 @@
 #ifndef EVALUATOR_HPP_INCLUDED
 #define EVALUATOR_HPP_INCLUDED
 
+#include "value.hpp"
+#include "type.hpp"
+
 #include <vector>
 #include <stdint.h>
 #include <stddef.h>
@@ -112,7 +115,7 @@ namespace hill {
 		stack s;
 		instr result_ins;
 
-		instr evaluate(const block &b)
+		value evaluate(const block &b)
 		{
 			s.push_alloc(b.s.frame.size()); // Allocate stack frame
 
@@ -129,7 +132,7 @@ namespace hill {
 				}
 			}
 
-			return result_ins;
+			return value(result_ins.res_ts, s.top(result_ins.res_ts.size()));
 		}
 
 	private:

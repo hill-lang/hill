@@ -3,6 +3,7 @@
 
 #include "parser.hpp"
 #include "serializer.hpp"
+#include "value.hpp"
 
 #include <concepts>
 #include <iostream>
@@ -33,7 +34,7 @@ namespace hill {
 	requires concepts::parser<PT, LT>
 		&& concepts::analyzer<AT>
 		&& concepts::evaluator<ET>
-	instr hill(std::istream &istr, LT &lexer, PT &parser, AT &analyzer, ET &evaluator)
+	value hill(std::istream &istr, LT &lexer, PT &parser, AT &analyzer, ET &evaluator)
 	{
 		parser.parse(istr, lexer);
 		analyzer.analyze(parser.get_rpn());

@@ -62,6 +62,7 @@ struct {
 	{"tests/tuple-diff-types.hill", "(@f,@i)", "(1.0,2)"},
 	{"tests/tuple-in-tuple.hill", "(@i,(@i,@i))", "(1,(2,3))"},
 	{"tests/tuples-in-tuple.hill", "((@i,@i),(@i,@i))", "((1,2),(3,4))"},
+	{"tests/pi.hill", "@f", "3.14"},
 };
 
 static void run_tests()
@@ -69,25 +70,26 @@ static void run_tests()
 	int ix;
 
 	for (ix = 0; ix<sizeof tests/sizeof tests[0]; ++ix) {
-		std::cout << tests[ix].src_fname << ":\n";
-
 		std::ifstream istr(tests[ix].src_fname);
 		hill::lexer l;
 		hill::parser p;
 		hill::analyzer a;
 		hill::evaluator e;
-		auto ins = hill::hill(istr, l, p, a, e);
+		auto val = hill::hill(istr, l, p, a, e);
 
-		const char *expected_type = tests[ix].expected_type;
-		const char *actual_type = strdup(ins.res_ts.to_str().c_str());
 		std::cout << "Type test " << tests[ix].src_fname;
-		if (!strcmp(expected_type, actual_type)) {
+		if (!strcmp(tests[ix].expected_type, val.ts.to_str().c_str())) {
 			std::cout << " PASSED\n";
 		} else {
-			std::cout << " FAILED: Expected type: " << expected_type << " - Got type: " << actual_type << '\n';
+			std::cout << " FAILED: Expected: " << tests[ix].expected_type << " - Actual: " << val.ts.to_str() << '\n';
 		}
 
-		std::cout << '\n';
+		std::cout << "Value test " << tests[ix].src_fname;
+		if (!strcmp(tests[ix].expected_value, val.to_str().c_str())) {
+			std::cout << " PASSED\n";
+		} else {
+			std::cout << " FAILED: Expected: " << tests[ix].expected_value << " - Actual: " << val.to_str() << '\n';
+		}
 	}
 }
 
