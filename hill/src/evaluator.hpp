@@ -13,57 +13,6 @@
 
 namespace hill {
 
-#ifdef DUMP_VALUE
-	template<typename VT> std::string dump_value(const uint8_t *p)
-	{
-		std::stringstream ss;
-		ss << *(VT *)p;
-		return ss.str();
-	}
-
-	inline std::string dump_value(const type_spec &ts, const uint8_t *p)
-	{
-		std::stringstream ss;
-
-		if (ts.types.size()>1) {
-			ss << '(';
-		}
-
-		auto prev_type = basic_type::START;
-		for (auto &type: ts.types) {
-			if (prev_type!=basic_type::START && type!=basic_type::END) ss << ',';
-
-			switch (type) {
-			case basic_type::I8: ss << dump_value<int8_t>(p); break;
-			case basic_type::I16: ss << dump_value<int16_t>(p); break;
-			case basic_type::I32: ss << dump_value<int32_t>(p); break;
-			case basic_type::I64:
-			case basic_type::I: ss << dump_value<int64_t>(p); break;
-			case basic_type::U8: ss << dump_value<uint8_t>(p); break;
-			case basic_type::U16: ss << dump_value<uint16_t>(p); break;
-			case basic_type::U32: ss << dump_value<uint32_t>(p); break;
-			case basic_type::U64:
-			case basic_type::U: ss << dump_value<uint64_t>(p); break;
-			case basic_type::F32: ss << dump_value<float>(p); break;
-			case basic_type::F64:
-			case basic_type::F: ss << dump_value<double>(p); break;
-			case basic_type::START: ss << '('; break;
-			case basic_type::END: ss << ')'; break;
-			default: break; /* Throw? Look for custom implemetation? */
-			}
-
-			p += basic_type_size(type);
-			prev_type = type;
-		}
-
-		if (ts.types.size()>1) {
-			ss << ')';
-		}
-
-		return ss.str();
-	}
-#endif /* DUMP_VALUE */
-
 	struct stack {
 		std::vector<uint8_t> mem;
 
