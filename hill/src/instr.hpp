@@ -17,6 +17,7 @@ namespace hill {
 		COPY, // Bind identifier to memory,
 		ADD, // Arithmetic addition
 		SUB, // Arithmetic subtraction
+		MUL, // Arithmetic multiplication
 		TUPLE, // Build tuple
 	};
 
@@ -30,6 +31,7 @@ namespace hill {
 		case op_code::COPY: return "COPY";
 		case op_code::ADD: return "ADD";
 		case op_code::SUB: return "SUB";
+		case op_code::MUL: return "MUL";
 		case op_code::TUPLE: return "TUPLE";
 		default: return "<UNKNOWN>";
 		}

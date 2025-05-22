@@ -32,6 +32,7 @@ namespace hill {
 			{":tests/pi.hill", "@f", "3.14"},
 			{"1+2", "@i", "3"},
 			{"3-2", "@i", "1"},
+			{"5*3", "@i", "15"},
 		};
 
 		inline void evaluator()

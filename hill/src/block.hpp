@@ -136,6 +136,22 @@ namespace hill {
 					ts.push(res_ts);
 				}
 				break;
+			case tt::OP_STAR:
+				{
+					/*const auto res_type = convert_binary(
+						t.get_type(),
+						second_last().res_dt,
+						last().res_dt);*/
+
+					type_spec res_ts = ts.top();
+					instrs.push_back(instr{
+						.op = op_code::MUL,
+						.res_ts = res_ts,
+						.arg1_ts = ts.top(1),
+						.arg2_ts = ts.top()});
+					ts.push(res_ts);
+				}
+				break;
 			case tt::OP_COLON_EQ:
 				{
 					/*const auto res_type = convert_binary(

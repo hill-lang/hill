@@ -128,6 +128,7 @@ namespace hill {
 				case op_code::COPY: copy(ins); break;
 				case op_code::ADD: add(ins); break;
 				case op_code::SUB: sub(ins); break;
+				case op_code::MUL: mul(ins); break;
 				case op_code::TUPLE: tuple(ins); break;
 				}
 			}
@@ -236,6 +237,35 @@ namespace hill {
 			case basic_type::F32: sub<float>(); break;
 			case basic_type::F64:
 			case basic_type::F: sub<double>(); break;
+			default: break; /* Throw? Look for custom implemetation? */
+			}
+		}
+
+		template<typename T> void mul()
+		{
+			T right = s.pop<T>();
+			T left = s.pop<T>();
+			s.push<T>(left * right);
+		}
+		void mul(const instr &ins)
+		{
+			// TODO: Type conversion?
+			// Maybe type conversion is its own instruction and handled by the analizer?
+
+			switch (ins.res_ts.types[0]) {
+			case basic_type::I8: mul<int8_t>(); break;
+			case basic_type::I16: mul<int16_t>(); break;
+			case basic_type::I32: mul<int32_t>(); break;
+			case basic_type::I64:
+			case basic_type::I: mul<int64_t>(); break;
+			case basic_type::U8: mul<uint8_t>(); break;
+			case basic_type::U16: mul<uint16_t>(); break;
+			case basic_type::U32: mul<uint32_t>(); break;
+			case basic_type::U64:
+			case basic_type::U: mul<uint64_t>(); break;
+			case basic_type::F32: mul<float>(); break;
+			case basic_type::F64:
+			case basic_type::F: mul<double>(); break;
 			default: break; /* Throw? Look for custom implemetation? */
 			}
 		}
