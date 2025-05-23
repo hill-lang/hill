@@ -1,0 +1,28 @@
+name: test-unit-debug
+
+on:
+  push:
+
+jobs:
+  test-unit-debug:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install premake5
+      uses: ./.github/actions/install-premake5
+
+    - name: make --version
+      run: make --version
+
+    - name: Generate make files (gcc)
+      run: premake5 gmake --cc=gcc
+
+    - name: Build debug
+      run: make config=debug
+
+    - name: Run tests
+      run: ../bin/Debug/hill test
+      working-directory: hill
