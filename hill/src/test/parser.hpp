@@ -11,9 +11,9 @@ namespace hill {
 			const char *src;
 			const char *expected;
 		} parser_tests[]={
-			{"1", "1:1:NUM(1),0:0:END()"},
-			{"a", "1:1:NAME(a),0:0:END()"},
-			{"2 + 3", "1:1:NUM(2),1:5:NUM(3),1:3:OP_PLUS(+):Binary,0:0:END()"},
+			{"1", "NUM(1),END()"},
+			{"a", "NAME(a),END()"},
+			{"2 + 3", "NUM(2),NUM(3),OP_PLUS(+):Binary,END()"},
 		};
 
 		inline void parser()
@@ -39,7 +39,7 @@ namespace hill {
 				int ii=0;
 				for (auto &t: p.get_rpn()) {
 					if (ii++>0) ss << ',';
-					ss << t.to_str();
+					ss << t.to_str(false);
 				}
 
 				std::cout << "Test  " << utils::escape_string(parser_tests[ix].src[0]==':' ? (parser_tests[ix].src+1) : parser_tests[ix].src);
