@@ -5,7 +5,7 @@
 
 namespace hill::utils {
 
-	enum class console_color {
+	enum class ccolor {
 		NONE = 0,
 		BLACK = 30, BRIGHT_BLACK = 90,
 		RED = 31, BRIGHT_RED = 91,
@@ -26,16 +26,16 @@ namespace hill::utils {
 	/// <summary>
 	/// Set the conosle forground color
 	/// </summary>
-	inline std::ostream &(*setcolor(console_color color))(std::ostream &) {
-		current_color = static_cast<int>(color);
+	inline std::ostream &(*setcolor(ccolor c))(std::ostream &) {
+		current_color = static_cast<int>(c);
 		return apply_color;
 	}
 
 	/// <summary>
 	/// Set the conosle forground color
 	/// </summary>
-	inline std::ostream &(*setbgcolor(console_color color))(std::ostream &) {
-		current_color = static_cast<int>(color) + 10;
+	inline std::ostream &(*setbgcolor(ccolor c))(std::ostream &) {
+		current_color = static_cast<int>(c) + 10;
 		return apply_color;
 	}
 
@@ -43,7 +43,7 @@ namespace hill::utils {
 	/// Resets the conosle forground and background color
 	/// </summary>
 	inline std::ostream &(*resetcolor())(std::ostream &) {
-		current_color = static_cast<int>(console_color::NONE);
+		current_color = static_cast<int>(ccolor::NONE);
 		return apply_color;
 	}
 
@@ -60,10 +60,10 @@ namespace hill::utils {
 		return ss.str();
 	}
 
-	inline const std::string &color(console_color fg, console_color bg, const std::string &str)
+	inline std::string color(const std::string &str, ccolor fg, ccolor bg=ccolor::NONE)
 	{
 		std::stringstream ss;
-		ss << setbgcolor(fg) << setbgcolor(bg) << str << resetcolor();
+		ss << setcolor(fg) << setbgcolor(bg) << str << resetcolor();
 		return ss.str();
 	}
 }

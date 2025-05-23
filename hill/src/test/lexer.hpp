@@ -34,7 +34,7 @@ namespace hill::test {
 			auto exp_ss = get_src(lexer_tests[ix].expected);
 
 			if (src_ss.str().empty()) {
-				std::cerr << "Cannot read source " << utils::setcolor(utils::console_color::YELLOW) << lexer_tests[ix].src << utils::resetcolor() << '\n';
+				std::cout << "Cannot read source " << utils::color(lexer_tests[ix].src, utils::ccolor::YELLOW) << '\n';
 				ok = false;
 				continue;
 			}
@@ -50,13 +50,10 @@ namespace hill::test {
 
 			std::cout << " Test  " << utils::escape_string(lexer_tests[ix].src[0]==':' ? (lexer_tests[ix].src+1) : lexer_tests[ix].src);
 			if (!strcmp(exp_ss.str().c_str(), ss.str().c_str())) {
-				std::cout << utils::setcolor(utils::console_color::GREEN) << " PASSED\n" << utils::resetcolor();
+				std::cout << utils::color(" PASSED", utils::ccolor::GREEN) << '\n';
 			} else {
 				std::cout << ' '
-					<< utils::setcolor(utils::console_color::WHITE)
-					<< utils::setbgcolor(utils::console_color::RED)
-					<< "FAILED"
-					<< utils::resetcolor()
+					<< utils::color("FAILED", utils::ccolor::WHITE, utils::ccolor::RED)
 					<< ": Expected: " << utils::escape_string(exp_ss.str().c_str())
 					<< " - Actual: " << utils::escape_string(ss.str().c_str()) << '\n';
 				ok = false;
