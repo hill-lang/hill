@@ -4,7 +4,10 @@
 #include "evaluator.hpp"
 #include "hill.hpp"
 
-#include "test.hpp"
+#include "test/lexer.hpp"
+#include "test/parser.hpp"
+#include "test/analyzer.hpp"
+#include "test/evaluator.hpp"
 
 #include <cstdlib>
 #include <fstream>
@@ -72,15 +75,28 @@ int main(int argc, char *argv[])
 			// TODO: REPL
 		} else if (!strcmp(argv[1], "test")) {
 			if (argc>2) {
-				if (!strcmp(argv[2], "evaluator")) {
+				if (!strcmp(argv[2], "lexer")) {
+					hill::test::lexer();
+				} else if (!strcmp(argv[2], "parser")) {
+					// TODO:
+				} else if (!strcmp(argv[2], "analyzer")) {
+					// TODO:
+				} else if (!strcmp(argv[2], "evaluator")) {
+					hill::test::evaluator();
 				} else {
 					return usage(argv[0]);
 				}
 			} else {
+				hill::test::lexer();
+				//hill::test::parser();
+				//hill::test::analyzer();
 				hill::test::evaluator();
 			}
 		}
 	} else {
+		hill::test::lexer();
+		//hill::test::parser();
+		//hill::test::analyzer();
 		hill::test::evaluator();
 	}
 
