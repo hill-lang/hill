@@ -37,11 +37,13 @@ namespace hill {
 			{"5*3", "@i", "15"},
 		};
 
-		inline void evaluator()
+		inline bool evaluator()
 		{
-			int ix;
+			std::cout << "Evaluator testing:\n";
 
-			for (ix = 0; ix<sizeof evaluator_tests/sizeof evaluator_tests[0]; ++ix) {
+			bool ok = true;
+
+			for (size_t ix = 0; ix<sizeof evaluator_tests/sizeof evaluator_tests[0]; ++ix) {
 				auto src_ss = get_src(evaluator_tests[ix].src);
 				auto exp_type_ss = get_src(evaluator_tests[ix].expected_type);
 				auto exp_value_ss = get_src(evaluator_tests[ix].expected_value);
@@ -57,7 +59,7 @@ namespace hill {
 				::hill::evaluator e;
 				auto val = ::hill::hill(src_ss, l, p, a, e);
 
-				std::cout << "Type test  " << (evaluator_tests[ix].src[0]==':' ? (evaluator_tests[ix].src+1) : evaluator_tests[ix].src);
+				std::cout << " Type test  " << (evaluator_tests[ix].src[0]==':' ? (evaluator_tests[ix].src+1) : evaluator_tests[ix].src);
 				if (!strcmp(exp_type_ss.str().c_str(), val.ts.to_str().c_str())) {
 					std::cout << utils::setcolor(utils::console_color::GREEN) << " PASSED\n" << utils::resetcolor();
 				} else {
@@ -68,9 +70,10 @@ namespace hill {
 						<< utils::resetcolor()
 						<< ": Expected: " << exp_type_ss.str().c_str()
 						<< " - Actual: " << val.to_str() << '\n';
+					ok = false;
 				}
 
-				std::cout << "Value test " << (evaluator_tests[ix].src[0]==':' ? (evaluator_tests[ix].src+1) : evaluator_tests[ix].src);
+				std::cout << " Value test " << (evaluator_tests[ix].src[0]==':' ? (evaluator_tests[ix].src+1) : evaluator_tests[ix].src);
 				if (!strcmp(exp_value_ss.str().c_str(), val.to_str().c_str())) {
 					std::cout << utils::setcolor(utils::console_color::GREEN) << " PASSED\n" << utils::resetcolor();
 				} else {
@@ -83,6 +86,8 @@ namespace hill {
 						<< " - Actual: " << val.to_str() << '\n';
 				}
 			}
+
+			return ok;
 		}
 	}
 }

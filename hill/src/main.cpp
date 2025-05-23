@@ -43,6 +43,8 @@ int usage(const char *cmd)
 
 int main(int argc, char *argv[])
 {
+	bool ok = true;
+
 	if (argc>1) {
 		if (!strcmp(argv[1], "run")) {
 			// TODO: Run file
@@ -75,5 +77,5 @@ int main(int argc, char *argv[])
 		hill::test::evaluator();
 	}
 
-	return EXIT_SUCCESS;
+	return ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -23,8 +23,10 @@ namespace hill {
 			{":tests/lexer-mess.hill", ":tests/lexer-mess.exp"},
 		};
 
-		inline void lexer()
+		inline bool lexer()
 		{
+			bool ok = true;
+
 			int ix;
 
 			std::cout << "Lexer testing:\n";
@@ -47,7 +49,7 @@ namespace hill {
 					ss << t.to_str();
 				}
 
-				std::cout << "Test  " << utils::escape_string(lexer_tests[ix].src[0]==':' ? (lexer_tests[ix].src+1) : lexer_tests[ix].src);
+				std::cout << " Test  " << utils::escape_string(lexer_tests[ix].src[0]==':' ? (lexer_tests[ix].src+1) : lexer_tests[ix].src);
 				if (!strcmp(exp_ss.str().c_str(), ss.str().c_str())) {
 					std::cout << utils::setcolor(utils::console_color::GREEN) << " PASSED\n" << utils::resetcolor();
 				} else {
@@ -58,8 +60,11 @@ namespace hill {
 						<< utils::resetcolor()
 						<< ": Expected: " << utils::escape_string(exp_ss.str().c_str())
 						<< " - Actual: " << utils::escape_string(ss.str().c_str()) << '\n';
+					ok = false;
 				}
 			}
+
+			return ok;
 		}
 
 	}

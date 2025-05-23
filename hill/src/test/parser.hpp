@@ -18,8 +18,10 @@ namespace hill {
 			{"(1 + 2) * 3", "NUM(1),NUM(2),OP_PLUS(+):Binary,RPAR()),NUM(3),OP_STAR(*):Binary,END()"},
 		};
 
-		inline void parser()
+		inline bool parser()
 		{
+			bool ok = true;
+
 			std::cout << "Parser testing:\n";
 
 			int ix;
@@ -44,7 +46,7 @@ namespace hill {
 					ss << t.to_str(false);
 				}
 
-				std::cout << "Test  " << utils::escape_string(parser_tests[ix].src[0]==':' ? (parser_tests[ix].src+1) : parser_tests[ix].src);
+				std::cout << " Test  " << utils::escape_string(parser_tests[ix].src[0]==':' ? (parser_tests[ix].src+1) : parser_tests[ix].src);
 				if (!strcmp(exp_ss.str().c_str(), ss.str().c_str())) {
 					std::cout << utils::setcolor(utils::console_color::GREEN) << " PASSED\n" << utils::resetcolor();
 				} else {
@@ -55,8 +57,11 @@ namespace hill {
 						<< utils::resetcolor()
 						<< ": Expected: " << utils::escape_string(exp_ss.str().c_str())
 						<< " - Actual: " << utils::escape_string(ss.str().c_str()) << '\n';
+					ok = false;
 				}
 			}
+
+			return ok;
 		}
 	}
 }
