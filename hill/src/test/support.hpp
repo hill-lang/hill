@@ -14,8 +14,8 @@ namespace hill {
 
 			std::stringstream ss;
 			if (isFileTest) {
-				std::ifstream fstr(src_spec+1);
-				std::copy(std::istream_iterator<char>(fstr), std::istream_iterator<char>(), std::ostreambuf_iterator(ss));
+				std::ifstream fstr(src_spec+1, std::ios_base::binary);
+				ss << fstr.rdbuf();
 			} else {
 				ss << src_spec;
 			}
