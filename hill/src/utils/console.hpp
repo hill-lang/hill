@@ -46,6 +46,19 @@ namespace hill::utils {
 		current_color = static_cast<int>(console_color::NONE);
 		return apply_color;
 	}
+
+	inline std::string escape_string(const char *s)
+	{
+		std::stringstream ss;
+		while (*s) {
+			switch (*s) {
+			case '\n': ss << "\\n"; break;
+			default: ss << *s;
+			}
+			++s;
+		}
+		return ss.str();
+	}
 }
 
 #endif /* UTILS__CONSOLE_HPP_INCLUDED */

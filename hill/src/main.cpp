@@ -14,31 +14,6 @@
 #include <iostream>
 #include <cstdint>
 
-static void test_lexer()
-{
-	std::istringstream istr(R"(
-// Comment
-n = 1 * 10.0f;
-/*
-Multi line comment
-*/
-a = b /* Inline comment */ + c;
-
-total := 100'000L;
-PI: = 3.1415f;
-
-a b;
-/*/
-*/
-)");
-
-	hill::token token;
-	hill::lexer lexer;
-	while (!(token=std::move(lexer.get_token(istr))).end()) {
-		std::cout << token.to_str() << '\n';
-	}
-}
-
 static void test_parser()
 {
 	std::istringstream istr("\r\na:=5\r\n\r\n");

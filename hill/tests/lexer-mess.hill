@@ -1,0 +1,14 @@
+// Comment
+n = 1 * 10.0f;
+/*
+Multi line comment
+*/
+a = b /* Inline comment */ + c;
+
+total := 100'000L;
+PI: = 3.1415f;
+
+a b;
+/*/
+*/
+)

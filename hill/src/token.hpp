@@ -85,7 +85,9 @@ namespace hill {
 
 		tt get_type() const {return this->type;}
 		const std::string &get_text() const {return this->text;}
-		std::string str() const {return this->type_spec->name + " (" + this->text + ")";}
+		std::string str() const {
+			return this->type_spec->name + "(" + this->text + ")";
+		}
 		std::string to_str() const
 		{
 			std::stringstream pos_ss;
@@ -97,9 +99,9 @@ namespace hill {
 					: this->op_type_spec->arity==tt_arity::RUNARY ? "Right unary"
 					: this->op_type_spec->arity==tt_arity::BINARY ? "Binary"
 					: "<UNKNOWN>";
-				return pos_ss.str() + " - " + this->str() + " - " + arity;
+				return pos_ss.str() + ":" + this->str() + ":" + arity;
 			} else {
-				return pos_ss.str() + " - " + this->str();
+				return pos_ss.str() + ":" + this->str();
 			}
 		}
 
