@@ -1,4 +1,4 @@
-name: windows-vs2022-clang
+name: build-windows-vs2022-clang
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ["master"]
 
 jobs:
-  windows-vs2022-clang:
+  build-windows-vs2022-clang:
     runs-on: windows-latest
 
     steps:

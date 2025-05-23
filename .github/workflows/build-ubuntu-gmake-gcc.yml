@@ -1,4 +1,4 @@
-name: ubuntu-gmake-gcc
+name: build-ubuntu-gmake-gcc
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ["master"]
 
 jobs:
-  ubuntu-gmake-gcc:
+  build-ubuntu-gmake-gcc:
     runs-on: ubuntu-latest
 
     steps:

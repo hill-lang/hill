@@ -1,4 +1,4 @@
-name: windows-vs2019-msc
+name: build-windows-vs2019-msc
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ["master"]
 
 jobs:
-  windows-vs2019-msc:
+  build-windows-vs2019-msc:
     runs-on: windows-latest
 
     steps:

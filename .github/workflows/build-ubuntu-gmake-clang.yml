@@ -1,4 +1,4 @@
-name: ubuntu-gmake-clang
+name: build-ubuntu-gmake-clang
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ["master"]
 
 jobs:
-  ubuntu-gmake-clang:
+  build-ubuntu-gmake-clang:
     runs-on: ubuntu-latest
 
     steps:

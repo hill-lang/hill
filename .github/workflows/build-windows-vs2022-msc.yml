@@ -1,4 +1,4 @@
-name: windows-vs2019-clang
+name: build-windows-vs2022-msc
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ["master"]
 
 jobs:
-  windows-vs2019-clang:
+  build-windows-vs2022-msc:
     runs-on: windows-latest
 
     steps:
@@ -20,8 +20,8 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v2
 
-    - name: Generate vs2019 clang
-      run: premake5 vs2019 --cc=clang
+    - name: Generate vs2022 msc
+      run: premake5 vs2022
       shell: bash
 
     - name: Build debug
