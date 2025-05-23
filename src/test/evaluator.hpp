@@ -1,14 +1,14 @@
 #ifndef TEST__EVALUATOR_HPP_INCLUDED
 #define TEST__EVALUATOR_HPP_INCLUDED
 
-#include "lexer.hpp"
-#include "parser.hpp"
-#include "analyzer.hpp"
-#include "evaluator.hpp"
-#include "hill.hpp"
-#include "utils/console.hpp"
+#include "../lexer.hpp"
+#include "../parser.hpp"
+#include "../analyzer.hpp"
+#include "../evaluator.hpp"
+#include "../hill.hpp"
+#include "../utils/console.hpp"
 
-#include "test/support.hpp"
+#include "support.hpp"
 
 #include <sstream>
 #include <fstream>
@@ -37,11 +37,11 @@ namespace hill::test {
 
 	inline bool evaluator()
 	{
-		std::cout << "Evaluator testing:\n";
-
 		bool ok = true;
 
-		for (size_t ix = 0; ix<sizeof evaluator_tests/sizeof evaluator_tests[0]; ++ix) {
+		std::cout << "Evaluator testing:\n";
+
+		for (size_t ix=0; ix<sizeof evaluator_tests/sizeof evaluator_tests[0]; ++ix) {
 			auto src_ss = get_src(evaluator_tests[ix].src);
 			auto exp_type_ss = get_src(evaluator_tests[ix].expected_type);
 			auto exp_value_ss = get_src(evaluator_tests[ix].expected_value);
@@ -60,23 +60,18 @@ namespace hill::test {
 
 			std::cout << " Type test  " << (evaluator_tests[ix].src[0]==':' ? (evaluator_tests[ix].src+1) : evaluator_tests[ix].src);
 			if (!strcmp(exp_type_ss.str().c_str(), val.ts.to_str().c_str())) {
-				std::cout << utils::color(" PASSED", utils::ccolor::GREEN) << '\n';
+				std::cout << passed_str() << '\n';
 			} else {
-				std::cout << ' '
-					<< utils::color("FAILED", utils::ccolor::WHITE, utils::ccolor::RED)
-					<< ": Expected: " << exp_type_ss.str().c_str()
-					<< " - Actual: " << val.to_str() << '\n';
+				std::cout << failed_str(exp_type_ss.str().c_str(), val.ts.to_str().c_str()) << '\n';
 				ok = false;
 			}
 
 			std::cout << " Value test " << (evaluator_tests[ix].src[0]==':' ? (evaluator_tests[ix].src+1) : evaluator_tests[ix].src);
 			if (!strcmp(exp_value_ss.str().c_str(), val.to_str().c_str())) {
-				std::cout << utils::color(" PASSED", utils::ccolor::GREEN) << '\n';
+				std::cout << passed_str() << '\n';
 			} else {
-				std::cout << ' '
-					<< utils::color("FAILED", utils::ccolor::WHITE, utils::ccolor::RED)
-					<< ": Expected: " << exp_value_ss.str().c_str()
-					<< " - Actual: " << val.to_str() << '\n';
+				std::cout << failed_str(exp_value_ss.str().c_str(), val.to_str().c_str()) << '\n';
+				ok = false;
 			}
 		}
 

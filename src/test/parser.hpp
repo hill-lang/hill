@@ -1,7 +1,8 @@
 #ifndef TEST__PARSER_HPP_INCLUDED
 #define TEST__PARSER_HPP_INCLUDED
 
-#include "lexer.hpp"
+#include "../lexer.hpp"
+#include "support.hpp"
 
 namespace hill::test {
 
@@ -22,9 +23,7 @@ namespace hill::test {
 
 		std::cout << "Parser testing:\n";
 
-		int ix;
-
-		for (ix = 0; ix<sizeof parser_tests/sizeof parser_tests[0]; ++ix) {
+		for (size_t ix=0; ix<sizeof parser_tests/sizeof parser_tests[0]; ++ix) {
 			auto src_ss = get_src(parser_tests[ix].src);
 			auto exp_ss = get_src(parser_tests[ix].expected);
 
@@ -47,12 +46,9 @@ namespace hill::test {
 
 			std::cout << " Test  " << utils::escape_string(parser_tests[ix].src[0]==':' ? (parser_tests[ix].src+1) : parser_tests[ix].src);
 			if (!strcmp(exp_ss.str().c_str(), ss.str().c_str())) {
-				std::cout << utils::color(" PASSED", utils::ccolor::GREEN) << '\n';
+				std::cout << passed_str() << '\n';
 			} else {
-				std::cout << ' '
-					<< utils::color("FAILED", utils::ccolor::WHITE, utils::ccolor::RED)
-					<< ": Expected: " << utils::escape_string(exp_ss.str().c_str())
-					<< " - Actual: " << utils::escape_string(ss.str().c_str()) << '\n';
+				std::cout << failed_str(exp_ss.str().c_str(), ss.str().c_str()) << '\n';
 				ok = false;
 			}
 		}

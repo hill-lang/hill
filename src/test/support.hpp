@@ -1,13 +1,15 @@
 #ifndef TEST__SUPPORT_HPP_INCLUDED
 #define TEST__SUPPORT_HPP_INCLUDED
 
+#include "../utils/console.hpp"
+#include <string>
 #include <sstream>
 #include <fstream>
 #include <istream>
 
 namespace hill::test {
 
-	std::stringstream get_src(const char *src_spec)
+	inline std::stringstream get_src(const char *src_spec)
 	{
 		bool isFileTest = src_spec[0] == ':';
 
@@ -20,6 +22,23 @@ namespace hill::test {
 		}
 
 		return ss;
+	}
+
+	inline std::string passed_str()
+	{
+		return utils::color(" PASSED", utils::ccolor::GREEN);
+	}
+
+	inline std::string failed_str(const char *expected, const char *actual)
+	{
+		std::stringstream ss;
+
+		ss << ' '
+			<< utils::color("FAILED", utils::ccolor::WHITE, utils::ccolor::RED)
+			<< ": Expected: " << utils::escape_string(expected)
+			<< " - Actual: " << utils::escape_string(actual);
+
+		return ss.str();
 	}
 }
 

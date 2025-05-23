@@ -5,4 +5,4 @@ namespace hill::test {
 
 }
 
-#endif
+#endif /* TEST__ANALYZER_HPP_INCLUDED */
