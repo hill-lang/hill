@@ -53,28 +53,28 @@ int main(int argc, char *argv[])
 		} else if (!strcmp(argv[1], "test")) {
 			if (argc>2) {
 				if (!strcmp(argv[2], "lexer")) {
-					hill::test::lexer();
+					ok = hill::test::lexer();
 				} else if (!strcmp(argv[2], "parser")) {
-					hill::test::parser();
+					ok = hill::test::parser();
 				} else if (!strcmp(argv[2], "analyzer")) {
-					// hill::test::analyzer();
+					// ok = hill::test::analyzer();
 				} else if (!strcmp(argv[2], "evaluator")) {
-					hill::test::evaluator();
+					ok = hill::test::evaluator();
 				} else {
 					return usage(argv[0]);
 				}
 			} else {
-				hill::test::lexer();
-				hill::test::parser();
-				//hill::test::analyzer();
-				hill::test::evaluator();
+				if (!hill::test::lexer()) ok =false;
+				if (!hill::test::parser()) ok = false;
+				//if (!hill::test::analyzer()) ok = false;
+				if (!hill::test::evaluator()) ok = false;
 			}
 		}
 	} else {
-		hill::test::lexer();
-		hill::test::parser();
-		//hill::test::analyzer();
-		hill::test::evaluator();
+		if (!hill::test::lexer()) ok = false;
+		if (!hill::test::parser()) ok = false;
+		//if (!hill::test::analyzer()) ok = false;
+		if (!hill::test::evaluator()) ok = false;
 	}
 
 	return ok ? EXIT_SUCCESS : EXIT_FAILURE;
