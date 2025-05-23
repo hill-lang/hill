@@ -53,9 +53,9 @@ int main(int argc, char *argv[])
 				if (!strcmp(argv[2], "lexer")) {
 					hill::test::lexer();
 				} else if (!strcmp(argv[2], "parser")) {
-					// TODO:
+					hill::test::parser();
 				} else if (!strcmp(argv[2], "analyzer")) {
-					// TODO:
+					// hill::test::analyzer();
 				} else if (!strcmp(argv[2], "evaluator")) {
 					hill::test::evaluator();
 				} else {
