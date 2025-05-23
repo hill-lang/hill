@@ -63,14 +63,14 @@ int main(int argc, char *argv[])
 				}
 			} else {
 				hill::test::lexer();
-				//hill::test::parser();
+				hill::test::parser();
 				//hill::test::analyzer();
 				hill::test::evaluator();
 			}
 		}
 	} else {
 		hill::test::lexer();
-		//hill::test::parser();
+		hill::test::parser();
 		//hill::test::analyzer();
 		hill::test::evaluator();
 	}
