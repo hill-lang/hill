@@ -42,9 +42,11 @@ namespace hill {
 			int ix;
 
 			for (ix = 0; ix<sizeof evaluator_tests/sizeof evaluator_tests[0]; ++ix) {
-				auto istr = get_src(evaluator_tests[ix].src);
+				auto src_ss = get_src(evaluator_tests[ix].src);
+				auto exp_type_ss = get_src(evaluator_tests[ix].expected_type);
+				auto exp_value_ss = get_src(evaluator_tests[ix].expected_value);
 
-				if (istr.str().empty()) {
+				if (src_ss.str().empty()) {
 					std::cerr << "Cannot read source " << utils::setcolor(utils::console_color::YELLOW) << evaluator_tests[ix].src << utils::resetcolor() << '\n';
 					continue;
 				}
@@ -53,10 +55,10 @@ namespace hill {
 				::hill::parser p;
 				::hill::analyzer a;
 				::hill::evaluator e;
-				auto val = ::hill::hill(istr, l, p, a, e);
+				auto val = ::hill::hill(src_ss, l, p, a, e);
 
 				std::cout << "Type test  " << (evaluator_tests[ix].src[0]==':' ? (evaluator_tests[ix].src+1) : evaluator_tests[ix].src);
-				if (!strcmp(evaluator_tests[ix].expected_type, val.ts.to_str().c_str())) {
+				if (!strcmp(exp_type_ss.str().c_str(), val.ts.to_str().c_str())) {
 					std::cout << utils::setcolor(utils::console_color::GREEN) << " PASSED\n" << utils::resetcolor();
 				} else {
 					std::cout << ' '
@@ -64,12 +66,12 @@ namespace hill {
 						<< utils::setbgcolor(utils::console_color::RED)
 						<< "FAILED"
 						<< utils::resetcolor()
-						<< ": Expected: " << evaluator_tests[ix].expected_type
+						<< ": Expected: " << exp_type_ss.str().c_str()
 						<< " - Actual: " << val.to_str() << '\n';
 				}
 
 				std::cout << "Value test " << (evaluator_tests[ix].src[0]==':' ? (evaluator_tests[ix].src+1) : evaluator_tests[ix].src);
-				if (!strcmp(evaluator_tests[ix].expected_value, val.to_str().c_str())) {
+				if (!strcmp(exp_value_ss.str().c_str(), val.to_str().c_str())) {
 					std::cout << utils::setcolor(utils::console_color::GREEN) << " PASSED\n" << utils::resetcolor();
 				} else {
 					std::cout << ' '
@@ -77,7 +79,7 @@ namespace hill {
 						<< utils::setbgcolor(utils::console_color::RED)
 						<< "FAILED"
 						<< utils::resetcolor()
-						<< ": Expected: " << evaluator_tests[ix].expected_value
+						<< ": Expected: " << exp_value_ss.str().c_str()
 						<< " - Actual: " << val.to_str() << '\n';
 				}
 			}
