@@ -32,6 +32,7 @@ namespace hill {
 
 				if (src_ss.str().empty()) {
 					std::cerr << "Cannot read source " << utils::setcolor(utils::console_color::YELLOW) << parser_tests[ix].src << utils::resetcolor() << '\n';
+					ok = false;
 					continue;
 				}
 
