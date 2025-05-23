@@ -46,9 +46,9 @@ namespace hill::test {
 
 			std::cout << " Test  " << utils::escape_string(parser_tests[ix].src[0]==':' ? (parser_tests[ix].src+1) : parser_tests[ix].src);
 			if (!strcmp(exp_ss.str().c_str(), ss.str().c_str())) {
-				std::cout << passed_str() << '\n';
+				std::cout << passed() << '\n';
 			} else {
-				std::cout << failed_str(exp_ss.str().c_str(), ss.str().c_str()) << '\n';
+				std::cout << failed(exp_ss.str().c_str(), ss.str().c_str()) << '\n';
 				ok = false;
 			}
 		}

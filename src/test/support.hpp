@@ -24,12 +24,12 @@ namespace hill::test {
 		return ss;
 	}
 
-	inline std::string passed_str()
+	inline std::string passed()
 	{
 		return utils::color(" PASSED", utils::ccolor::GREEN);
 	}
 
-	inline std::string failed_str(const char *expected, const char *actual)
+	inline std::string failed(const char *expected, const char *actual)
 	{
 		std::stringstream ss;
 
