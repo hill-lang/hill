@@ -59,6 +59,15 @@ namespace hill::utils {
 		}
 		return ss.str();
 	}
+
+	inline const std::string &color(console_color fg, console_color bg, const std::string &str)
+	{
+		std::stringstream ss;
+
+		ss << setbgcolor(fg) << setbgcolor(bg) << str << resetcolor();
+
+		ss.str();
+	}
 }
 
 #endif /* UTILS__CONSOLE_HPP_INCLUDED */
