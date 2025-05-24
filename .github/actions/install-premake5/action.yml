@@ -9,6 +9,10 @@ inputs:
     description: 'The branch, tag or SHA to checkout'
     required: false
     default: ''
+  msdev:
+    description: 'one of vs2019 or vs2022'
+    required: false
+    default: 'vs2022'
 
 runs:
   using: "composite"
