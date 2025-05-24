@@ -1,10 +1,10 @@
-name: test-unit-dist
+name: test-unit-release
 
 on:
   push:
 
 jobs:
-  test-unit-dist:
+  test-unit-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,8 +20,8 @@ jobs:
     - name: Generate make files (gcc)
       run: premake5 gmake --cc=gcc
 
-    - name: Build dist
-      run: make config=dist
+    - name: Build release
+      run: make config=release
 
     - name: Run tests
-      run: ./bin/Dist/hill test
+      run: ./bin/Release/hill test
