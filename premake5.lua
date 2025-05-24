@@ -3,9 +3,9 @@ workspace "hill"
 	startproject "hill"
 
 	configurations {
-		"Debug",
-		"Release",
-		"Dist",
+		"debug",
+		"release",
+		"dist",
 	}
 
 project "hill"
@@ -25,17 +25,17 @@ project "hill"
 		"src",
 	}
 
-	filter "configurations:Debug"
+	filter "configurations:debug"
 		defines "HILL_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
-	filter "configurations:Release"
+	filter "configurations:release"
 		defines "HILL_RELEASE"
 		runtime "Release"
 		optimize "on"
 
-	filter "configurations:Dist"
+	filter "configurations:dist"
 		defines "HILL_DIST"
 		runtime "Release"
 		optimize "on"

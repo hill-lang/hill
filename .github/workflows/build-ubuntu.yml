@@ -1,14 +1,13 @@
-name: Build MacOS
+name: Build Ubuntu
 
-on:
-  push:
+on: [push]
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        compiler: [gcc]
+        compiler: [gcc, clang]
         config: [debug, release, dist]
 
     steps:

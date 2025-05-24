@@ -1,14 +1,14 @@
-name: Build MacOS
+name: Test Unit
 
 on:
   push:
 
 jobs:
-  build:
-    runs-on: macos-latest
+  test-unit:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        compiler: [gcc]
+        compiler: [gcc, clang]
         config: [debug, release, dist]
 
     steps:
@@ -26,3 +26,6 @@ jobs:
 
     - name: Build
       run: make config=${{ matrix.config }}
+
+    - name: Run tests
+      run: ./bin/${{ matrix.config }}/hill test
