@@ -9,10 +9,6 @@ inputs:
     description: 'The branch, tag or SHA to checkout'
     required: false
     default: ''
-  msdev:
-    description: 'one of vs2019 or vs2022'
-    required: false
-    default: 'vs2022'
 
 runs:
   using: "composite"
@@ -20,77 +16,92 @@ runs:
 
     - name: Set premake cache key
       id: cache-key
-      run: echo "key=premake5-${{ runner.os }}-${{ inputs.ref || 'latest' }}" >> $GITHUB_OUTPUT
       shell: bash
+      run: echo "key=premake5-${{ runner.os }}-${{ inputs.ref || 'latest' }}" >> $GITHUB_OUTPUT
 
     - name: Restore premake5 from cache
+      id: cache-restore
       uses: actions/cache@v4
       with:
         path: |
           ~/.cache/premake5
-          /usr/bin/premake5
-          /Applications/premake5.app
-          C:\Program Files\premake\premake5.exe
+          C:/Users/runneradmin/.cache/premake5
         key: ${{ steps.cache-key.outputs.key }}
         restore-keys: |
           premake5-${{ runner.os }}-
 
-    - name: Check if premake5 is already installed
-      id: premake-check
-      run: |
-        if [ -f "/usr/bin/premake5" ] || [ -f "/Applications/premake5.app/premake5" ]; then
-          echo "found=true" >> $GITHUB_OUTPUT
-        else
-          echo "found=false" >> $GITHUB_OUTPUT
-        fi
-      shell: bash
-
-    - name: checkout premake5
-      if: steps.premake-check.outputs.found != 'true'
+    - name: Checkout premake5
+      if: steps.cache-restore.outputs.cache-hit != 'true'
       uses: actions/checkout@v4
       with:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
         path: .premake-build
 
-    - name: Install dependencies
-      if: runner.os == 'Linux' && steps.premake-check.outputs.found != 'true'
+    - name: Install dependencies (Linux)
+      if: runner.os == 'Linux' && steps.cache-restore.outputs.cache-hit != 'true'
+      shell: bash
       run: |
         sudo apt-get update
         sudo apt-get -y install uuid-dev
-      shell: bash
 
-    - name: Build premake5 on Linux
-      if: runner.os == 'Linux' && steps.premake-check.outputs.found != 'true'
+    - name: Restore from cache (Linux)
+      if: runner.os == 'Linux' && steps.cache-restore.outputs.cache-hit == 'true'
+      shell: bash
       run: |
+        set -e
+        sudo cp ~/.cache/premake5/premake5 /usr/bin/
+
+    - name: Build premake5 (Linux)
+      if: runner.os == 'Linux' && steps.cache-restore.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        set -e
         cd .premake-build
         make -f Bootstrap.mak linux CONFIG=release
         mkdir -p ~/.cache/premake5
         cp bin/release/premake5 ~/.cache/premake5/
-        sudo cp ~/.cache/premake5/premake5 /usr/bin/
+        sudo cp bin/release/premake5 /usr/bin/
         cd ..
-        rm -Rf .premake-build
-      shell: bash
+        rm -rf .premake-build
 
-    - name: Build premake5 on macOS
-      if: runner.os == 'macOS' && steps.premake-check.outputs.found != 'true'
+    - name: Build premake5 (macOS)
+      if: runner.os == 'macOS' && steps.cache-restore.outputs.cache-hit != 'true'
+      shell: bash
       run: |
         cd .premake-build
         make -f Bootstrap.mak osx CONFIG=release
+        mkdir -p ~/.cache/premake5
+        cp bin/release/premake5 ~/.cache/premake5/
         mkdir -p /Applications/premake5.app
         cp bin/release/premake5 /Applications/premake5.app/
         cd ..
-        rm -Rf .premake-build
-        echo PATH=$PATH:/Applications/premake5.app/ >> $GITHUB_ENV
+        rm -rf .premake-build
         echo /Applications/premake5.app/ >> $GITHUB_PATH
-      shell: bash
 
-    - name: Build premake5 on Windows
-      if: runner.os == 'Windows' && steps.premake-check.outputs.found != 'true'
+    - name: Restore from cache (macOS)
+      if: runner.os == 'macOS' && steps.cache-restore.outputs.cache-hit == 'true'
+      shell: bash
       run: |
-        mkdir "C:\Program Files\premake"
+        mkdir -p /Applications/premake5.app
+        cp ~/.cache/premake5/premake5 /Applications/premake5.app/
+        echo /Applications/premake5.app/ >> $GITHUB_PATH
+
+    - name: Build premake5 (Windows)
+      if: runner.os == 'Windows' && steps.cache-restore.outputs.cache-hit != 'true'
+      shell: powershell
+      run: |
+        mkdir "C:\Program Files\premake" -ErrorAction SilentlyContinue
         $vcvarall_path = vswhere -find VC\Auxiliary\Build\vcvarsall.bat
         cmd.exe /c "call ""$vcvarall_path"" x86_amd64 && cd .premake-build && nmake -f Bootstrap.mak MSDEV=${{ inputs.msdev }} windows-msbuild PLATFORM=Win32 CONFIG=release && cp bin/release/premake5.exe ""c:/Program Files/premake"""
+        Copy-Item "c:/Program Files/premake/premake5.exe" "$env:USERPROFILE\.cache\premake5\premake5.exe" -Force
         Remove-Item .premake-build -Recurse -Force
         echo "C:\Program Files\premake" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: Restore from cache (Windows)
+      if: runner.os == 'Windows' && steps.cache-restore.outputs.cache-hit == 'true'
       shell: powershell
+      run: |
+        mkdir "C:\Program Files\premake" -ErrorAction SilentlyContinue
+        Copy-Item "$env:USERPROFILE\.cache\premake5\premake5.exe" "C:\Program Files\premake\premake5.exe" -Force
+        echo "C:\Program Files\premake" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
