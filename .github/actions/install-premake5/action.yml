@@ -98,6 +98,7 @@ runs:
         mkdir "C:\Program Files\premake" -ErrorAction SilentlyContinue
         $vcvarall_path = vswhere -find VC\Auxiliary\Build\vcvarsall.bat
         cmd.exe /c "call ""$vcvarall_path"" x86_amd64 && cd .premake-build && nmake -f Bootstrap.mak MSDEV=${{ inputs.msdev }} windows-msbuild PLATFORM=Win32 CONFIG=release && cp bin/release/premake5.exe ""c:/Program Files/premake"""
+        mkdir "$env:USERPROFILE\.cache\premake5" -ErrorAction SilentlyContinue
         Copy-Item "c:/Program Files/premake/premake5.exe" "$env:USERPROFILE\.cache\premake5\premake5.exe" -Force
         Remove-Item .premake-build -Recurse -Force
         echo "C:\Program Files\premake" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
