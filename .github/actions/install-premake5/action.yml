@@ -18,45 +18,75 @@ runs:
   using: "composite"
   steps:
 
+    - name: Set premake cache key
+      id: cache-key
+      run: echo "key=premake5-${{ runner.os }}-${{ inputs.ref || 'latest' }}" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Restore premake5 from cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/premake5
+          /usr/bin/premake5
+          /Applications/premake5.app
+          C:\Program Files\premake\premake5.exe
+        key: ${{ steps.cache-key.outputs.key }}
+        restore-keys: |
+          premake5-${{ runner.os }}-
+
+    - name: Check if premake5 is already installed
+      id: premake-check
+      run: |
+        if [ -f "/usr/bin/premake5" ] || [ -f "/Applications/premake5.app/premake5" ]; then
+          echo "found=true" >> $GITHUB_OUTPUT
+        else
+          echo "found=false" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+
     - name: checkout premake5
+      if: steps.premake-check.outputs.found != 'true'
       uses: actions/checkout@v4
       with:
-          repository: ${{ inputs.repository }}
-          ref: ${{ inputs.ref }}
-          path: .premake-build
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.ref }}
+        path: .premake-build
 
     - name: Install dependencies
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && steps.premake-check.outputs.found != 'true'
       run: |
         sudo apt-get update
         sudo apt-get -y install uuid-dev
       shell: bash
 
-    - name: Build premake5
-      if: runner.os == 'Linux'
+    - name: Build premake5 on Linux
+      if: runner.os == 'Linux' && steps.premake-check.outputs.found != 'true'
       run: |
         cd .premake-build
         make -f Bootstrap.mak linux CONFIG=release
-        sudo cp bin/release/premake5 /usr/bin/
+        mkdir -p ~/.cache/premake5
+        cp bin/release/premake5 ~/.cache/premake5/
+        sudo cp ~/.cache/premake5/premake5 /usr/bin/
         cd ..
         rm -Rf .premake-build
       shell: bash
 
-    - name: Build premake5
-      if: runner.os == 'macOS'
+    - name: Build premake5 on macOS
+      if: runner.os == 'macOS' && steps.premake-check.outputs.found != 'true'
       run: |
         cd .premake-build
         make -f Bootstrap.mak osx CONFIG=release
-        mkdir /Applications/premake5.app
+        mkdir -p /Applications/premake5.app
         cp bin/release/premake5 /Applications/premake5.app/
         cd ..
         rm -Rf .premake-build
         echo PATH=$PATH:/Applications/premake5.app/ >> $GITHUB_ENV
-        echo /Applications/premake5.app/ >> GITHUB_PATH
+        echo /Applications/premake5.app/ >> $GITHUB_PATH
       shell: bash
 
-    - name: Build premake5
-      if: runner.os == 'Windows' # 2019 or 2022
+    - name: Build premake5 on Windows
+      if: runner.os == 'Windows' && steps.premake-check.outputs.found != 'true'
       run: |
         mkdir "C:\Program Files\premake"
         $vcvarall_path = vswhere -find VC\Auxiliary\Build\vcvarsall.bat
