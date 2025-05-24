@@ -3,6 +3,9 @@
 
 #include "val_ref.hpp"
 
+#include "exceptions.hpp"
+#include "instr.hpp"
+
 #include <string>
 #include <vector>
 #include <map>

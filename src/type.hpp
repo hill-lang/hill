@@ -13,6 +13,7 @@ namespace hill {
 		I, I8, I16, I32, I64,
 		U, U8, U16, U32, U64,
 		F, F32, F64, /*F128,*/
+		FUNC,
 //		ARRAY,
 		START,
 		END,
