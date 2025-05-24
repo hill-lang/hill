@@ -58,21 +58,8 @@ namespace hill::test {
 			::hill::evaluator e;
 			auto val = ::hill::hill(src_ss, l, p, a, e);
 
-			std::cout << " Type test  " << (evaluator_tests[ix].src[0]==':' ? (evaluator_tests[ix].src+1) : evaluator_tests[ix].src);
-			if (!strcmp(exp_type_ss.str().c_str(), val.ts.to_str().c_str())) {
-				std::cout << passed() << '\n';
-			} else {
-				std::cout << failed(exp_type_ss.str().c_str(), val.ts.to_str().c_str()) << '\n';
-				ok = false;
-			}
-
-			std::cout << " Value test " << (evaluator_tests[ix].src[0]==':' ? (evaluator_tests[ix].src+1) : evaluator_tests[ix].src);
-			if (!strcmp(exp_value_ss.str().c_str(), val.to_str().c_str())) {
-				std::cout << passed() << '\n';
-			} else {
-				std::cout << failed(exp_value_ss.str().c_str(), val.to_str().c_str()) << '\n';
-				ok = false;
-			}
+			std::cout << " Type test  " << test(evaluator_tests[ix].src, exp_type_ss.str().c_str(), val.ts.to_str().c_str(), &ok);
+			std::cout << " Value test " << test(evaluator_tests[ix].src, exp_value_ss.str().c_str(), val.to_str().c_str(), &ok);
 		}
 
 		return ok;

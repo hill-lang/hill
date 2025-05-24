@@ -24,19 +24,25 @@ namespace hill::test {
 		return ss;
 	}
 
-	inline std::string passed()
-	{
-		return utils::color(" PASSED", utils::ccolor::GREEN);
-	}
-
-	inline std::string failed(const char *expected, const char *actual)
+	inline std::string test(
+		const char *test_name,
+		const char *expected,
+		const char *actual,
+		bool *ok)
 	{
 		std::stringstream ss;
 
-		ss << ' '
-			<< utils::color("FAILED", utils::ccolor::WHITE, utils::ccolor::RED)
-			<< ": Expected: " << utils::escape_string(expected)
-			<< " - Actual: " << utils::escape_string(actual);
+		ss << utils::escape_string(test_name[0] == ':' ? (test_name +1) : test_name);
+		if (!strcmp(expected, actual)) {
+			ss << utils::color(" PASSED", utils::ccolor::GREEN) << '\n';
+		} else {
+			ss << ' '
+				<< utils::color("FAILED", utils::ccolor::WHITE, utils::ccolor::RED)
+				<< ": Expected: " << utils::escape_string(expected)
+				<< " - Actual: " << utils::escape_string(actual)
+				<< '\n';
+			*ok = false;
+		}
 
 		return ss.str();
 	}
