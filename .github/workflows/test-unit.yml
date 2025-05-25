@@ -29,7 +29,7 @@ jobs:
     - name: Run tests
       run: ./bin/${{ matrix.config }}/hill test
 
-    - name: Uplaod test results
+    - name: Upload test results
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
