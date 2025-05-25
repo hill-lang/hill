@@ -1,7 +1,6 @@
 name: 'Test Unit'
 
-on:
-  push:
+on: [push]
 
 jobs:
   test-unit:
