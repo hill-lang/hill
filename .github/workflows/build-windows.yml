@@ -9,7 +9,7 @@ jobs:
       matrix:
         visual-studio: [vs2019, vs2022]
         compiler: [msc, clang]
-        config: [debug, release, dist]
+        config: [debug, release]
 
     steps:
       - name: Checkout

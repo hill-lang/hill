@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         compiler: [gcc, clang]
-        config: [debug, release, dist]
+        config: [debug, release]
 
     steps:
       - uses: dorny/test-reporter@v2

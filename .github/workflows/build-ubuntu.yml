@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         compiler: [gcc, clang]
-        config: [debug, release, dist]
+        config: [debug, release]
 
     steps:
       - name: Checkout

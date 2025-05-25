@@ -5,7 +5,6 @@ workspace "hill"
 	configurations {
 		"debug",
 		"release",
-		"dist",
 	}
 
 project "hill"
@@ -35,7 +34,3 @@ project "hill"
 		runtime "Release"
 		optimize "on"
 
-	filter "configurations:dist"
-		defines "HILL_DIST"
-		runtime "Release"
-		optimize "on"
