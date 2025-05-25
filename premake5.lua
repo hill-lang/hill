@@ -25,12 +25,10 @@ project "hill"
 	}
 
 	filter "configurations:debug"
-		defines "HILL_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:release"
-		defines "HILL_RELEASE"
 		runtime "Release"
 		optimize "on"
 
