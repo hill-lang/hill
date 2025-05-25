@@ -1,13 +1,16 @@
-name: 'Test Report'
+name: "Test Report"
+
 on:
   workflow_run:
-    workflows: ['Test Unit']
+    workflows: ["Test Unit"]
     types:
       - completed
+
 permissions:
   contents: read
   actions: read
   checks: write
+
 jobs:
   report:
     runs-on: ubuntu-latest
@@ -17,9 +20,9 @@ jobs:
         config: [debug, release, dist]
 
     steps:
-    - uses: dorny/test-reporter@v2
-      with:
-        artifact: test-results-${{ matrix.compiler }}-${{ matrix.config }}
-        name: Hill test report
-        path: '*.xml'
-        reporter: jest-junit
+      - uses: dorny/test-reporter@v2
+        with:
+          artifact: test-results-${{ matrix.compiler }}-${{ matrix.config }}
+          name: Hill test report
+          path: "*.xml"
+          reporter: jest-junit

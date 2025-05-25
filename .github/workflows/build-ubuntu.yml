@@ -1,4 +1,4 @@
-name: Build Ubuntu
+name: "Build Ubuntu"
 
 on: [push]
 
@@ -11,17 +11,17 @@ jobs:
         config: [debug, release, dist]
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Install premake5
-      uses: ./.github/actions/install-premake5
+      - name: Install premake5
+        uses: ./.github/actions/install-premake5
 
-    - name: Make version
-      run: make --version
+      - name: Make version
+        run: make --version
 
-    - name: Generate make files
-      run: premake5 gmake --cc=${{ matrix.compiler }}
+      - name: Generate make files
+        run: premake5 gmake --cc=${{ matrix.compiler }}
 
-    - name: Build
-      run: make config=${{ matrix.config }}
+      - name: Build
+        run: make config=${{ matrix.config }}

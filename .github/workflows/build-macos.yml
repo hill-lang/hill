@@ -1,10 +1,10 @@
-name: "Test Unit"
+name: "Build MacOS"
 
 on: [push]
 
 jobs:
-  test-unit:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: macos-latest
     strategy:
       matrix:
         compiler: [gcc, clang]
@@ -25,13 +25,3 @@ jobs:
 
       - name: Build
         run: make config=${{ matrix.config }}
-
-      - name: Run tests
-        run: ./bin/${{ matrix.config }}/hill test
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: test-results-${{ matrix.compiler }}-${{ matrix.config }}
-          path: test-results.xml
