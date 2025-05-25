@@ -1,5 +1,5 @@
-#ifndef EXCEPTIONS_HPP_INCLUDED
-#define EXCEPTIONS_HPP_INCLUDED
+#ifndef HILL__EXCEPTIONS_HPP_INCLUDED
+#define HILL__EXCEPTIONS_HPP_INCLUDED
 
 #include <exception>
 
@@ -18,4 +18,4 @@ namespace hill {
 	};
 }
 
-#endif /* EXCEPTIONS_HPP_INCLUDED */
+#endif /* HILL__EXCEPTIONS_HPP_INCLUDED */

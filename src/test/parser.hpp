@@ -1,5 +1,5 @@
-#ifndef TEST__PARSER_HPP_INCLUDED
-#define TEST__PARSER_HPP_INCLUDED
+#ifndef HILL__TEST__PARSER_HPP_INCLUDED
+#define HILL__TEST__PARSER_HPP_INCLUDED
 
 #include "../lexer.hpp"
 #include "support.hpp"
@@ -51,4 +51,4 @@ namespace hill::test {
 	}
 }
 
-#endif /* TEST__PARSER_HPP_INCLUDED */
+#endif /* HILL__TEST__PARSER_HPP_INCLUDED */

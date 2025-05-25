@@ -1,5 +1,5 @@
-#ifndef ANALYZER_HPP_INCLUDED
-#define ANALYZER_HPP_INCLUDED
+#ifndef HILL__ANALYZER_HPP_INCLUDED
+#define HILL__ANALYZER_HPP_INCLUDED
 
 #include "lexer.hpp"
 #include "type.hpp"
@@ -40,4 +40,4 @@ namespace hill {
 	};
 }
 
-#endif /* ANALYZER_HPP_INCLUDED */
+#endif /* HILL__ANALYZER_HPP_INCLUDED */

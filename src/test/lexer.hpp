@@ -1,5 +1,5 @@
-#ifndef TEST__LEXER_INCLUDED
-#define TEST__LEXER_INCLUDED
+#ifndef HILL__TEST__LEXER_INCLUDED
+#define HILL__TEST__LEXER_INCLUDED
 
 #include "../token.hpp"
 #include "../lexer.hpp"
@@ -52,4 +52,4 @@ namespace hill::test {
 	}
 }
 
-#endif /* TEST__LEXER_INCLUDED */
+#endif /* HILL__TEST__LEXER_INCLUDED */

@@ -1,5 +1,5 @@
-#ifndef TYPE_HPP_INCLUDED
-#define TYPE_HPP_INCLUDED
+#ifndef HILL__TYPE_HPP_INCLUDED
+#define HILL__TYPE_HPP_INCLUDED
 
 #include <string>
 #include <vector>
@@ -138,4 +138,4 @@ namespace hill {
 	};
 }
 
-#endif /* TYPE_HPP_INCLUDED */
+#endif /* HILL__TYPE_HPP_INCLUDED */

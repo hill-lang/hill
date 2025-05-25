@@ -1,5 +1,5 @@
-#ifndef LEXER_HPP_INCLUDED
-#define LEXER_HPP_INCLUDED
+#ifndef HILL__LEXER_HPP_INCLUDED
+#define HILL__LEXER_HPP_INCLUDED
 
 #include "token.hpp"
 #include "lang_spec.hpp"
@@ -187,4 +187,4 @@ namespace hill {
 	};
 }
 
-#endif /* LEXER_HPP_INCLUDED */
+#endif /* HILL__LEXER_HPP_INCLUDED */

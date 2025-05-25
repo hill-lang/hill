@@ -1,5 +1,5 @@
-#ifndef SERIALIZER_H_INCLUDED
-#define SERIALIZER_H_INCLUDED
+#ifndef HILL__SERIALIZER_H_INCLUDED
+#define HILL__SERIALIZER_H_INCLUDED
 
 #include "block.hpp"
 
@@ -275,4 +275,4 @@ namespace hill {
 	};
 }
 
-#endif /* SERIALIZER_H_INCLUDED */
+#endif /* HILL__SERIALIZER_H_INCLUDED */

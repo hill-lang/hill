@@ -1,5 +1,5 @@
-#ifndef BLOCK_HPP_INCLUDED
-#define BLOCK_HPP_INCLUDED
+#ifndef HILL__BLOCK_HPP_INCLUDED
+#define HILL__BLOCK_HPP_INCLUDED
 
 #include "val_ref.hpp"
 
@@ -208,4 +208,4 @@ namespace hill {
 	};
 }
 
-#endif /* BLOCK_HPP_INCLUDED */
+#endif /* HILL__BLOCK_HPP_INCLUDED */

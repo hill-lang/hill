@@ -1,5 +1,5 @@
-#ifndef HILL_HPP_INCLUDED
-#define HILL_HPP_INCLUDED
+#ifndef HILL__HILL_HPP_INCLUDED
+#define HILL__HILL_HPP_INCLUDED
 
 #include "parser.hpp"
 #include "serializer.hpp"
@@ -49,4 +49,4 @@ namespace hill {
 	}
 }
 
-#endif /* HILL_HPP_INCLUDED */
+#endif /* HILL__HILL_HPP_INCLUDED */

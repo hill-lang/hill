@@ -1,5 +1,5 @@
-#ifndef TYPE_CONVERSION_HPP_DEFINED
-#define TYPE_CONVERSION_HPP_DEFINED
+#ifndef HILL__TYPE_CONVERSION_HPP_DEFINED
+#define HILL__TYPE_CONVERSION_HPP_DEFINED
 
 #include "type.hpp"
 
@@ -39,4 +39,4 @@ namespace hill {
 	}
 }
 
-#endif /* TYPE_CONVERSION_HPP_DEFINED */
+#endif /* HILL__TYPE_CONVERSION_HPP_DEFINED */

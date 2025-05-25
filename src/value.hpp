@@ -1,5 +1,5 @@
-#ifndef VALUE_HPP_INCLUDED
-#define VALUE_HPP_INCLUDED
+#ifndef HILL__VALUE_HPP_INCLUDED
+#define HILL__VALUE_HPP_INCLUDED
 
 #include "type.hpp"
 
@@ -89,4 +89,4 @@ namespace hill {
 	};
 }
 
-#endif /* VALUE_HPP_INCLUDED */
+#endif /* HILL__VALUE_HPP_INCLUDED */

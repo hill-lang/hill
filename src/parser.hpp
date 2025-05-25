@@ -1,5 +1,5 @@
-#ifndef PARSER_HPP_INCLUDED
-#define PARSER_HPP_INCLUDED
+#ifndef HILL__PARSER_HPP_INCLUDED
+#define HILL__PARSER_HPP_INCLUDED
 
 #include <memory>
 #include <istream>
@@ -146,4 +146,4 @@ namespace hill {
 	};
 }
 
-#endif /* PARSER_HPP_INCLUDED */
+#endif /* HILL__PARSER_HPP_INCLUDED */

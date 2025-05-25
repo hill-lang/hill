@@ -1,5 +1,5 @@
-#ifndef EVALUATOR_HPP_INCLUDED
-#define EVALUATOR_HPP_INCLUDED
+#ifndef HILL__EVALUATOR_HPP_INCLUDED
+#define HILL__EVALUATOR_HPP_INCLUDED
 
 #include "value.hpp"
 #include "type.hpp"
@@ -234,4 +234,4 @@ namespace hill {
 	};
 }
 
-#endif /* EVALUATOR_HPP_INCLUDED */
+#endif /* HILL__EVALUATOR_HPP_INCLUDED */

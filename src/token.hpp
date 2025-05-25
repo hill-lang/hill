@@ -1,5 +1,5 @@
-#ifndef TOKEN_HPP_INCLUDED
-#define TOKEN_HPP_INCLUDED
+#ifndef HILL__TOKEN_HPP_INCLUDED
+#define HILL__TOKEN_HPP_INCLUDED
 
 #include "lang_spec.hpp"
 #include "exceptions.hpp"
@@ -155,4 +155,4 @@ namespace hill {
 	};
 }
 
-#endif /* TOKEN_HPP_INCLUDED */
+#endif /* HILL__TOKEN_HPP_INCLUDED */

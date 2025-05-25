@@ -1,5 +1,5 @@
-#ifndef TEST__SUPPORT_HPP_INCLUDED
-#define TEST__SUPPORT_HPP_INCLUDED
+#ifndef HILL__TEST__SUPPORT_HPP_INCLUDED
+#define HILL__TEST__SUPPORT_HPP_INCLUDED
 
 #include "../utils/console.hpp"
 #include <string>
@@ -48,4 +48,4 @@ namespace hill::test {
 	}
 }
 
-#endif /* TEST__SUPPORT_HPP_INCLUDED */
+#endif /* HILL__TEST__SUPPORT_HPP_INCLUDED */

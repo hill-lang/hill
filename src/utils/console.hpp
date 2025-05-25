@@ -1,6 +1,7 @@
-#ifndef UTILS__CONSOLE_HPP_INCLUDED
-#define UTILS__CONSOLE_HPP_INCLUDED
+#ifndef HILL__UTILS__CONSOLE_HPP_INCLUDED
+#define HILL__UTILS__CONSOLE_HPP_INCLUDED
 
+#include "string.hpp"
 #include <ios>
 
 namespace hill::utils {
@@ -47,19 +48,6 @@ namespace hill::utils {
 		return ss.str();
 	}
 
-	inline std::string escape_string(const char *s)
-	{
-		std::stringstream ss;
-		while (*s) {
-			switch (*s) {
-			case '\n': ss << "\\n"; break;
-			default: ss << *s;
-			}
-			++s;
-		}
-		return ss.str();
-	}
-
 	inline std::string color(const std::string &str, ccolor fg, ccolor bg=ccolor::NONE)
 	{
 		std::stringstream ss;
@@ -68,4 +56,4 @@ namespace hill::utils {
 	}
 }
 
-#endif /* UTILS__CONSOLE_HPP_INCLUDED */
+#endif /* HILL__UTILS__CONSOLE_HPP_INCLUDED */

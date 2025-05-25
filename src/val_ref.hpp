@@ -1,5 +1,5 @@
-#ifndef VAL_REF_HPP_INCLUDED
-#define VAL_REF_HPP_INCLUDED
+#ifndef HILL__VAL_REF_HPP_INCLUDED
+#define HILL__VAL_REF_HPP_INCLUDED
 
 #include "type.hpp"
 #include "utils/print.hpp"
@@ -106,4 +106,4 @@ namespace hill {
 	};
 }
 
-#endif /* VAL_REF_HPP_INCLUDED */
+#endif /* HILL__VAL_REF_HPP_INCLUDED */

@@ -1,5 +1,5 @@
-#ifndef LANG_SPEC_HPP_INCLUDED
-#define LANG_SPEC_HPP_INCLUDED
+#ifndef HILL__LANG_SPEC_HPP_INCLUDED
+#define HILL__LANG_SPEC_HPP_INCLUDED
 
 #include "exceptions.hpp"
 #include <map>
@@ -200,4 +200,4 @@ namespace hill {
 	};
 }
 
-#endif /* LANG_SPEC_HPP_INCLUDED */
+#endif /* HILL__LANG_SPEC_HPP_INCLUDED */
