@@ -16,5 +16,5 @@ jobs:
       with:
         artifact: test-results
         name: Hill test report
-        path: 'test-results-*.xml'
+        path: '*.xml'
         reporter: jest-junit
