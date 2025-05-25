@@ -27,11 +27,13 @@ jobs:
       run: make config=${{ matrix.config }}
 
     - name: Run tests
-      run: ./bin/${{ matrix.config }}/hill test
+      run: |
+        ./bin/${{ matrix.config }}/hill test
+        mv test-results.xml test-results-${{ matrix.compiler }}-${{ matrix.config }}.xml
 
     - name: Uplaod test results
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: test-results
-        path: test-results.xml
+        name: test-results-${{ matrix.compiler }}-${{ matrix.config }}
+        path: test-results-${{ matrix.compiler }}-${{ matrix.config }}.xml
