@@ -1,5 +1,8 @@
 # Hill language [![License](https://img.shields.io/github/license/hill-lang/hill.svg)](https://github.com/hill-lang/hill/blob/master/LICENSE)
 
+[![Build Ubuntu](https://github.com/hill-lang/hill/actions/workflows/build-ubuntu.yml/badge.svg)](https://github.com/hill-lang/hill/actions/workflows/build-ubuntu.yml) [![Build MacOS](https://github.com/hill-lang/hill/actions/workflows/build-macos.yml/badge.svg)](https://github.com/hill-lang/hill/actions/workflows/build-macos.yml) [![Build Windows](https://github.com/hill-lang/hill/actions/workflows/build-windows.yml/badge.svg)](https://github.com/hill-lang/hill/actions/workflows/build-windows.yml)
+[![Test Unit](https://github.com/hill-lang/hill/actions/workflows/test-unit.yml/badge.svg)](https://github.com/hill-lang/hill/actions/workflows/test-unit.yml)
+
 A static typed scripting language in its very early stage
 
 ## Getting started
