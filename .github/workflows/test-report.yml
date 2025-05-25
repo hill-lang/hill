@@ -11,10 +11,15 @@ permissions:
 jobs:
   report:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+        config: [debug, release, dist]
+
     steps:
     - uses: dorny/test-reporter@v2
       with:
-        artifact: test-results
+        artifact: test-results-${{ matrix.compiler }}-${{ matrix.config }}
         name: Hill test report
         path: '*.xml'
         reporter: jest-junit
