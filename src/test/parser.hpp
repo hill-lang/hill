@@ -17,13 +17,17 @@ namespace hill::test {
 		{"(1 + 2) * 3", "NUM(1),NUM(2),OP_PLUS(+):Binary,RPAR()),NUM(3),OP_STAR(*):Binary,END()"},
 	};
 
-	inline bool parser()
+	inline bool parser(utils::junit_session &test_session)
 	{
+		auto suite = test_session.add_suite("Test.Parser", std::filesystem::path(__FILE__).filename().string());
+
 		bool ok = true;
 
 		std::cout << "Parser testing:\n";
 
 		for (size_t ix=0; ix<sizeof parser_tests/sizeof parser_tests[0]; ++ix) {
+			utils::timer timer;
+
 			auto src_ss = get_src(parser_tests[ix].src);
 			auto exp_ss = get_src(parser_tests[ix].expected);
 
@@ -44,7 +48,12 @@ namespace hill::test {
 				ss << t.to_str(false);
 			}
 
-			std::cout << " Test " << test(parser_tests[ix].src, exp_ss.str().c_str(), ss.str().c_str(), &ok);
+			std::cout << " Test " << test(
+				suite, timer.elapsed_sec(), __LINE__,
+				parser_tests[ix].src,
+				exp_ss.str().c_str(),
+				ss.str().c_str(),
+				&ok);
 		}
 
 		return ok;

@@ -12,5 +12,7 @@ bin/
 bin-int/
 Debug/
 
+test-results.xml
+
 output.hill_c
 output.hill_c.txt

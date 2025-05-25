@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <ios>
 #include <locale>
 #include <string>
 #include <sstream>
@@ -44,6 +45,20 @@ namespace hill::utils {
 	{
 		ltrim(s);
 		rtrim(s);
+	}
+
+	inline std::string utostr(size_t u)
+	{
+		std::ostringstream ss;
+		ss << u;
+		return ss.str();
+	}
+
+	inline std::string f64tostr(double f)
+	{
+		std::ostringstream ss;
+		ss << std::fixed << f;
+		return ss.str();
 	}
 }
 

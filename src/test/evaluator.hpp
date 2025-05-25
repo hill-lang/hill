@@ -35,13 +35,18 @@ namespace hill::test {
 		{"5*3", "@i", "15"},
 	};
 
-	inline bool evaluator()
+	inline bool evaluator(utils::junit_session &test_session)
 	{
+		auto suite = test_session.add_suite("Test.Evaluator", std::filesystem::path(__FILE__).filename().string());
+		auto type_suite = suite->add_suite("Test.Evaluator.Type", std::filesystem::path(__FILE__).filename().string());
+		auto val_suite = suite->add_suite("Test.Evaluator.Value", std::filesystem::path(__FILE__).filename().string());
+
 		bool ok = true;
 
 		std::cout << "Evaluator testing:\n";
 
 		for (size_t ix=0; ix<sizeof evaluator_tests/sizeof evaluator_tests[0]; ++ix) {
+			utils::timer timer;
 			auto src_ss = get_src(evaluator_tests[ix].src);
 			auto exp_type_ss = get_src(evaluator_tests[ix].expected_type);
 			auto exp_value_ss = get_src(evaluator_tests[ix].expected_value);
@@ -58,8 +63,19 @@ namespace hill::test {
 			::hill::evaluator e;
 			auto val = ::hill::hill(src_ss, l, p, a, e);
 
-			std::cout << " Type test  " << test(evaluator_tests[ix].src, exp_type_ss.str().c_str(), val.ts.to_str().c_str(), &ok);
-			std::cout << " Value test " << test(evaluator_tests[ix].src, exp_value_ss.str().c_str(), val.to_str().c_str(), &ok);
+			double duration = timer.elapsed_sec();
+			std::cout << " Type test  " << test(
+				type_suite, duration, __LINE__,
+				evaluator_tests[ix].src,
+				exp_type_ss.str().c_str(),
+				val.ts.to_str().c_str(),
+				&ok);
+			std::cout << " Value test " << test(
+				val_suite, duration, __LINE__,
+				evaluator_tests[ix].src,
+				exp_value_ss.str().c_str(),
+				val.to_str().c_str(),
+				&ok);
 		}
 
 		return ok;

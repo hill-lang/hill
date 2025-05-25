@@ -20,13 +20,17 @@ namespace hill::test {
 		{":tests/lexer-mess.hill", ":tests/lexer-mess.exp"},
 	};
 
-	inline bool lexer()
+	inline bool lexer(utils::junit_session &test_session)
 	{
+		auto suite = test_session.add_suite("Test.Lexer", std::filesystem::path(__FILE__).filename().string());
+
 		bool ok = true;
 
 		std::cout << "Lexer testing:\n";
 
 		for (size_t ix=0; ix<sizeof lexer_tests/sizeof lexer_tests[0]; ++ix) {
+			utils::timer timer;
+
 			auto src_ss = get_src(lexer_tests[ix].src);
 			auto exp_ss = get_src(lexer_tests[ix].expected);
 
@@ -45,7 +49,12 @@ namespace hill::test {
 				ss << t.to_str();
 			}
 
-			std::cout << " Test " << test(lexer_tests[ix].src, exp_ss.str().c_str(), ss.str().c_str(), &ok);
+			std::cout << " Test " << test(
+				suite, timer.elapsed_sec(), __LINE__,
+				lexer_tests[ix].src,
+				exp_ss.str().c_str(),
+				ss.str().c_str(),
+				&ok);
 		}
 
 		return ok;
