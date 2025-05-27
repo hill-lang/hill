@@ -27,9 +27,9 @@ namespace hill {
 				ss << '(';
 			}
 
-			auto prev_type = basic_type::START;
+			auto prev_type = basic_type::TUPLE;
 			for (auto &type: ts.types) {
-				if (prev_type!=basic_type::START && type!=basic_type::END) ss << ',';
+				if (prev_type!=basic_type::TUPLE && type!=basic_type::END) ss << ',';
 
 				switch (type) {
 				case basic_type::I8: ss << dump_value<int8_t>(p); break;
@@ -45,7 +45,7 @@ namespace hill {
 				case basic_type::F32: ss << dump_value<float>(p); break;
 				case basic_type::F64:
 				case basic_type::F: ss << dump_value<double>(p); break;
-				case basic_type::START: ss << '('; break;
+				case basic_type::TUPLE: ss << '('; break;
 				case basic_type::END: ss << ')'; break;
 				default: break; /* Throw? Look for custom implemetation? */
 				}

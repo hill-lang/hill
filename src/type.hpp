@@ -15,7 +15,7 @@ namespace hill {
 		F, F32, F64, /*F128,*/
 		FUNC,
 //		ARRAY,
-		START,
+		TUPLE,
 		END,
 	};
 
@@ -63,7 +63,7 @@ namespace hill {
 		case basic_type::F32: return "@f32";
 		case basic_type::F64: return "@f64";
 		//case basic_type::F128: return "@f128";
-		case basic_type::START: return "(";
+		case basic_type::TUPLE: return "(";
 		//case basic_type::ARRAY: return "@array";
 		case basic_type::END: return ")";
 		default: return "<UNKNOWN>";
@@ -76,13 +76,23 @@ namespace hill {
 		return os;
 	}
 
+	enum class type_kind {
+	};
+
+	struct type_dict_entry {
+	};
+
+	struct type_dict {
+		std::vector<type_dict_entry> entries;
+	};
+
 	struct type_spec {
 		type_spec() = default;
 		explicit type_spec(basic_type bt): types{bt} {}
 		explicit type_spec(const std::vector<basic_type> &bts): types(bts) {}
 		explicit type_spec(const type_spec &left, const type_spec &right) {
 			if (left.types.size()>1) {
-				this->types.push_back(basic_type::START);
+				this->types.push_back(basic_type::TUPLE);
 				this->types.insert(this->types.end(), left.types.begin(), left.types.end());
 				this->types.push_back(basic_type::END);
 			} else {
@@ -90,7 +100,7 @@ namespace hill {
 			}
 
 			if (right.types.size()>1) {
-				this->types.push_back(basic_type::START);
+				this->types.push_back(basic_type::TUPLE);
 				this->types.insert(this->types.end(), right.types.cbegin(), right.types.cend());
 				this->types.push_back(basic_type::END);
 			} else {
@@ -112,9 +122,9 @@ namespace hill {
 				ss << '(';
 			}
 
-			auto prev_type = basic_type::START;
+			auto prev_type = basic_type::TUPLE;
 			for (auto &type: types) {
-				if (prev_type!=basic_type::START && type!=basic_type::END) ss << ',';
+				if (prev_type!=basic_type::TUPLE && type!=basic_type::END) ss << ',';
 				ss << type;
 
 				prev_type = type;

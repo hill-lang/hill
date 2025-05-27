@@ -78,9 +78,9 @@ namespace hill {
 				ofs << '(';
 			}
 
-			auto prev_type = basic_type::START;
+			auto prev_type = basic_type::TUPLE;
 			for (auto &type : ts.types) {
-				if (prev_type != basic_type::START && type != basic_type::END) ofs << ',';
+				if (prev_type != basic_type::TUPLE && type != basic_type::END) ofs << ',';
 				ofs << basic_type_str(type);
 
 				prev_type = type;
