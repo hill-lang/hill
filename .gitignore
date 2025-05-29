@@ -5,13 +5,11 @@
 **.vcxproj.filters
 **.vcxproj.user
 
-Makefile
-
 # Binaries
 bin/
 bin-int/
-Debug/
 
+hill*
 test-results.xml
 
 output.hill_c
