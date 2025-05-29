@@ -10,33 +10,21 @@
 #include "test/analyzer.hpp"
 #include "test/evaluator.hpp"
 
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
-#include <cstdint>
+#include <stdlib.h>
+#include <string.h>
 
-static void test_parser()
-{
-	std::istringstream istr("\r\na:=5\r\n\r\n");
-
-	hill::lexer lexer;
-	hill::parser parser;
-
-	parser.parse(istr, lexer);
-}
-
-void fatal(const char *msg)
+static void fatal(const char *msg)
 {
 	std::cerr << "Error: " << msg << '\n';
 	exit(EXIT_FAILURE);
 }
 
-int usage(const char *cmd)
+static int usage(const char *cmd)
 {
 	std::cerr << "Usage: " << cmd << " [command [argument]\n";
 	std::cerr << "Commands:\n";
 	std::cerr << " run <file-path> - Evaluate a file and print the result\n";
-	std::cerr << " repl - Start a read evaluate print loop\n";
+	std::cerr << " repl - Start a Read Evaluate Print Loop\n";
 	std::cerr << " test <subsystem> - Test the selected sub-system (evaluator)\n";
 	std::cerr << "If no command is supplied, all tests will be performed\n";
 	return EXIT_FAILURE;
