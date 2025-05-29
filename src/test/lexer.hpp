@@ -22,7 +22,7 @@ namespace hill::test {
 
 	inline bool lexer(utils::junit_session &test_session)
 	{
-		auto suite = test_session.add_suite("Test.Lexer", std::filesystem::path(__FILE__).filename().string());
+		auto suite = test_session.add_suite("Test.Lexer");
 
 		bool ok = true;
 
@@ -50,7 +50,7 @@ namespace hill::test {
 			}
 
 			std::cout << " Test " << test(
-				suite, timer.elapsed_sec(), __LINE__,
+				suite, timer.elapsed_sec(),
 				lexer_tests[ix].src,
 				exp_ss.str().c_str(),
 				ss.str().c_str(),

@@ -37,7 +37,7 @@ namespace hill::test {
 
 	inline bool evaluator(utils::junit_session &test_session)
 	{
-		auto suite = test_session.add_suite("Test.Evaluator", std::filesystem::path(__FILE__).filename().string());
+		auto suite = test_session.add_suite("Test.Evaluator");
 
 		bool ok = true;
 
@@ -63,13 +63,13 @@ namespace hill::test {
 
 			double duration = timer.elapsed_sec();
 			std::cout << " Type test  " << test(
-				suite, duration, __LINE__,
+				suite, duration,
 				evaluator_tests[ix].src,
 				exp_type_ss.str().c_str(),
 				val.ts.to_str().c_str(),
 				&ok);
 			std::cout << " Value test " << test(
-				suite, duration, __LINE__,
+				suite, duration,
 				evaluator_tests[ix].src,
 				exp_value_ss.str().c_str(),
 				val.to_str().c_str(),

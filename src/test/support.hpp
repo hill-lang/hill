@@ -32,7 +32,6 @@ namespace hill::test {
 	inline std::string test(
 		const std::shared_ptr<utils::junit_test_suite> &suite,
 		double duration,
-		size_t line,
 		const char *test_name,
 		const char *expected,
 		const char *actual,
@@ -41,7 +40,7 @@ namespace hill::test {
 		std::stringstream ss;
 
 		auto name = utils::escape_string(test_name[0] == ':' ? (test_name + 1) : test_name);
-		auto test_case = suite->add_case(name, line);
+		auto test_case = suite->add_case(name);
 		test_case->time = duration;
 
 		ss << name;

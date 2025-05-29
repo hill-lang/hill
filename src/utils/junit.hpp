@@ -37,18 +37,13 @@ namespace hill::utils {
 	};
 
 	struct junit_test_case {
-		junit_test_case(
-			const std::string &name,
-			const std::string &classname,
-			const std::string &file,
-			size_t line) : name(name), classname(classname), file(file), line(line), time(0.0)
+		junit_test_case(const std::string &name, const std::string &classname)
+			: name(name), classname(classname), time(0.0)
 		{
 		}
 
 		std::string name;
 		std::string classname;
-		std::string file;
-		size_t line;
 		double time;
 		size_t assertion_count = 1; // TODO: Maybe allow multiple assertions per case?
 		junit_test_failure failure;
@@ -59,28 +54,27 @@ namespace hill::utils {
 	};
 
 	struct junit_test_suite {
-		junit_test_suite(const std::string &name, const std::string &file)
-			: name(name), file(file)
+		junit_test_suite(const std::string &name)
+			: name(name)
 		{
 			timestamp = std::chrono::system_clock::now();
 		}
 
 		std::string name;
-		std::string file;
 		std::chrono::system_clock::time_point timestamp;
 		std::vector<std::shared_ptr<junit_test_suite>> test_suites;
 		std::vector<std::shared_ptr<junit_test_case>> test_cases;
 
-		std::shared_ptr<junit_test_suite> add_suite(const std::string &suite_name, const std::string &suite_file)
+		std::shared_ptr<junit_test_suite> add_suite(const std::string &suite_name)
 		{
-			auto suite = std::make_shared<junit_test_suite>(suite_name, suite_file);
+			auto suite = std::make_shared<junit_test_suite>(suite_name);
 			test_suites.push_back(suite);
 			return suite;
 		}
 
-		std::shared_ptr<junit_test_case> add_case(const std::string &case_name, size_t line)
+		std::shared_ptr<junit_test_case> add_case(const std::string &case_name)
 		{
-			auto test_case = std::make_shared<junit_test_case>(case_name, this->name, this->file, line);
+			auto test_case = std::make_shared<junit_test_case>(case_name, this->name);
 			test_cases.push_back(test_case);
 			return test_case;
 		}
@@ -160,9 +154,9 @@ namespace hill::utils {
 		std::vector<std::shared_ptr<junit_test_suite>> test_suites;
 		std::shared_ptr<xml_writer> xml;
 
-		std::shared_ptr<junit_test_suite> add_suite(const std::string &suite_name, const std::string &suite_file)
+		std::shared_ptr<junit_test_suite> add_suite(const std::string &suite_name)
 		{
-			auto suite = std::make_shared<junit_test_suite>(suite_name, suite_file);
+			auto suite = std::make_shared<junit_test_suite>(suite_name);
 			test_suites.push_back(suite);
 			return suite;
 		}
@@ -217,13 +211,8 @@ namespace hill::utils {
 			auto timestr = f64tostr(test_case->time);
 			xml->set_attribute("time", timestr);
 
-			auto linestr = utostr(test_case->line);
-			xml->set_attribute("line", linestr);
-
 			auto assertioncntstr = utostr(test_case->assertion_count);
 			xml->set_attribute("assertions", assertioncntstr);
-
-			xml->set_attribute("file", test_case->file);
 
 			if (test_case->failure.type != junit_test_failure_type::NONE) {
 				xml->push_section("failure");
@@ -263,8 +252,6 @@ namespace hill::utils {
 			xml->set_attribute("time", timestr);
 
 			xml->set_attribute("timestamp", std::format("{:%FT%TZ}", suite->timestamp));
-
-			xml->set_attribute("file", suite->file);
 
 			for (const auto &suite : suite->test_suites) {
 				write_suite(suite, xml);
