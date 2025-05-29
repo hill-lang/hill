@@ -31,4 +31,3 @@ project "hill"
 	filter "configurations:release"
 		runtime "Release"
 		optimize "on"
-

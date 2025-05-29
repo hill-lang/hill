@@ -9,7 +9,8 @@
 bin/
 bin-int/
 
-hill*
+hill
+hill.exe
 test-results.xml
 
 output.hill_c
