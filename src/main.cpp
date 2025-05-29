@@ -13,12 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void fatal(const char *msg)
-{
-	std::cerr << "Error: " << msg << '\n';
-	exit(EXIT_FAILURE);
-}
-
 static int usage(const char *cmd)
 {
 	std::cerr << "Usage: " << cmd << " [command [argument]\n";

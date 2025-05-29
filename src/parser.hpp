@@ -48,7 +48,7 @@ namespace hill {
 				op_stack.push(std::move(t));
 			} else if (t.rgroup()) {
 				while (!op_stack.empty() && !op_stack.top().lgroup()) {
-					put_token(std::move(pop_mv(op_stack)));
+					put_token(pop_mv(op_stack));
 				}
 				// TODO: Consider checking if grouping tokens matches in token type
 				op_stack.pop();
@@ -56,15 +56,15 @@ namespace hill {
 			} else if (t.op()) {
 				if (t.lassoc()) {
 					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() <= t.prec()) {
-						put_token(std::move(pop_mv(op_stack)));
+						put_token(pop_mv(op_stack));
 					}
 				} else if (t.rassoc()) {
 					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() < t.prec()) {
-						put_token(std::move(pop_mv(op_stack)));
+						put_token(pop_mv(op_stack));
 					}
 				} else {
 					while (!op_stack.empty() && !op_stack.top().lgroup() && op_stack.top().prec() <= t.prec()) {
-						put_token(std::move(pop_mv(op_stack)));
+						put_token(pop_mv(op_stack));
 					}
 				}
 
@@ -74,7 +74,7 @@ namespace hill {
 				// TODO: Handle short circuit
 			} else if (t.end()) {
 				while (!op_stack.empty()) {
-					put_token(std::move(pop_mv(op_stack)));
+					put_token(pop_mv(op_stack));
 				}
 				put_token(std::move(t));
 			}
