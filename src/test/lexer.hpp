@@ -4,8 +4,7 @@
 #include "../token.hpp"
 #include "../lexer.hpp"
 #include "../utils/console.hpp"
-
-#include "test/support.hpp"
+#include "support.hpp"
 
 namespace hill::test {
 
