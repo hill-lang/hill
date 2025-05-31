@@ -30,6 +30,23 @@ namespace hill {
 		};
 	}
 
+	scope build_root()
+	{
+		return scope();
+	}
+
+	scope build_lib(scope *parent)
+	{
+		scope s;
+
+		int32_t a = 42;
+		s.ids["the_answer"] = val_ref(a, basic_type::I32);
+
+		s.parent = parent;
+
+		return s;
+	}
+
 	template<typename LT, typename PT, typename AT, typename ET>
 	requires concepts::parser<PT, LT>
 		&& concepts::analyzer<AT>
@@ -37,6 +54,10 @@ namespace hill {
 	value hill(std::istream &istr, LT &lexer, PT &parser, AT &analyzer, ET &evaluator)
 	{
 		parser.parse(istr, lexer);
+
+		scope root = build_root();
+		scope lib = build_lib(&root);
+		analyzer.set_trunk(&lib);
 		analyzer.analyze(parser.get_rpn());
 
 		// Debug only!

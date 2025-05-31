@@ -33,6 +33,9 @@ namespace hill::test {
 		{"1+2", "@i", "3"},
 		{"3-2", "@i", "1"},
 		{"5*3", "@i", "15"},
+		/*{"abs -1", "@i", "1"},
+		{"abs 1", "@i", "1"},*/
+		{"the_answer", "@i", "42"},
 	};
 
 	inline bool evaluator(utils::junit_session &test_session)

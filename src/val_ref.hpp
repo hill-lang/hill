@@ -8,6 +8,7 @@
 #include <string>
 #include <string.h>
 #include <vector>
+#include <array>
 
 namespace hill {
 
@@ -89,10 +90,19 @@ namespace hill {
 
 	struct val_ref {
 		val_ref(): mt(mem_type::UNDECIDED), ix(SIZE_MAX) {}
-		explicit val_ref(mem_type mt, size_t ix, type_spec ts): mt(mt), ix(ix), ts(ts) {}
+		val_ref(mem_type mt, size_t ix, type_spec ts): mt(mt), ix(ix), ts(ts) {}
+		template<typename VT> val_ref(VT v, basic_type bt): mt(mem_type::LITERAL), ts(bt)
+		{
+			memcpy(this->val, (uint8_t *)&v, sizeof v);
+		}
+		val_ref(uint32_t v, basic_type bt): mt(mem_type::LITERAL), u32(v), ts(bt) {}
 
 		mem_type mt;
-		size_t ix;
+		union {
+			size_t ix;
+			uint32_t u32;
+			uint8_t val[8];
+		};
 		type_spec ts;
 
 		std::string to_str() const

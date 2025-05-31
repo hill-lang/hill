@@ -17,6 +17,11 @@ namespace hill {
 
 		block main;
 
+		void set_trunk(scope *s)
+		{
+			main.s.parent = s;
+		}
+
 		void analyze_token(const token &t)
 		{
 			//std::cout<<"analyzer: "<< t.to_str() <<'\n';

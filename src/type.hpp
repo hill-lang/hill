@@ -85,7 +85,7 @@ namespace hill {
 	struct type_dict_entry {
 		type_kind kind;
 		std::vector<basic_type> types; // For dependent type
-		op_code operation; // For dependent type
+		//op_code operation; // For dependent type
 	};
 
 	struct type_dict {

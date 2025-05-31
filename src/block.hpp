@@ -15,6 +15,8 @@ namespace hill {
 	struct scope { // The names and values
 		std::map<std::string, val_ref> ids;
 		frame_def frame;
+
+		const scope *parent = nullptr;
 	};
 
 	struct type_stack {
