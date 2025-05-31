@@ -77,9 +77,15 @@ namespace hill {
 	}
 
 	enum class type_kind {
+		PLACEHOLDER,
+		DEPENDENT,
+		USERDEFINED,
 	};
 
 	struct type_dict_entry {
+		type_kind kind;
+		std::vector<basic_type> types; // For dependent type
+		op_code operation; // For dependent type
 	};
 
 	struct type_dict {
