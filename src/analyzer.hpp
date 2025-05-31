@@ -17,7 +17,7 @@ namespace hill {
 
 		block main;
 
-		void set_trunk(scope *s)
+		void set_trunk(const std::shared_ptr<scope> &s)
 		{
 			main.s.parent = s;
 		}

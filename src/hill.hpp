@@ -3,11 +3,13 @@
 
 #include "parser.hpp"
 #include "serializer.hpp"
+#include "token.hpp"
 #include "value.hpp"
 
 #include <concepts>
 #include <iostream>
 #include <vector>
+#include <memory>
 
 namespace hill {
 
@@ -19,8 +21,9 @@ namespace hill {
 		};
 
 		template<typename AT>
-		concept analyzer = requires(AT a, std::vector<token> rpn) {
+		concept analyzer = requires(AT a, std::vector<token> rpn, const std::shared_ptr<scope> &root) {
 			{a.analyze(rpn)};
+			{a.set_trunk(root)};
 			{a.get_main_block()};
 		};
 
@@ -30,19 +33,20 @@ namespace hill {
 		};
 	}
 
-	scope build_root()
+	std::shared_ptr<scope> build_root()
 	{
-		return scope();
+		auto s = scope::create();
+
+		// TODO: Add basic types
+
+		return s;
 	}
 
-	scope build_lib(scope *parent)
+	std::shared_ptr<scope> build_lib(const std::shared_ptr<scope> &parent)
 	{
-		scope s;
+		auto s = scope::create(parent);
 
-		int32_t a = 42;
-		s.ids["the_answer"] = val_ref(a, basic_type::I32);
-
-		s.parent = parent;
+		s->ids["the_answer"] = val_ref((int32_t)42, basic_type::I32);
 
 		return s;
 	}
@@ -55,9 +59,9 @@ namespace hill {
 	{
 		parser.parse(istr, lexer);
 
-		scope root = build_root();
-		scope lib = build_lib(&root);
-		analyzer.set_trunk(&lib);
+		auto root = build_root();
+		auto lib = build_lib(root);
+		analyzer.set_trunk(lib);
 		analyzer.analyze(parser.get_rpn());
 
 		// Debug only!

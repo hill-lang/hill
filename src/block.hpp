@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 namespace hill {
 
@@ -16,7 +17,29 @@ namespace hill {
 		std::map<std::string, val_ref> ids;
 		frame_def frame;
 
-		const scope *parent = nullptr;
+		std::shared_ptr<scope> parent = nullptr;
+
+		const val_ref *find_val_ref(const std::string &identifier) const
+		{
+			if (ids.contains(identifier)) {
+				return &ids.at(identifier);
+			} else if (parent) {
+				return parent->find_val_ref(identifier);
+			} else {
+				return nullptr;
+			}
+		}
+
+		static std::shared_ptr<scope> create()
+		{
+			return std::make_shared<scope>();
+		}
+		static std::shared_ptr<scope> create(const std::shared_ptr<scope> &parent)
+		{
+			auto s = std::make_shared<scope>();
+			s->parent = parent;
+			return s;
+		}
 	};
 
 	struct type_stack {
@@ -47,6 +70,9 @@ namespace hill {
 		literal_values values;
 		std::vector<instr> instrs;
 
+		// Very temp, just to make stuff work
+		std::string curr_id;
+
 		std::string to_str() const
 		{
 			std::stringstream ss;
@@ -71,6 +97,7 @@ namespace hill {
 				break;
 			case tt::NAME:
 				instrs.push_back(instr{.op = op_code::ID});
+				this->curr_id = t.text;
 				break;
 			case tt::NUM:
 				{
@@ -159,6 +186,10 @@ namespace hill {
 				break;
 			case tt::OP_COLON_EQ:
 				{
+					// TODO: Check if id already exists in this scope.
+					// If it does, that is a compilation error
+					// Maybe try to create some nice error message?
+
 					/*const auto res_type = convert_binary(
 						t.get_type(),
 						second_last().res_dt,
@@ -172,7 +203,7 @@ namespace hill {
 						mem_type::STACK,
 						s.frame.add(res_ts.size(), 1),
 						res_ts);
-					s.ids[t.str()] = val;
+					s.ids[this->curr_id] = val;
 
 					// TODO: Optimization: Do not copy if immutable variable and right side is immutable
 
@@ -181,6 +212,27 @@ namespace hill {
 						.op = op_code::COPY,
 						.res_ts = val.ts,
 						.val = {.ix=val.ix},
+						.arg2_ts = ts.top()});
+					ts.push(res_ts);
+				}
+				break;
+			case tt::OP_EQ:
+				{
+					// TODO: Check parent scope(s)
+					// If identifier starts with '@'. Only check root scope
+
+					type_spec res_ts = ts.top();
+
+					auto val = s.find_val_ref(this->curr_id);
+					if (!val) {throw semantic_error_exception();}
+					if (val->ts != res_ts) {throw semantic_error_exception();}
+					if (val->mt != mem_type::STACK) {throw semantic_error_exception();}
+					// TODO: Check mutability of 'val'
+
+					instrs.push_back(instr{
+						.op = op_code::COPY,
+						.res_ts = res_ts,
+						.val = {.ix=val->ix},
 						.arg2_ts = ts.top()});
 					ts.push(res_ts);
 				}
