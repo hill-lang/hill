@@ -72,7 +72,8 @@ namespace hill {
 				switch (ins.op) {
 				case op_code::END: end(ins); break;
 				case op_code::ID: break;
-				case op_code::LOAD: load(ins, b.values); break;
+				case op_code::LOAD: load(ins); break;
+				case op_code::LOADL: loadl(ins, b.values); break;
 				case op_code::LOADI: loadi(ins); break;
 				case op_code::COPY: copy(ins); break;
 				case op_code::ADD: add(ins); break;
@@ -91,7 +92,13 @@ namespace hill {
 			this->result_ins = ins;
 		}
 
-		void load(const instr &ins, const literal_values &values)
+		void load(const instr &ins)
+		{
+			// TODO: What if we want to load from a different stack frame?
+			s.push(ins.arg2_ts.size(), s.data() + ins.val.ix);
+		}
+
+		void loadl(const instr &ins, const literal_values &values)
 		{
 			uint8_t *p = s.push_alloc(ins.res_ts.size());
 			values.copy(ins.val.ix, p, ins.res_ts.size());

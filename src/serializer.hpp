@@ -114,6 +114,7 @@ namespace hill {
 			case op_code::TUPLE:
 				break;
 			case op_code::LOAD:
+			case op_code::LOADL:
 				ofs << ' ' << ins.val.ix;
 				break;
 			case op_code::LOADI:
@@ -159,6 +160,7 @@ namespace hill {
 			case op_code::TUPLE:
 				break;
 			case op_code::LOAD:
+			case op_code::LOADL:
 				write_bin(static_cast<uint64_t>(ins.val.ix), ofs);
 				write_bin<uint32_t>(0u, ofs);
 				write_bin<uint32_t>(0u, ofs);

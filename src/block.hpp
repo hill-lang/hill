@@ -96,8 +96,29 @@ namespace hill {
 				}
 				break;
 			case tt::NAME:
-				instrs.push_back(instr{.op = op_code::ID});
-				this->curr_id = t.text;
+				{
+					instrs.push_back(instr{.op = op_code::ID});
+					this->curr_id = t.text;
+
+					// If this is on the right side of the equal sign
+					auto val = s.find_val_ref(t.text);
+					if (val) {
+						if (val->mt == mem_type::STACK) {
+							instrs.push_back(instr{
+								.op = op_code::LOAD,
+								.res_ts = val->ts,
+								.val = {.ix=val->ix}});
+						} else if (val->mt == mem_type::LITERAL) {
+							instrs.push_back(instr{
+								.op = op_code::LOADI,
+								.res_ts = val->ts,
+								.val = {.imm_u32 = val->u32}});
+						} else {
+							throw internal_exception();
+						}
+						ts.push(val->ts);
+					}
+				}
 				break;
 			case tt::NUM:
 				{

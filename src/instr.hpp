@@ -12,9 +12,10 @@ namespace hill {
 	enum class op_code {
 		END, // End of program
 		ID, // Unbound identifier
-		LOAD, // Load value from address/ix (literal or calculated by analyzer/optimizer)
+		LOAD, // Load value from stack
+		LOADL, // Load literal value (literal or calculated by analyzer/optimizer)
 		LOADI, // Load immediate value (literal or calculated by analyzer/optimizer)
-		COPY, // Bind identifier to memory,
+		COPY, // Copy from the stack, to the stack || Bind identifier to memory
 		ADD, // Arithmetic addition
 		SUB, // Arithmetic subtraction
 		MUL, // Arithmetic multiplication
@@ -27,6 +28,7 @@ namespace hill {
 		case op_code::END: return "END";
 		case op_code::ID: return "ID";
 		case op_code::LOAD: return "LOAD";
+		case op_code::LOADL: return "LOADL";
 		case op_code::LOADI: return "LOADI";
 		case op_code::COPY: return "COPY";
 		case op_code::ADD: return "ADD";
@@ -72,6 +74,7 @@ namespace hill {
 			case op_code::ID:
 			case op_code::TUPLE:
 			case op_code::LOAD:
+			case op_code::LOADL:
 				ss << " ix:" << this->val.ix;
 				break;
 			case op_code::LOADI:
@@ -97,10 +100,14 @@ namespace hill {
 				ss << " ix:" << this->val.ix;
 				ss << " arg2_ts:" << this->arg2_ts.to_str();
 				break;
-			default:
+			case op_code::ADD:
+			case op_code::SUB:
+			case op_code::MUL:
 				ss << " arg1_ts:" << this->arg1_ts.to_str();
 				ss << " arg2_ts:" << this->arg2_ts.to_str();
 				break;
+			default:
+				throw internal_exception();
 			}
 
 			return ss.str();
