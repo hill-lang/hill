@@ -47,7 +47,7 @@ namespace hill {
 				case basic_type::F: ss << dump_value<double>(p); break;
 				case basic_type::TUPLE: ss << '('; break;
 				case basic_type::END: ss << ')'; break;
-				default: break; /* Throw? Look for custom implemetation? */
+				default: throw internal_exception();
 				}
 
 				p += basic_type_size(type);

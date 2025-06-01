@@ -86,6 +86,8 @@ namespace hill {
 		void add(const token &t)
 		{
 			switch (t.get_type()) {
+			case tt::RPAR:
+				break;
 			case tt::END:
 				{
 					type_spec res_ts = ts.top();
@@ -293,7 +295,7 @@ namespace hill {
 				}
 				break;
 			default:
-				break;
+				throw not_implemented_exception();
 			}
 		}
 	};

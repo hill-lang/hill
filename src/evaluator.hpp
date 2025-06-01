@@ -80,6 +80,7 @@ namespace hill {
 				case op_code::MUL: mul(ins); break;
 				case op_code::TUPLE: tuple(ins); break;
 				case op_code::CALL: call(ins); break;
+				default: throw internal_exception();
 				}
 			}
 

@@ -34,7 +34,8 @@ namespace hill {
 		case op_code::SUB: return "SUB";
 		case op_code::MUL: return "MUL";
 		case op_code::TUPLE: return "TUPLE";
-		default: return "<UNKNOWN>";
+		case op_code::CALL: return "CALL";
+		default: throw internal_exception();
 		}
 	}
 
@@ -77,7 +78,7 @@ namespace hill {
 				break;
 			case op_code::LOADI:
 				ss << " imm:";
-				switch (this->res_ts.types[0]) {
+				switch (this->res_ts.first()) {
 				case basic_type::I8: ss << this->val.imm_i8; break;
 				case basic_type::I16: ss << this->val.imm_i16; break;
 				case basic_type::I32: ss << this->val.imm_i32; break;
@@ -91,7 +92,7 @@ namespace hill {
 				case basic_type::F32: ss << this->val.imm_f32; break;
 				case basic_type::F64:
 				case basic_type::F: ss << this->val.imm_f64; break;
-				default: ss << "ERR"; break;
+				default: throw internal_exception();
 				}
 				break;
 			case op_code::COPY:

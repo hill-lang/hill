@@ -39,8 +39,13 @@ namespace hill {
 		case basic_type::F:
 		case basic_type::F64:
 			return 8u;
-		//case basic_type::F128: return 16u;
-		default: return 0u;
+		/*case basic_type::F128:
+			return 16u;*/
+		case basic_type::FUNC:
+		case basic_type::TUPLE:
+		case basic_type::END:
+			return 0u;
+		default: throw internal_exception();
 		}
 	}
 
@@ -62,11 +67,12 @@ namespace hill {
 		case basic_type::F: return "@f";
 		case basic_type::F32: return "@f32";
 		case basic_type::F64: return "@f64";
+		case basic_type::FUNC: return "@fn";
 		//case basic_type::F128: return "@f128";
 		case basic_type::TUPLE: return "(";
 		//case basic_type::ARRAY: return "@array";
 		case basic_type::END: return ")";
-		default: return "<UNKNOWN>";
+		default: throw internal_exception();;
 		}
 	}
 
@@ -96,7 +102,7 @@ namespace hill {
 		type_spec() = default;
 		explicit type_spec(basic_type bt): types{bt} {}
 		explicit type_spec(const std::vector<basic_type> &bts): types(bts) {}
-		explicit type_spec(const type_spec &left, const type_spec &right) {
+		type_spec(const type_spec &left, const type_spec &right) {
 			if (left.types.size()>1) {
 				this->types.push_back(basic_type::TUPLE);
 				this->types.insert(this->types.end(), left.types.begin(), left.types.end());

@@ -84,7 +84,7 @@ namespace hill {
 		case mem_type::UNDECIDED: return "UNDECIDED";
 		case mem_type::LITERAL: return "LITERAL";
 		case mem_type::STACK: return "STACK";
-		default: return "<UNKNOWN>";
+		default: throw internal_exception();
 		}
 	}
 

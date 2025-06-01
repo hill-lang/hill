@@ -21,7 +21,7 @@ namespace hill {
 	{
 		switch (v) { // MAX 9 characters excluding the null terminator
 		case file_version::V0_1: return "0.1";
-		default: return "<UNKNOWN>";
+		default: throw internal_exception();
 		}
 	}
 
@@ -135,10 +135,14 @@ namespace hill {
 				ofs << ' ' << ins.val.ix;
 				type_spec_ascii(ins.arg2_ts, ofs);
 				break;
-			default:
+			case op_code::ADD:
+			case op_code::SUB:
+			case op_code::MUL:
 				type_spec_ascii(ins.arg1_ts, ofs);
 				type_spec_ascii(ins.arg2_ts, ofs);
 				break;
+			default:
+				throw internal_exception();
 			}
 			ofs << '\n';
 		}
@@ -181,10 +185,14 @@ namespace hill {
 				write_bin(static_cast<uint64_t>(ins.val.ix), ofs);
 				type_spec_bin(ins.arg2_ts, ofs);
 				break;
-			default:
+			case op_code::ADD:
+			case op_code::SUB:
+			case op_code::MUL:
 				type_spec_bin(ins.arg1_ts, ofs);
 				type_spec_bin(ins.arg2_ts, ofs);
 				break;
+			default:
+				throw internal_exception();
 			}
 		}
 
