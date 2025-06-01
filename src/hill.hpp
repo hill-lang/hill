@@ -42,11 +42,17 @@ namespace hill {
 		return s;
 	}
 
+	int32_t pf_abs(int32_t v)
+	{
+		return (int32_t)abs(v);
+	}
+
 	std::shared_ptr<scope> build_lib(const std::shared_ptr<scope> &parent)
 	{
 		auto s = scope::create(parent);
 
 		s->ids["the_answer"] = val_ref((int32_t)42, basic_type::I32);
+		s->ids["abs"] = val_ref(pf_abs, type_spec({basic_type::FUNC, basic_type::I32, basic_type::I32}));
 
 		return s;
 	}

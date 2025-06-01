@@ -276,6 +276,17 @@ namespace hill {
 					ts.push(res_ts);
 				}
 				break;
+			case tt::CALL:
+				{
+					type_spec res_type;
+					if (ts.top().first()==basic_type::FUNC) {
+						res_type = ts.top().sub_type(1);
+					} else {
+						// TODO: Error
+					}
+
+					ts.push(res_type);
+				}
 			default:
 				break;
 			}

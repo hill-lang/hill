@@ -119,6 +119,17 @@ namespace hill {
 		
 		std::vector<basic_type> types;
 
+		basic_type first() const
+		{
+			return types.empty() ? basic_type::UNDECIDED : types[0];
+		}
+
+		type_spec sub_type(size_t ix) const
+		{
+			// TODO: Until end
+			return type_spec(std::vector<basic_type>());
+		}
+
 		std::string to_str() const
 		{
 			std::ostringstream ss;
