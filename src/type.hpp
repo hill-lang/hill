@@ -124,10 +124,16 @@ namespace hill {
 			return types.empty() ? basic_type::UNDECIDED : types[0];
 		}
 
-		type_spec sub_type(size_t ix) const
+		type_spec inner_type(size_t ix) const
 		{
-			// TODO: Until end
-			return type_spec(std::vector<basic_type>());
+			std::vector<basic_type> inner_types;
+			
+			if (types.at(1)==basic_type::TUPLE) {
+				// TODO: Until end
+			} else {
+				inner_types.push_back(types[1]);
+			}
+			return type_spec(inner_types);
 		}
 
 		std::string to_str() const

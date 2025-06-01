@@ -278,15 +278,21 @@ namespace hill {
 				break;
 			case tt::CALL:
 				{
-					type_spec res_type;
+					type_spec res_ts;
 					if (ts.top().first()==basic_type::FUNC) {
-						res_type = ts.top().sub_type(1);
+						res_ts = ts.top().inner_type(1);
+
+						instrs.push_back(instr{
+							.op = op_code::CALL,
+							.res_ts = res_ts
+							});
 					} else {
 						// TODO: Error
 					}
 
-					ts.push(res_type);
+					ts.push(res_ts);
 				}
+				break;
 			default:
 				break;
 			}

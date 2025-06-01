@@ -20,6 +20,7 @@ namespace hill {
 		SUB, // Arithmetic subtraction
 		MUL, // Arithmetic multiplication
 		TUPLE, // Build tuple
+		CALL, // Call function
 	};
 
 	inline const char *op_code_str(op_code op)
