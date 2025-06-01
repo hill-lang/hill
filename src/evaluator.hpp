@@ -80,6 +80,7 @@ namespace hill {
 				case op_code::SUB: sub(ins); break;
 				case op_code::MUL: mul(ins); break;
 				case op_code::TUPLE: tuple(ins); break;
+				case op_code::CALL: call(ins); break;
 				}
 			}
 
@@ -237,6 +238,10 @@ namespace hill {
 
 			// Make tuple
 			// The top of the stack already looks like a tuple
+		}
+
+		void call(const instr &ins)
+		{
 		}
 	};
 }
