@@ -71,7 +71,6 @@ namespace hill {
 			for (auto &ins : b.instrs) {
 				switch (ins.op) {
 				case op_code::END: end(ins); break;
-				case op_code::ID: break;
 				case op_code::LOAD: load(ins); break;
 				case op_code::LOADL: loadl(ins, b.values); break;
 				case op_code::LOADI: loadi(ins); break;

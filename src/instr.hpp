@@ -11,7 +11,6 @@ namespace hill {
 
 	enum class op_code {
 		END, // End of program
-		ID, // Unbound identifier
 		LOAD, // Load value from stack
 		LOADL, // Load literal value (literal or calculated by analyzer/optimizer)
 		LOADI, // Load immediate value (literal or calculated by analyzer/optimizer)
@@ -27,7 +26,6 @@ namespace hill {
 	{
 		switch (op) {
 		case op_code::END: return "END";
-		case op_code::ID: return "ID";
 		case op_code::LOAD: return "LOAD";
 		case op_code::LOADL: return "LOADL";
 		case op_code::LOADI: return "LOADI";
@@ -72,7 +70,6 @@ namespace hill {
 			ss << " res_ts:" << res_ts.to_str();
 			switch (op) {
 			case op_code::END:
-			case op_code::ID:
 			case op_code::TUPLE:
 			case op_code::LOAD:
 			case op_code::LOADL:

@@ -101,16 +101,11 @@ namespace hill {
 
 		void instr_ascii(const instr &ins, std::ofstream &ofs)
 		{
-			if (ins.op == op_code::ID) {
-				return;
-			}
-
 			ofs << op_code_str(ins.op);
 			type_spec_ascii(ins.res_ts, ofs);
 
 			switch (ins.op) {
 			case op_code::END:
-			case op_code::ID:
 			case op_code::TUPLE:
 				break;
 			case op_code::LOAD:
@@ -156,7 +151,6 @@ namespace hill {
 
 			switch (ins.op) {
 			case op_code::END:
-			case op_code::ID:
 			case op_code::TUPLE:
 				break;
 			case op_code::LOAD:

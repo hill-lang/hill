@@ -97,7 +97,6 @@ namespace hill {
 				break;
 			case tt::NAME:
 				{
-					instrs.push_back(instr{.op = op_code::ID});
 					this->curr_id = t.text;
 
 					// If this is on the right side of the equal sign
