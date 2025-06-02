@@ -15,6 +15,7 @@ namespace hill::test {
 		{"2 + 3", "NUM(2),NUM(3),OP_PLUS(+):Binary,END()"},
 		{"1 + 2 * 3", "NUM(1),NUM(2),NUM(3),OP_STAR(*):Binary,OP_PLUS(+):Binary,END()"},
 		{"(1 + 2) * 3", "NUM(1),NUM(2),OP_PLUS(+):Binary,RPAR()),NUM(3),OP_STAR(*):Binary,END()"},
+		{"1 2", "NUM(1),NUM(2),CALL(),END()"},
 	};
 
 	inline bool parser(utils::junit_session &test_session)
