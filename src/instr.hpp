@@ -58,6 +58,8 @@ namespace hill {
 
 			float imm_f32;
 			double imm_f64;
+
+			void *imm_p;
 		} val;
 		type_spec arg1_ts;
 		type_spec arg2_ts;
@@ -112,6 +114,28 @@ namespace hill {
 			return ss.str();
 		}
 	};
+
+	template<typename VT> instr make_instr(op_code o, type_spec ts, VT v)
+	{
+		instr i;
+
+		i.op = o;
+		i.res_ts = ts;
+		i.val.imm_u32 = v;
+
+		return i;
+	}
+
+	template<> instr make_instr<void *>(op_code o, type_spec ts, void *v)
+	{
+		instr i;
+
+		i.op = o;
+		i.res_ts = ts;
+		i.val.imm_p = v;
+
+		return i;
+	}
 }
 
 #endif /* HILL__INSTR_HPP_INCLUDED */

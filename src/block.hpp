@@ -110,10 +110,11 @@ namespace hill {
 								.res_ts = val->ts,
 								.val = {.ix=val->ix}});
 						} else if (val->mt == mem_type::LITERAL) {
-							instrs.push_back(instr{
-								.op = op_code::LOADI,
-								.res_ts = val->ts,
-								.val = {.imm_u32 = val->u32}});
+							if (val->ts.first()==basic_type::FUNC) {
+								instrs.push_back(make_instr(op_code::LOADI, val->ts, val->p));
+							} else {
+								instrs.push_back(make_instr(op_code::LOADI, val->ts, val->u32));
+							}
 						} else {
 							throw internal_exception();
 						}
@@ -281,7 +282,7 @@ namespace hill {
 				{
 					type_spec res_ts;
 					type_spec arg_ts;
-					if (ts.top().first()==basic_type::FUNC) {
+					if (ts.top(1).first()==basic_type::FUNC) {
 						res_ts = ts.top().inner_type(1);
 						arg_ts = ts.top().inner_type(1+res_ts.types.size());
 

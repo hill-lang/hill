@@ -242,8 +242,8 @@ namespace hill {
 
 		void call(const instr &ins)
 		{
-			void *func = s.pop<void *>();
 			int32_t arg = s.pop<int32_t>(); // TODO: Make generic
+			void *func = s.pop<void *>();
 
 			uint32_t ret = ((int32_t (*)(int32_t))func)(arg);
 

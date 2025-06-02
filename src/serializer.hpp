@@ -141,6 +141,9 @@ namespace hill {
 				type_spec_ascii(ins.arg1_ts, ofs);
 				type_spec_ascii(ins.arg2_ts, ofs);
 				break;
+			case op_code::CALL:
+				// TODO:
+				break;
 			default:
 				throw internal_exception();
 			}
@@ -190,6 +193,9 @@ namespace hill {
 			case op_code::MUL:
 				type_spec_bin(ins.arg1_ts, ofs);
 				type_spec_bin(ins.arg2_ts, ofs);
+				break;
+			case op_code::CALL:
+				// TODO:
 				break;
 			default:
 				throw internal_exception();

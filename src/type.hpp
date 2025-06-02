@@ -134,10 +134,10 @@ namespace hill {
 		{
 			std::vector<basic_type> inner_types;
 			
-			if (types.at(1)==basic_type::TUPLE) {
+			if (types.size()>1 && types[0]==basic_type::TUPLE) {
 				// TODO: Until end
 			} else {
-				inner_types.push_back(types[1]);
+				inner_types.push_back(types[0]);
 			}
 			return type_spec(inner_types);
 		}
