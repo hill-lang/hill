@@ -288,7 +288,7 @@ namespace hill {
 							.res_ts = res_ts
 							});
 					} else {
-						// TODO: Error
+						throw semantic_error_exception();
 					}
 
 					ts.push(res_ts);
