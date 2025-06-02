@@ -96,7 +96,7 @@ namespace hill {
 			memcpy(this->val, (uint8_t *)&v, sizeof v);
 		}
 		val_ref(uint32_t v, basic_type bt): mt(mem_type::LITERAL), u32(v), ts(bt) {}
-		val_ref(void *p, type_spec ts): p(p), ts(ts) {}
+		val_ref(void *p, type_spec ts): mt(mem_type::LITERAL), p(p), ts(ts) {}
 
 		mem_type mt;
 		union {
