@@ -72,9 +72,9 @@ namespace hill {
 
 		// Debug only!
 		serializer s(serializer_mode::ASCII);
-		s.serialize("./output.hill_c.txt", analyzer.get_main_block());
+		s.serialize("./tmp/output.hill_c.txt", analyzer.get_main_block());
 		s = serializer(serializer_mode::BIN);
-		s.serialize("./output.hill_c", analyzer.get_main_block());
+		s.serialize("./tmp/output.hill_c", analyzer.get_main_block());
 
 		return evaluator.evaluate(analyzer.get_main_block());
 	}

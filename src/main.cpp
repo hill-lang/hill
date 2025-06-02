@@ -26,6 +26,9 @@ static int usage(const char *cmd)
 
 int main(int argc, char *argv[])
 {
+	// TODO: Don't do this later. But usefull for testing
+	std::filesystem::create_directories("./tmp/");
+
 	bool ok = true;
 
 	if (argc>1) {

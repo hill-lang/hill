@@ -9,9 +9,8 @@
 bin/
 bin-int/
 
+tmp/
+
 hill
 hill.exe
 test-results.xml
-
-output.hill_c
-output.hill_c.txt
