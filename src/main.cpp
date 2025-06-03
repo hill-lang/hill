@@ -4,6 +4,8 @@
 #include "evaluator.hpp"
 #include "hill.hpp"
 
+#include "lsp/server.hpp"
+
 #include "utils/junit.hpp"
 #include "test/lexer.hpp"
 #include "test/parser.hpp"
@@ -35,6 +37,9 @@ int main(int argc, char *argv[])
 	if (argc>1) {
 		if (!strcmp(argv[1], "run")) {
 			// TODO: Run file
+		} else if (!strcmp(argv[1], "lsp")) {
+			hill::lsp::server server;
+			server.run();
 		} else if (!strcmp(argv[1], "repl")) {
 			// TODO: REPL
 		} else if (!strcmp(argv[1], "test")) {
