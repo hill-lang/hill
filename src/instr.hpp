@@ -15,9 +15,12 @@ namespace hill {
 		LOADL, // Load literal value (literal or calculated by analyzer/optimizer)
 		LOADI, // Load immediate value (literal or calculated by analyzer/optimizer)
 		COPY, // Copy from the stack, to the stack || Bind identifier to memory
+
 		ADD, // Arithmetic addition
 		SUB, // Arithmetic subtraction
 		MUL, // Arithmetic multiplication
+		NEG, // Arithmetic negation
+
 		TUPLE, // Build tuple
 		CALL, // Call function
 	};
@@ -33,6 +36,7 @@ namespace hill {
 		case op_code::ADD: return "ADD";
 		case op_code::SUB: return "SUB";
 		case op_code::MUL: return "MUL";
+		case op_code::NEG: return "NEG";
 		case op_code::TUPLE: return "TUPLE";
 		case op_code::CALL: return "CALL";
 		default: throw internal_exception();

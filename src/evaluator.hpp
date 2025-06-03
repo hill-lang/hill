@@ -78,6 +78,7 @@ namespace hill {
 				case op_code::ADD: add(ins); break;
 				case op_code::SUB: sub(ins); break;
 				case op_code::MUL: mul(ins); break;
+				case op_code::NEG: neg(ins); break;
 				case op_code::TUPLE: tuple(ins); break;
 				case op_code::CALL: call(ins); break;
 				default: throw internal_exception();
@@ -225,6 +226,31 @@ namespace hill {
 			case basic_type::F64:
 			case basic_type::F: mul<double>(); break;
 			default: break; /* Throw? Look for custom implemetation? */
+			}
+		}
+
+		template<typename T> void neg()
+		{
+			T v = s.pop<T>();
+			s.push<T>(-v);
+		}
+		void neg(const instr &ins)
+		{
+			switch (ins.res_ts.types[0]) {
+			case basic_type::I8: neg<int8_t>(); break;
+			case basic_type::I16: neg<int16_t>(); break;
+			case basic_type::I32: neg<int32_t>(); break;
+			case basic_type::I64:
+			case basic_type::I: neg<int64_t>(); break;
+			case basic_type::U8: neg<uint8_t>(); break;
+			case basic_type::U16: neg<uint16_t>(); break;
+			case basic_type::U32: neg<uint32_t>(); break;
+			case basic_type::U64:
+			case basic_type::U: neg<uint64_t>(); break;
+			case basic_type::F32: neg<float>(); break;
+			case basic_type::F64:
+			case basic_type::F: neg<double>(); break;
+			default: throw internal_exception();
 			}
 		}
 

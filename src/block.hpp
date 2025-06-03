@@ -172,6 +172,8 @@ namespace hill {
 						.res_ts = res_ts,
 						.arg1_ts = ts.top(1),
 						.arg2_ts = ts.top()});
+					ts.pop();
+					ts.pop();
 					ts.push(res_ts);
 				}
 				break;
@@ -182,13 +184,27 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
-					type_spec res_ts = ts.top();
-					instrs.push_back(instr{
-						.op = op_code::SUB,
-						.res_ts = res_ts,
-						.arg1_ts = ts.top(1),
-						.arg2_ts = ts.top()});
-					ts.push(res_ts);
+					if (t.get_arity()==tt_arity::LUNARY) {
+						type_spec res_ts = ts.top();
+						instrs.push_back(instr{
+							.op = op_code::NEG,
+							.res_ts = res_ts,
+							.arg1_ts = ts.top()});
+						ts.pop();
+						ts.push(res_ts);
+					} else if (t.get_arity()==tt_arity::BINARY) {
+						type_spec res_ts = ts.top();
+						instrs.push_back(instr{
+							.op = op_code::SUB,
+							.res_ts = res_ts,
+							.arg1_ts = ts.top(1),
+							.arg2_ts = ts.top()});
+						ts.pop();
+						ts.pop();
+						ts.push(res_ts);
+					} else {
+						throw internal_exception();
+					}
 				}
 				break;
 			case tt::OP_STAR:
@@ -204,6 +220,8 @@ namespace hill {
 						.res_ts = res_ts,
 						.arg1_ts = ts.top(1),
 						.arg2_ts = ts.top()});
+					ts.pop();
+					ts.pop();
 					ts.push(res_ts);
 				}
 				break;
@@ -236,6 +254,7 @@ namespace hill {
 						.res_ts = val.ts,
 						.val = {.ix=val.ix},
 						.arg2_ts = ts.top()});
+					ts.pop();
 					ts.push(res_ts);
 				}
 				break;
@@ -257,6 +276,7 @@ namespace hill {
 						.res_ts = res_ts,
 						.val = {.ix=val->ix},
 						.arg2_ts = ts.top()});
+					ts.pop();
 					ts.push(res_ts);
 				}
 				break;
