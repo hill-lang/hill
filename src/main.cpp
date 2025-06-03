@@ -9,6 +9,7 @@
 #include "test/parser.hpp"
 #include "test/analyzer.hpp"
 #include "test/evaluator.hpp"
+#include "test/json_writer.hpp"
 
 #include <stdlib.h>
 #include <string.h>
@@ -49,6 +50,8 @@ int main(int argc, char *argv[])
 					// ok = hill::test::analyzer(test_session);
 				} else if (!strcmp(argv[2], "evaluator")) {
 					ok = hill::test::evaluator(test_session);
+				} else if (!strcmp(argv[2], "json_writer")) {
+					ok = hill::test::json_writer(test_session);
 				} else {
 					return usage(argv[0]);
 				}
@@ -57,6 +60,7 @@ int main(int argc, char *argv[])
 				if (!hill::test::parser(test_session)) ok = false;
 				//if (!hill::test::analyzer(test_session)) ok = false;
 				if (!hill::test::evaluator(test_session)) ok = false;
+				if (!hill::test::json_writer(test_session)) ok = false;
 			}
 		}
 	} else {
@@ -65,6 +69,7 @@ int main(int argc, char *argv[])
 		if (!hill::test::parser(test_session)) ok = false;
 		//if (!hill::test::analyzer(test_session)) ok = false;
 		if (!hill::test::evaluator(test_session)) ok = false;
+		if (!hill::test::json_writer(test_session)) ok = false;
 	}
 
 	return ok ? EXIT_SUCCESS : EXIT_FAILURE;
