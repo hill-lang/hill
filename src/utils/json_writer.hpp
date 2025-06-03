@@ -12,11 +12,11 @@
 namespace hill::utils {
 
 	class json_writer_exception : std::exception {
-		const char *what() const noexcept override { return "Json writer exception"; }
+		const char *what() const noexcept override { return "JSON writer exception"; }
 	};
 
 	class json_writer_internal_exception : std::exception {
-		const char *what() const noexcept override { return "Json writer internal exception"; }
+		const char *what() const noexcept override { return "JSON writer internal exception"; }
 	};
 
 	struct json_writer {
