@@ -45,7 +45,7 @@ namespace hill::test {
 			json.obj_bool("bool1", true);
 			json.obj_bool("bool2", false);
 			json.obj_f32("f32", 42.65f);
-			json.obj_f32("i32", 123456);
+			json.obj_i32("i32", 123456);
 			json.obj_str("str", "hello world");
 			json.close();
 
