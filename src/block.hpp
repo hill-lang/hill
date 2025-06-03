@@ -132,7 +132,7 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
 							.res_ts = res_ts,
-							.val = {.imm_f64 = (double)std::strtold(t.get_text().c_str(), &endp)}});
+							.val = {.imm_f64 = static_cast<double>(std::strtold(t.get_text().c_str(), &endp))}});
 #else
 						auto vix = values.add(std::strtold(t.get_text().c_str(), &endp));
 						instrs.push_back(instr{
@@ -147,7 +147,7 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
 							.res_ts = res_ts,
-							.val = {.imm_i32 = std::strtol(t.get_text().c_str(), &endp, 10)}});
+							.val = {.imm_i32 = static_cast<int32_t>(std::strtol(t.get_text().c_str(), &endp, 10))}});
 #else
 						auto vix = values.add(std::strtoll(t.get_text().c_str(), &endp, 10));
 						instrs.push_back(instr{
