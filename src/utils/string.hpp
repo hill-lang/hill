@@ -47,6 +47,7 @@ namespace hill::utils {
 		rtrim(s);
 	}
 
+	// TODO: Replace with std::to_string(x);
 	inline std::string utostr(size_t u)
 	{
 		std::ostringstream ss;

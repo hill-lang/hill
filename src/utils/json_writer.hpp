@@ -98,6 +98,12 @@ namespace hill::utils {
 			*os << (value ? "true" : "false");
 		}
 
+		void obj_raw(const std::string &key, const std::string &value)
+		{
+			obj_header(key);
+			*os << value;
+		}
+
 		/// <summary>
 		/// Start a standalone array. E.g. Inside an array or top level
 		/// </summary>
@@ -144,6 +150,12 @@ namespace hill::utils {
 		{
 			arr_header();
 			*os << (value ? "true" : "false");
+		}
+
+		void arr_raw(const std::string &value)
+		{
+			arr_header();
+			*os << value;
 		}
 
 		void pop()
