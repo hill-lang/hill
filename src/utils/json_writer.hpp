@@ -60,7 +60,7 @@ namespace hill::utils {
 			}
 
 			*os << '{';
-			state.emplace_back(json_node_kind::OBJECT, 0);
+			state.push_back(json_writer_state(json_node_kind::OBJECT));
 		}
 
 		/// <summary>
@@ -71,7 +71,7 @@ namespace hill::utils {
 		{
 			obj_header(key);
 			*os << '{';
-			state.emplace_back(json_node_kind::OBJECT, 0);
+			state.push_back(json_writer_state(json_node_kind::OBJECT));
 		}
 
 		void obj_f32(const std::string &key, float value)
@@ -109,7 +109,7 @@ namespace hill::utils {
 			}
 
 			*os << '[';
-			state.emplace_back(json_node_kind::ARRAY, 0);
+			state.push_back(json_writer_state(json_node_kind::ARRAY));
 		}
 
 		/// <summary>
@@ -119,7 +119,7 @@ namespace hill::utils {
 		{
 			obj_header(key);
 			*os << '[';
-			state.emplace_back(json_node_kind::ARRAY, 0);
+			state.push_back(json_writer_state(json_node_kind::ARRAY));
 		}
 
 		void arr_f32(float value)
@@ -166,6 +166,8 @@ namespace hill::utils {
 		};
 
 		struct json_writer_state {
+			json_writer_state(json_node_kind kind): kind(kind), element_count(0) {}
+
 			json_node_kind kind;
 			size_t element_count;
 		};
