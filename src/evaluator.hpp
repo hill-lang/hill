@@ -242,11 +242,11 @@ namespace hill {
 			case basic_type::I32: neg<int32_t>(); break;
 			case basic_type::I64:
 			case basic_type::I: neg<int64_t>(); break;
-			case basic_type::U8: neg<uint8_t>(); break;
+			/*case basic_type::U8: neg<uint8_t>(); break;
 			case basic_type::U16: neg<uint16_t>(); break;
 			case basic_type::U32: neg<uint32_t>(); break;
 			case basic_type::U64:
-			case basic_type::U: neg<uint64_t>(); break;
+			case basic_type::U: neg<uint64_t>(); break;*/
 			case basic_type::F32: neg<float>(); break;
 			case basic_type::F64:
 			case basic_type::F: neg<double>(); break;
