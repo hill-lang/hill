@@ -126,6 +126,7 @@ namespace hill {
 			case basic_type::F32: *(float *)p = ins.val.imm_f32; break;
 			case basic_type::F64:
 			case basic_type::F: *(double *)p = ins.val.imm_f64; break;
+			case basic_type::FUNC: *(void **)p = ins.val.imm_p; break;
 			default: break; /* Throw? Look for custom implemetation? */
 			}
 		}

@@ -142,12 +142,12 @@ namespace hill {
 #endif /* USE_LOAD_IMMEDIATE */
 						ts.push(res_ts);
 					} else { // integral
-						type_spec res_ts = type_spec(basic_type::I);
+						type_spec res_ts = type_spec(basic_type::I32);
 #ifdef USE_LOAD_IMMEDIATE
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
 							.res_ts = res_ts,
-							.val = {.imm_i64 = std::strtoll(t.get_text().c_str(), &endp, 10)}});
+							.val = {.imm_i32 = std::strtol(t.get_text().c_str(), &endp, 10)}});
 #else
 						auto vix = values.add(std::strtoll(t.get_text().c_str(), &endp, 10));
 						instrs.push_back(instr{

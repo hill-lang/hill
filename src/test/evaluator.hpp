@@ -22,23 +22,24 @@ namespace hill::test {
 		const char *expected_type;
 		const char *expected_value;
 	} evaluator_tests[]={
-		{":tests/initial-assignment.hill", "@i", "5"},
-		{":tests/add.hill", "@i", "7"},
-		{":tests/sub.hill", "@i", "-1"},
-		{":tests/tuple.hill", "(@i,@i)", "(1,2)"},
-		{":tests/tuple-diff-types.hill", "(@f,@i)", "(1.0,2)"},
-		{":tests/tuple-in-tuple.hill", "(@i,(@i,@i))", "(1,(2,3))"},
-		{":tests/tuples-in-tuple.hill", "((@i,@i),(@i,@i))", "((1,2),(3,4))"},
+		{"abs 1", "@i32", "1"},
+		{":tests/initial-assignment.hill", "@i32", "5"},
+		{":tests/add.hill", "@i32", "7"},
+		{":tests/sub.hill", "@i32", "-1"},
+		{":tests/tuple.hill", "(@i32,@i32)", "(1,2)"},
+		{":tests/tuple-diff-types.hill", "(@f,@i32)", "(1.0,2)"},
+		{":tests/tuple-in-tuple.hill", "(@i32,(@i32,@i32))", "(1,(2,3))"},
+		{":tests/tuples-in-tuple.hill", "((@i32,@i32),(@i32,@i32))", "((1,2),(3,4))"},
 		{":tests/pi.hill", "@f", "3.14"},
-		{"1+2", "@i", "3"},
-		{"3-2", "@i", "1"},
-		{"5*3", "@i", "15"},
-		/*{"abs -1", "@i", "1"},
-		{"abs 1", "@i", "1"},*/
+		{"1+2", "@i32", "3"},
+		{"3-2", "@i32", "1"},
+		{"5*3", "@i32", "15"},
+		/*{"abs (-1)", "@i32", "1"},
+		{"abs 1", "@i32", "1"},*/
 		{"the_answer", "@i32", "42"},
-		//{"a:=1;a=2", "@i", "2"},
-		//{"a:=1;a=a+2", "@i", "3"},
-		//{"a:=1;b:=10;a=a+2", "@i", "3"},
+		//{"a:=1;a=2", "@i32", "2"},
+		//{"a:=1;a=a+2", "@i32", "3"},
+		//{"a:=1;b:=10;a=a+2", "@i32", "3"},
 	};
 
 	inline bool evaluator(utils::junit_session &test_session)

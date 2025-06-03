@@ -42,6 +42,7 @@ namespace hill {
 		/*case basic_type::F128:
 			return 16u;*/
 		case basic_type::FUNC:
+			return sizeof(void *);
 		case basic_type::TUPLE:
 		case basic_type::END:
 			return 0u;
@@ -168,6 +169,10 @@ namespace hill {
 
 		size_t size() const
 		{
+			if (types.size()>0 && types[0]==basic_type::FUNC) {
+				return basic_type_size(basic_type::FUNC); // A function is always the size of a function pointer
+			}
+
 			return std::accumulate(
 				types.begin(),
 				types.end(),
