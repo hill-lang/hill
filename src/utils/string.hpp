@@ -46,21 +46,6 @@ namespace hill::utils {
 		ltrim(s);
 		rtrim(s);
 	}
-
-	// TODO: Replace with std::to_string(x);
-	inline std::string utostr(size_t u)
-	{
-		std::ostringstream ss;
-		ss << u;
-		return ss.str();
-	}
-
-	inline std::string f64tostr(double f)
-	{
-		std::ostringstream ss;
-		ss << std::fixed << f;
-		return ss.str();
-	}
 }
 
 #endif /* HILL__UTILS__STRING_HPP_INCLUDED */

@@ -105,7 +105,7 @@ namespace hill::utils {
 			section_stack.pop_back();
 		}
 
-		void set_attribute(std::string key, std::string value)
+		void set_attribute(const std::string &key, const std::string &value)
 		{
 			if (section_stack.size()==0) {
 				return;

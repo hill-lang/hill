@@ -207,11 +207,11 @@ namespace hill::utils {
 
 			xml->set_attribute("name", test_case->name);
 			xml->set_attribute("classname", test_case->classname);
-			f64tostr(test_case->time);
-			auto timestr = f64tostr(test_case->time);
+
+			auto timestr = std::to_string(test_case->time);
 			xml->set_attribute("time", timestr);
 
-			auto assertioncntstr = utostr(test_case->assertion_count);
+			auto assertioncntstr = std::to_string(test_case->assertion_count);
 			xml->set_attribute("assertions", assertioncntstr);
 
 			if (test_case->failure.type != junit_test_failure_type::NONE) {
@@ -235,20 +235,20 @@ namespace hill::utils {
 
 			xml->set_attribute("name", suite->name);
 
-			auto testcntstr = utostr(suite->test_count());
+			auto testcntstr = std::to_string(suite->test_count());
 			xml->set_attribute("tests", testcntstr);
 
-			auto assertioncntstr = utostr(suite->assertion_count());
+			auto assertioncntstr = std::to_string(suite->assertion_count());
 			xml->set_attribute("assertions", assertioncntstr);
 
-			auto failedcntstr = utostr(suite->failed_count());
+			auto failedcntstr = std::to_string(suite->failed_count());
 			xml->set_attribute("failures", failedcntstr);
 
 			// TODO: Do we are for supporting this?
 			xml->set_attribute("errors", "0");
 			xml->set_attribute("skipped", "0");
 
-			auto timestr = f64tostr(suite->time());
+			auto timestr = std::to_string(suite->time());
 			xml->set_attribute("time", timestr);
 
 			xml->set_attribute("timestamp", std::format("{:%FT%TZ}", suite->timestamp));
@@ -272,20 +272,20 @@ namespace hill::utils {
 
 			xml->set_attribute("name", session.name);
 
-			auto testcntstr = utostr(session.test_count());
+			auto testcntstr = std::to_string(session.test_count());
 			xml->set_attribute("tests", testcntstr);
 
-			auto assertioncntstr = utostr(session.assertion_count());
+			auto assertioncntstr = std::to_string(session.assertion_count());
 			xml->set_attribute("assertions", assertioncntstr);
 
-			auto failedcntstr = utostr(session.failed_count());
+			auto failedcntstr = std::to_string(session.failed_count());
 			xml->set_attribute("failures", failedcntstr);
 
 			// TODO: Do we are for supporting this?
 			xml->set_attribute("errors", "0");
 			xml->set_attribute("skipped", "0");
 
-			auto timestr = f64tostr(session.time());
+			auto timestr = std::to_string(session.time());
 			xml->set_attribute("time", timestr);
 
 			xml->set_attribute("timestamp", std::format("{:%FT%TZ}", session.timestamp));
