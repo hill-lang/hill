@@ -11,6 +11,14 @@
 
 namespace hill::utils {
 
+	class xml_writer_exception : std::exception {
+		const char *what() const noexcept override { return "XML writer exception"; }
+	};
+
+	class xml_writer_internal_exception : std::exception {
+		const char *what() const noexcept override { return "XML writer internal exception"; }
+	};
+
 	enum class xml_version {
 		V1_0,
 	};
@@ -23,7 +31,7 @@ namespace hill::utils {
 	{
 		switch (v) {
 		case xml_version::V1_0: return "1.0";
-		default: return "UNKNOWN";
+		default: throw xml_writer_internal_exception();
 		}
 	}
 
@@ -31,28 +39,26 @@ namespace hill::utils {
 	{
 		switch (v) {
 		case xml_encoding::UTF_8: return "UTF-8";
-		default: return "UNKNOWN";
+		default: throw xml_writer_internal_exception();
 		}
 	}
 
 	struct xml_writer {
-		explicit xml_writer(const std::filesystem::path &fpath)
+		xml_writer(const std::filesystem::path &fpath)
 			: version(xml_version::V1_0), encoding(xml_encoding::UTF_8)
 		{
-			std::cout << "Trying to open: " << fpath << std::endl;
-
 			auto ofs = std::make_shared<std::ofstream>();
 			ofs->open(fpath);
 			if (!ofs || !ofs->is_open()) {
-				// TODO: Maybe throw?
+				throw xml_writer_exception();
 			}
 
-			this->os = ofs;
+			os = ofs;
 
 			write_header();
 		}
 
-		explicit xml_writer(const std::shared_ptr<std::ostream> &os)
+		xml_writer(const std::shared_ptr<std::ostream> &os)
 			: os(os), version(xml_version::V1_0), encoding(xml_encoding::UTF_8)
 		{
 			write_header();
@@ -69,8 +75,10 @@ namespace hill::utils {
 
 		void close()
 		{
-			flush();
-			os = nullptr;
+			if (os) {
+				flush();
+				os = nullptr;
+			}
 		}
 
 		void push_section(const std::string &sname)
@@ -208,12 +216,12 @@ namespace hill::utils {
 				flush_section(s);
 				section_stack.pop_back();
 			}
-			this->os->flush();
+			os->flush();
 		}
 
 		void write_header()
 		{
-			*this->os << "<?xml"
+			*os << "<?xml"
 				<< " version=\"" << xml_version_str(this->version) << '"'
 				<< " encoding=\"" << xml_encoding_str(this->encoding) << '"'
 				<< "?>\n";
@@ -221,17 +229,17 @@ namespace hill::utils {
 
 		void write_section_start(const xml_section &s)
 		{
-			s.write_start(*this->os, this->section_stack.size()-1);
+			s.write_start(*os, this->section_stack.size()-1);
 		}
 
 		void write_section_text(const xml_section &s)
 		{
-			s.write_text(*this->os, this->section_stack.size());
+			s.write_text(*os, this->section_stack.size());
 		}
 
 		void write_section_end(const xml_section &s)
 		{
-			s.write_end(*this->os, this->section_stack.size()-1);
+			s.write_end(*os, this->section_stack.size()-1);
 		}
 	};
 }
