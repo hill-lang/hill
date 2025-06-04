@@ -3,18 +3,16 @@
 
 // https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/
 
+#include "logger.hpp"
+#include "listener.hpp"
+#include "router.hpp"
+#include "response_builder.hpp"
 #include "../exceptions.hpp"
 #include "../utils/json_writer.hpp"
 
-#include <iostream>
 #include <string>
-#include <string_view>
 #include <stddef.h>
 #include <stdint.h>
-#include <unordered_map>
-
-#include <filesystem>
-#include <fstream>
 
 #ifdef _WIN32
 #include <fcntl.h>
@@ -22,166 +20,51 @@
 #endif
 
 namespace hill::lsp {
-	enum {MAX_HTTP_HEADER_LENGTH=512};
-
-	enum class srv_state {
-		ERROR,
-		RECV_HEADERS,
-		PARSE_HEADERS,
-		RECV_CONTENT,
-		PARSE_CONTENT,
-		HANDLE_REQUEST,
-	};
-
-	struct req_packet {
-		req_packet(std::string method): method(method) {}
-		std::string method;
-	};
 
 	struct server {
-		server() = default;
-
-		// DEBUG: For logging
-		std::ofstream logs;
-
-		std::shared_ptr<req_packet> get_req()
-		{
-			while (!recv_headers()) {}
-
-			parse_headers();
-
-			while (!recv_content()) {}
-
-			parse_content();
-
-			return std::make_shared<req_packet>("");
-		}
-
-		void run()
+		server() : running(true)
 		{
 #ifdef _WIN32
 			(void)_setmode(_fileno(stdin), _O_BINARY);
 			(void)_setmode(_fileno(stdout), _O_BINARY);
 #endif
+		}
 
-			std::filesystem::create_directories("/tmp/");
-			logs.open("/tmp/lsp.log", std::ios::binary);
+		bool running;
+		logger log;
+		listener listener;
+		router router;
+		response_builder res_builder;
 
+		void run()
+		{
 			running = true;
-			content_buf.reserve(16'384u);
-			reset();
+			log.open("/tmp/lsp.log");
 
 			while (running) {
-				get_req();
+				auto req = listener.get_req();
+				if (!req) continue;
 
-				switch (state) {
-				case srv_state::ERROR: reset(); break;
-				case srv_state::RECV_HEADERS: if (recv_headers()) {state=srv_state::PARSE_HEADERS;} break;
-				case srv_state::PARSE_HEADERS: if (parse_headers()) {state=srv_state::RECV_CONTENT;} break;
-				case srv_state::RECV_CONTENT: if (recv_content()) {state=srv_state::PARSE_CONTENT;} break;
-				case srv_state::PARSE_CONTENT: if (parse_content()) {state=srv_state::HANDLE_REQUEST;} break;
-				case srv_state::HANDLE_REQUEST: handle_request(); reset(); break;
-				default: throw internal_exception();
-				}
+				auto func = router.get(req->metod);
+				if (!func) continue;
+
+				//auto result = func(req->content);
+				auto result = func();
+				if (!result) continue;
+
+				// We only have to reply to messages with an id
+				if (req->has_id) continue;
+
+				//auto response = res_builder.build(req->id, result);
+				auto response = handle_request();
+
+				fwrite(response.c_str(), 1, response.size(), stdout);
+				fflush(stdout);
 			}
 		}
 
 	private:
-		bool running;
-
-		srv_state state;
-
-		size_t content_len;
-		char b[MAX_HTTP_HEADER_LENGTH];
-		std::string content_buf;
-
-		std::unordered_map<std::string, std::string> headers;
-
-	private:
-		void reset()
-		{
-			state = srv_state::RECV_HEADERS;
-			content_buf.clear();
-			content_len = 0u;
-			headers.clear();
-		}
-
-		
-		bool recv_headers()
-		{
-			char *p;
-
-			fgets(b, MAX_HTTP_HEADER_LENGTH, stdin);
-
-			if ((p=strchr(b, '\r'))) {
-				*p = '\0';
-			}
-
-			if ((p=strchr(b, ':'))) {
-				*p++ = '\0';
-				while (isspace(*p)) ++p;
-				headers[b] = p;
-
-				return false;
-			} else {
-				if (*b) {
-					throw internal_exception();
-				}
-				return true;
-			}
-		}
-
-		bool parse_headers()
-		{
-			if (!headers.contains("Content-Length")) {
-				state = srv_state::ERROR;
-				return false;
-			}
-
-			char *endp = nullptr;
-			content_len = std::strtoull(headers.at("Content-Length").c_str(), &endp, 10);
-
-			return true;
-		}
-
-		bool recv_content()
-		{
-			content_buf.push_back(getchar());
-			return content_buf.size() >= content_len;
-		}
-
-		bool parse_content()
-		{
-			logs << content_buf << '\n';
-			logs.flush();
-
-			return true;
-		}
-
-		std::string build_response(size_t id, const std::string &result)
-		{
-			auto oss = std::make_shared<std::ostringstream>();
-			utils::json_writer json(oss);
-			json.obj_i32("id", (int32_t)id);
-			json.obj_raw("result", result);
-			json.close();
-			auto json_str = oss->str();
-
-			std::string header = "Content-Length: " + std::to_string(json_str.size()) + "\r\n\r\n";
-
-			// Logging
-			//os.write(header.c_str(), header.size());
-			logs.write(json_str.c_str(), json_str.size());
-			logs << "\n";
-			logs.flush();
-
-			std::stringstream ss;
-			ss.write(header.c_str(), header.size());
-			ss.write(json_str.c_str(), json_str.size());
-			return ss.str();
-		}
-
-		void handle_request()
+		std::string handle_request()
 		{
 			auto oss = std::make_shared<std::ostringstream>();
 			utils::json_writer json(oss);
@@ -195,10 +78,7 @@ namespace hill::lsp {
 			json.close();
 			auto result = oss->str();
 
-			auto res = build_response(0, result);
-
-			std::cout.write(res.c_str(), res.size());
-			std::cout.flush();
+			return res_builder.build(0, result);
 		}
 	};
 }
