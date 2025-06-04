@@ -22,6 +22,7 @@
 #endif
 
 namespace hill::lsp {
+	enum {MAX_HTTP_HEADER_LENGTH=512};
 
 	enum class srv_state {
 		ERROR,
@@ -32,28 +33,47 @@ namespace hill::lsp {
 		HANDLE_REQUEST,
 	};
 
+	struct req_packet {
+		req_packet(std::string method): method(method) {}
+		std::string method;
+	};
+
 	struct server {
 		server() = default;
 
 		// DEBUG: For logging
-		std::ofstream os;
+		std::ofstream logs;
+
+		std::shared_ptr<req_packet> get_req()
+		{
+			while (!recv_headers()) {}
+
+			parse_headers();
+
+			while (!recv_content()) {}
+
+			parse_content();
+
+			return std::make_shared<req_packet>("");
+		}
 
 		void run()
 		{
 #ifdef _WIN32
-			(void)_setmode(_fileno(stdout), _O_BINARY);
 			(void)_setmode(_fileno(stdin), _O_BINARY);
+			(void)_setmode(_fileno(stdout), _O_BINARY);
 #endif
 
 			std::filesystem::create_directories("/tmp/");
-			os.open("/tmp/lsp.log", std::ios::binary);
+			logs.open("/tmp/lsp.log", std::ios::binary);
 
 			running = true;
-			header_buf.reserve(256u);
 			content_buf.reserve(16'384u);
 			reset();
 
 			while (running) {
+				get_req();
+
 				switch (state) {
 				case srv_state::ERROR: reset(); break;
 				case srv_state::RECV_HEADERS: if (recv_headers()) {state=srv_state::PARSE_HEADERS;} break;
@@ -72,7 +92,7 @@ namespace hill::lsp {
 		srv_state state;
 
 		size_t content_len;
-		std::string header_buf;
+		char b[MAX_HTTP_HEADER_LENGTH];
 		std::string content_buf;
 
 		std::unordered_map<std::string, std::string> headers;
@@ -81,33 +101,34 @@ namespace hill::lsp {
 		void reset()
 		{
 			state = srv_state::RECV_HEADERS;
-			header_buf.clear();
 			content_buf.clear();
 			content_len = 0u;
 			headers.clear();
 		}
 
+		
 		bool recv_headers()
 		{
-			char c = std::cin.get();
-			if (c == '\r') return false;
-			header_buf.push_back(c);
+			char *p;
 
-			// Keep reading headers untill the next new line
-			if (header_buf.back() != '\n') {
-				return false;
+			fgets(b, MAX_HTTP_HEADER_LENGTH, stdin);
+
+			if ((p=strchr(b, '\r'))) {
+				*p = '\0';
 			}
 
-			if (header_buf.length() > 1 || header_buf.back() != '\n') {
-				size_t split_ix = header_buf.find_first_of(':');
-				headers[header_buf.substr(0, split_ix)] = header_buf.substr(split_ix+2, header_buf.length()-split_ix-3);
-				header_buf.clear();
-				return false;
-			}
+			if ((p=strchr(b, ':'))) {
+				*p++ = '\0';
+				while (isspace(*p)) ++p;
+				headers[b] = p;
 
-			// Two new lines in a row means that we are done reading headers
-			state = srv_state::PARSE_HEADERS;
-			return true;
+				return false;
+			} else {
+				if (*b) {
+					throw internal_exception();
+				}
+				return true;
+			}
 		}
 
 		bool parse_headers()
@@ -125,14 +146,14 @@ namespace hill::lsp {
 
 		bool recv_content()
 		{
-			content_buf.push_back(std::cin.get());
-			return content_buf.length() >= content_len;
+			content_buf.push_back(getchar());
+			return content_buf.size() >= content_len;
 		}
 
 		bool parse_content()
 		{
-			os << content_buf << '\n';
-			os.flush();
+			logs << content_buf << '\n';
+			logs.flush();
 
 			return true;
 		}
@@ -150,9 +171,9 @@ namespace hill::lsp {
 
 			// Logging
 			//os.write(header.c_str(), header.size());
-			os.write(json_str.c_str(), json_str.size());
-			os << "\n";
-			os.flush();
+			logs.write(json_str.c_str(), json_str.size());
+			logs << "\n";
+			logs.flush();
 
 			std::stringstream ss;
 			ss.write(header.c_str(), header.size());
