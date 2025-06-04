@@ -112,7 +112,7 @@ namespace hill::utils {
 			}
 
 			auto &s = section_stack.back();
-			s.attribs[key] = value;
+			s.attribs[key] = escape_string(value.c_str());
 		}
 
 		void set_self_closing(bool self_closing)
