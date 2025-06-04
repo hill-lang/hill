@@ -3,10 +3,10 @@
 
 // www.json.org
 
+#include <algorithm>
 #include <istream>
 #include <string>
 #include <sstream>
-#include <unordered_map>
 #include <vector>
 #include <memory>
 
@@ -50,11 +50,34 @@ namespace hill::utils {
 
 		json_value_kind kind;
 
-		std::unordered_map<std::string, std::shared_ptr<json_value>> object;
+		std::vector<std::pair<std::string, std::shared_ptr<json_value>>> object_entires;
 		std::vector<std::shared_ptr<json_value>> array;
 		std::string string;
 		double number = 0.0;
 		bool boolean = false;
+
+		std::shared_ptr<json_value> object(const std::string &key)
+		{
+			auto it = std::find_if(object_entires.begin(), object_entires.end(),
+				[&key](std::pair<std::string, std::shared_ptr<json_value>> pair) {
+					return pair.first == key;
+				});
+
+			if (it != object_entires.end()) {
+				auto ix = std::distance(object_entires.begin(), it);
+				return object_entires[ix].second;
+			} else {
+				return nullptr;
+			}
+		}
+
+		bool object_contains(const std::string &key) const
+		{
+			return std::find_if(object_entires.begin(), object_entires.end(),
+				[&key](std::pair<std::string, std::shared_ptr<json_value>> pair) {
+					return pair.first == key;
+			}) != object_entires.end();
+		}
 
 		std::string to_str()
 		{
@@ -65,7 +88,7 @@ namespace hill::utils {
 			{
 				ss << '{';
 				size_t ix=0;
-				for (auto &[key, value] : object) {
+				for (auto &[key, value] : object_entires) {
 					if (ix++>0) ss << ',';
 					ss << '"' << key << "\":" << value->to_str();
 				}
@@ -111,8 +134,8 @@ namespace hill::utils {
 			switch (kind) {
 			case json_value_kind::OBJECT:
 			{
-				if (object.size()) {
-					for (auto &[key, value] : object) {
+				if (object_entires.size()) {
+					for (auto &[key, value] : object_entires) {
 						ss << ',' << value->kind_str();
 					}
 					ss << ",END";
@@ -193,9 +216,9 @@ namespace hill::utils {
 				skip_ws(istr);
 
 				if (istr.get()!=':') throw json_parser_exception();
-				if (ret->object.contains(member_name->string)) throw json_parser_exception();
+				if (ret->object_contains(member_name->string)) throw json_parser_exception();
 
-				ret->object[member_name->string] = parse_value(istr);
+				ret->object_entires.emplace_back(member_name->string, parse_value(istr));
 
 				skip_ws(istr);
 				if (istr.peek()==',') (void)istr.get();
