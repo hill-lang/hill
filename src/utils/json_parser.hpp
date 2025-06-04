@@ -12,11 +12,11 @@
 
 namespace hill::utils {
 
-	class json_parser_exception : std::exception {
+	class json_parser_exception : public std::exception {
 		const char *what() const noexcept override { return "JSON parser exception"; }
 	};
 
-	class json_parser_internal_exception : std::exception {
+	class json_parser_internal_exception : public std::exception {
 		const char *what() const noexcept override { return "JSON parser internal exception"; }
 	};
 

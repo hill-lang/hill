@@ -11,11 +11,11 @@
 
 namespace hill::utils {
 
-	class xml_writer_exception : std::exception {
+	class xml_writer_exception : public std::exception {
 		const char *what() const noexcept override { return "XML writer exception"; }
 	};
 
-	class xml_writer_internal_exception : std::exception {
+	class xml_writer_internal_exception : public std::exception {
 		const char *what() const noexcept override { return "XML writer internal exception"; }
 	};
 
