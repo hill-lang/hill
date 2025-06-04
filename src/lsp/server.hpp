@@ -41,8 +41,8 @@ namespace hill::lsp {
 		void run()
 		{
 #ifdef _WIN32
-			_setmode(_fileno(stdout), _O_BINARY);
-			_setmode(_fileno(stdin), _O_BINARY);
+			(void)_setmode(_fileno(stdout), _O_BINARY);
+			(void)_setmode(_fileno(stdin), _O_BINARY);
 #endif
 
 			std::filesystem::create_directories("/tmp/");
