@@ -42,11 +42,11 @@ namespace hill::test {
 	{
 		std::stringstream ss;
 
-		auto name = utils::escape_string(test_name[0] == ':' ? (test_name + 1) : test_name);
+		auto name = test_name[0] == ':' ? (test_name + 1) : test_name;
 		auto test_case = suite->add_case(name);
 		test_case->time = duration;
 
-		ss << name;
+		ss << utils::escape_string(name);
 		if (!strcmp(expected, actual)) {
 			ss << utils::color(" PASSED", utils::ccolor::GREEN) << '\n';
 		} else {

@@ -15,7 +15,25 @@ namespace hill::utils {
 		std::stringstream ss;
 		while (*s) {
 			switch (*s) {
+			case '"': ss << "\\\""; break;
 			case '\n': ss << "\\n"; break;
+			default: ss << *s;
+			}
+			++s;
+		}
+		return ss.str();
+	}
+
+	inline std::string xml_escape_string(const char *s)
+	{
+		std::stringstream ss;
+		while (*s) {
+			switch (*s) {
+			case '"': ss << "&quot;"; break;
+			case '\'': ss << "&apos;"; break;
+			case '<': ss << "&lt;"; break;
+			case '>': ss << "&gt;"; break;
+			case '&': ss << "&amp"; break;
 			default: ss << *s;
 			}
 			++s;
