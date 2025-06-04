@@ -32,8 +32,8 @@ namespace hill::lsp {
 
 		bool running;
 		logger log;
-		listener listener;
-		router router;
+		lsp::listener listener;
+		lsp::router router;
 		response_builder res_builder;
 
 		void run()
