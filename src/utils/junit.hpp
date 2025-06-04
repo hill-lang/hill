@@ -129,13 +129,13 @@ namespace hill::utils {
 	};
 
 	struct junit_session {
-		explicit junit_session(const std::string &name, const std::filesystem::path &fpath)
+		junit_session(const std::string &name, const std::filesystem::path &fpath)
 			: name(name)
 		{
 			xml = std::make_shared<xml_writer>(fpath);
 			timestamp = std::chrono::system_clock::now();
 		}
-		explicit junit_session(const std::string &name, const std::shared_ptr<std::ostream> &os)
+		junit_session(const std::string &name, const std::shared_ptr<std::ostream> &os)
 			: name(name)
 		{
 			xml = std::make_shared<xml_writer>(os);
