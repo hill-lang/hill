@@ -184,7 +184,7 @@ namespace hill::utils {
 		{
 			try {
 				return parse_value(istr);
-			} catch (json_parser_exception) {
+			} catch (const json_parser_exception) {
 				return nullptr;
 			}
 		}
