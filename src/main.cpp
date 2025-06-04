@@ -7,11 +7,14 @@
 #include "lsp/server.hpp"
 
 #include "utils/junit.hpp"
+
 #include "test/lexer.hpp"
 #include "test/parser.hpp"
 #include "test/analyzer.hpp"
 #include "test/evaluator.hpp"
+
 #include "test/json_writer.hpp"
+#include "test/json_parser.hpp"
 
 #include <stdlib.h>
 #include <string.h>
@@ -47,25 +50,20 @@ int main(int argc, char *argv[])
 			// TODO: Maybe allow setting output file
 			auto test_session = hill::utils::junit_session("Hill unit tests", "test-results.xml");
 			if (argc>2) {
-				if (!strcmp(argv[2], "lexer")) {
-					ok = hill::test::lexer(test_session);
-				} else if (!strcmp(argv[2], "parser")) {
-					ok = hill::test::parser(test_session);
-				} else if (!strcmp(argv[2], "analyzer")) {
-					// ok = hill::test::analyzer(test_session);
-				} else if (!strcmp(argv[2], "evaluator")) {
-					ok = hill::test::evaluator(test_session);
-				} else if (!strcmp(argv[2], "json_writer")) {
-					ok = hill::test::json_writer(test_session);
-				} else {
-					return usage(argv[0]);
-				}
+				if (!strcmp(argv[2], "lexer")) {ok = hill::test::lexer(test_session);}
+				else if (!strcmp(argv[2], "parser")) {ok = hill::test::parser(test_session);}
+				//else if (!strcmp(argv[2], "analyzer")) {/*ok = hill::test::analyzer(test_session); */ }
+				else if (!strcmp(argv[2], "evaluator")) {ok = hill::test::evaluator(test_session);}
+				else if (!strcmp(argv[2], "json_writer")) {ok = hill::test::json_writer(test_session);}
+				else if (!strcmp(argv[2], "json_parser")) {ok = hill::test::json_parser(test_session);}
+				else {return usage(argv[0]);}
 			} else {
 				if (!hill::test::lexer(test_session)) ok =false;
 				if (!hill::test::parser(test_session)) ok = false;
 				//if (!hill::test::analyzer(test_session)) ok = false;
 				if (!hill::test::evaluator(test_session)) ok = false;
 				if (!hill::test::json_writer(test_session)) ok = false;
+				if (!hill::test::json_parser(test_session)) ok = false;
 			}
 		}
 	} else {
@@ -75,6 +73,7 @@ int main(int argc, char *argv[])
 		//if (!hill::test::analyzer(test_session)) ok = false;
 		if (!hill::test::evaluator(test_session)) ok = false;
 		if (!hill::test::json_writer(test_session)) ok = false;
+		if (!hill::test::json_parser(test_session)) ok = false;
 	}
 
 	return ok ? EXIT_SUCCESS : EXIT_FAILURE;

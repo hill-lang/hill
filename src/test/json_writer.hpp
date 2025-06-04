@@ -24,7 +24,7 @@ namespace hill::test {
 
 			auto actual = oss->str();
 			bool ok = true;
-			std::cout << " Test " << test(
+			std::cout  << ' '<< test(
 				suite,
 				timer.elapsed_sec(),
 				"Name",
@@ -51,10 +51,10 @@ namespace hill::test {
 
 			auto actual = oss->str();
 			bool ok = true;
-			std::cout << " Test " << test(
+			std::cout << ' ' << test(
 				suite,
 				timer.elapsed_sec(),
-				"base types works",
+				"Base types works",
 				"{\"bool1\":true,\"bool2\":false,\"f32\":42.65,\"i32\":123456,\"str\":\"hello world\"}",
 				actual.c_str(),
 				&ok);
@@ -76,10 +76,10 @@ namespace hill::test {
 
 			auto actual = oss->str();
 			bool ok = true;
-			std::cout << " Test " << test(
+			std::cout << ' ' << test(
 				suite,
 				timer.elapsed_sec(),
-				"nested ojects works",
+				"Nested ojects works",
 				"{\"obj1\":{\"obj2\":{},\"obj3\":{}}}",
 				actual.c_str(),
 				&ok);
@@ -102,10 +102,10 @@ namespace hill::test {
 
 			auto actual = oss->str();
 			bool ok = true;
-			std::cout << " Test " << test(
+			std::cout << ' ' << test(
 				suite,
 				timer.elapsed_sec(),
-				"array works",
+				"Array works",
 				"{\"arr1\":[true,32,42.34,\"hello world\"]}",
 				actual.c_str(),
 				&ok);
@@ -131,10 +131,10 @@ namespace hill::test {
 
 			auto actual = oss->str();
 			bool ok = true;
-			std::cout << " Test " << test(
+			std::cout << ' ' << test(
 				suite,
 				timer.elapsed_sec(),
-				"nested arrays works",
+				"Nested arrays works",
 				"[[true,32],42.34,[\"hello world\"]]",
 				actual.c_str(),
 				&ok);
