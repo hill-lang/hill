@@ -44,7 +44,7 @@ namespace hill::utils {
 
 	struct json_value {
 		json_value(json_value_kind kind): kind(kind) {}
-		json_value(json_value_kind kind, const std::string &string) : kind(kind), string(string) {}
+		json_value(json_value_kind kind, const std::string &string): kind(kind), string(string) {}
 		json_value(json_value_kind kind, double number): kind(kind), number(number) {}
 		json_value(json_value_kind kind, bool boolean): kind(kind), boolean(boolean) {}
 
