@@ -3,7 +3,6 @@
 
 #include "../exceptions.hpp"
 #include "../utils/json.hpp"
-#include "../utils/json_writer.hpp"
 
 #include <optional>
 #include <memory>
@@ -161,20 +160,18 @@ namespace hill::lsp::models {
 		 */
 		std::optional<std::shared_ptr<::hill::utils::json_value>> data;
 
-		std::string str()
+		std::shared_ptr<utils::json_value> json()
 		{
-			auto oss = std::make_shared<std::ostringstream>();
-			utils::json_writer json(oss);
-			json.obj_i32("code", (int)code);
-			json.obj_str("message", message);
+			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+
+			json->obj_add_num("code", (double)code);
+			json->obj_add_str("message", message);
 
 			if (data.has_value()) {
-				json.obj_raw("data", data.value()->to_str());
+				json->obj_add_obj("data", data.value());
 			}
 
-			json.close();
-
-			return oss->str();
+			return json;
 		}
 	};
 
@@ -196,23 +193,21 @@ namespace hill::lsp::models {
 		 */
 		std::optional<response_error> error;
 
-		std::string str()
+		std::shared_ptr<utils::json_value> json()
 		{
-			auto oss = std::make_shared<std::ostringstream>();
-			utils::json_writer json(oss);
-			json.obj_i32("id", id);
+			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+
+			json->obj_add_num("id", (double)id);
 
 			if (result.has_value()) {
-				json.obj_raw("result", result.value()->to_str());
+				json->obj_add_obj("result", result.value());
 			}
 
 			if (error.has_value()) {
-				json.obj_raw("error", error.value().str());
+				json->obj_add_obj("error", error.value().json());
 			}
 
-			json.close();
-
-			return oss->str();
+			return json;
 		}
 	};
 

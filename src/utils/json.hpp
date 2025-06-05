@@ -71,6 +71,18 @@ namespace hill::utils {
 		}
 
 		/// <summary>
+		/// Add existing object to object
+		/// </summary>
+		std::optional<std::shared_ptr<json_value>> obj_add_obj(const std::string &key, const std::shared_ptr<json_value> &obj)
+		{
+			if (kind!=json_value_kind::OBJECT) return std::nullopt;
+			if (object_contains(key)) return std::nullopt;
+
+			object_entries.emplace_back(key, obj);
+			return obj;
+		}
+
+		/// <summary>
 		/// Add array to object
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> obj_add_arr(const std::string &key)
@@ -130,6 +142,16 @@ namespace hill::utils {
 			if (kind!=json_value_kind::ARRAY) return std::nullopt;
 
 			auto obj = create(json_value_kind::OBJECT);
+			array.push_back(obj);
+		}
+
+		/// <summary>
+		/// Add existing object to array
+		/// </summary>
+		std::optional<std::shared_ptr<json_value>> arr_add_obj(const std::shared_ptr<json_value> &obj)
+		{
+			if (kind!=json_value_kind::ARRAY) return std::nullopt;
+
 			array.push_back(obj);
 		}
 

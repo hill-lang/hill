@@ -105,7 +105,7 @@ namespace hill::lsp {
 					+ "> message<" + resp_msg.error.value().message + '>');
 			}
 
-			auto resp_msg_str = resp_msg.str();
+			auto resp_msg_str = resp_msg.json()->to_str();
 
 			std::string resp_header = "Content-Length: "
 				+ std::to_string(resp_msg_str.size())
