@@ -13,26 +13,8 @@
 
 namespace hill::utils {
 
-	class json_parser_exception : public std::exception {
-	public:
-		json_parser_exception(): message("JSON parser exception") {}
-		json_parser_exception(const std::string &msg): message(msg) {}
-
-		const char *what() const noexcept override {return message.c_str();}
-
-	private:
-		std::string message;
-	};
-
 	class json_parser_internal_exception : public std::exception {
-	public:
-		json_parser_internal_exception() : message("JSON parser exception") {}
-		json_parser_internal_exception(const std::string &msg) : message(msg) {}
-
-		const char *what() const noexcept override {return message.c_str();}
-
-	private:
-		std::string message;
+		const char *what() const noexcept override {return "JSON parser exception";}
 	};
 
 	enum class json_value_kind {
@@ -196,20 +178,21 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> parse(std::istream &istr)
 		{
-			try {
-				auto value = parse_value(istr);
-				skip_ws(istr);
-				if (istr.eof()) return value;
-				else return std::nullopt;
-			} catch (const json_parser_exception) {
-				return std::nullopt;
-			}
+			auto value = parse_value(istr);
+			if (!value.has_value()) return std::nullopt;
+
+			skip_ws(istr);
+			if (!istr.eof()) return std::nullopt;
+
+			return value;
 		}
 
 	private:
 		void skip_ws(std::istream &istr)
 		{
 			while (true) {
+				if (istr.eof()) return;
+
 				auto ch = istr.peek();
 				if (is_json_ws(ch)) {
 					(void)istr.get();
@@ -219,52 +202,10 @@ namespace hill::utils {
 			}
 		}
 
-		std::shared_ptr<json_value> parse_object(std::istream &istr)
-		{
-			auto ret = std::make_shared<json_value>(json_value_kind::OBJECT);
-
-			skip_ws(istr);
-
-			int ch;
-			while ((ch=istr.get()) != '}') {
-				if (ch!='"') throw json_parser_exception();
-
-				auto member_name = parse_string(istr);
-				skip_ws(istr);
-
-				if (istr.get()!=':') throw json_parser_exception();
-				if (ret->object_contains(member_name->string)) throw json_parser_exception();
-
-				ret->object_entries.emplace_back(member_name->string, parse_value(istr));
-
-				skip_ws(istr);
-				if (istr.peek()==',') (void)istr.get();
-				skip_ws(istr);
-			}
-
-			return ret;
-		}
-
-		std::shared_ptr<json_value> parse_array(std::istream &istr)
-		{
-			auto arr = std::make_shared<json_value>(json_value_kind::ARRAY);
-
-			skip_ws(istr);
-
-			while (istr.peek()!=']') {
-				arr->array.push_back(parse_value(istr));
-				skip_ws(istr);
-				if (istr.peek()==',') (void)istr.get();
-				skip_ws(istr);
-			}
-			(void)istr.get();
-
-			return arr;
-		}
-
-		std::shared_ptr<json_value> parse_value(std::istream &istr)
+		std::optional<std::shared_ptr<json_value>> parse_value(std::istream &istr)
 		{
 			skip_ws(istr);
+			if (istr.eof()) return std::nullopt;
 
 			switch (istr.peek()) {
 			case '"': (void)istr.get(); return parse_string(istr);
@@ -277,20 +218,81 @@ namespace hill::utils {
 			}
 		}
 
-		std::shared_ptr<json_value> parse_string(std::istream &istr)
+		std::optional<std::shared_ptr<json_value>> parse_object(std::istream &istr)
+		{
+			auto ret = std::make_shared<json_value>(json_value_kind::OBJECT);
+
+			while (true) {
+				skip_ws(istr);
+				if (istr.eof()) return std::nullopt;
+
+				auto ch = istr.get();
+				if (ch=='}') break;
+				if (ch!='"') return std::nullopt; // There has to be a '"' to start the first key
+
+				auto key = parse_string(istr);
+				if (!key.has_value()) return std::nullopt;
+
+				skip_ws(istr);
+				if (istr.eof()) return std::nullopt;
+
+				if (istr.get()!=':') return std::nullopt; // Member without value?
+				if (ret->object_contains(key.value()->string)) return std::nullopt; // Duplicate key
+
+				auto value = parse_value(istr);
+				if (!value.has_value()) return std::nullopt;
+
+				ret->object_entries.emplace_back(key.value()->string, value.value());
+
+				skip_ws(istr);
+				if (istr.eof()) return std::nullopt;
+				if (istr.peek()==',') (void)istr.get();
+			}
+
+			return ret;
+		}
+
+		std::optional<std::shared_ptr<json_value>> parse_array(std::istream &istr)
+		{
+			auto arr = std::make_shared<json_value>(json_value_kind::ARRAY);
+
+			while (true) {
+				skip_ws(istr);
+				if (istr.eof()) return std::nullopt;
+
+				// End of array
+				if (istr.peek()==']') {
+					(void)istr.get();
+					break;
+				}
+
+				auto value = parse_value(istr);
+				if (!value.has_value()) return std::nullopt;
+
+				arr->array.push_back(value.value());
+
+				skip_ws(istr);
+				if (istr.eof()) return std::nullopt;
+				if (istr.peek()==',') (void)istr.get();
+			}
+
+			return arr;
+		}
+
+		std::optional<std::shared_ptr<json_value>> parse_string(std::istream &istr)
 		{
 			std::stringstream ss;
 
 			while (true) {
-				if (istr.eof()) throw json_parser_exception("Unexpected EOF in string");
+				if (istr.eof()) return std::nullopt;
 
 				auto ch = istr.get();
 				if (ch == '"') break;
 
 				if (ch == '\\') { // Handle escaped character
-					if (istr.eof()) throw json_parser_exception("Unexpected EOF in escape sequence");
-					ch = istr.get();
+					if (istr.eof()) return std::nullopt;
 
+					ch = istr.get();
 					switch (ch) {
 					case '"':
 					case '\\':
@@ -303,9 +305,9 @@ namespace hill::utils {
 					case 'b': ss.put('\b'); break;
 					case 'f': ss.put('\f'); break;
 					case 'u': // Handle \uHHHH (Unicode)
-						// Add Unicode parsing logic here
-						throw json_parser_exception("Unicode escape sequences not supported");
-					default: throw json_parser_exception("Invalid escape sequence");
+						return std::nullopt; // Unicode escape sequences not supported
+					default:
+						return std::nullopt; // Invalid escape sequence
 					}
 				} else {
 					ss.put(ch);
@@ -316,7 +318,7 @@ namespace hill::utils {
 			return std::make_shared<json_value>(json_value_kind::STRING, str);
 		}
 
-		std::shared_ptr<json_value> parse_number(std::istream &istr)
+		std::optional<std::shared_ptr<json_value>> parse_number(std::istream &istr)
 		{
 			std::stringstream ss;
 
@@ -328,7 +330,7 @@ namespace hill::utils {
 
 			auto str = ss.str();
 			if (!str.size()) {
-				throw json_parser_exception();
+				return std::nullopt; // Empty number
 			}
 
 			char *end = nullptr;
@@ -337,30 +339,37 @@ namespace hill::utils {
 			return std::make_shared<json_value>(json_value_kind::NUMBER, number);
 		}
 
-		std::shared_ptr<json_value> parse_true(std::istream &istr)
+		std::optional<std::shared_ptr<json_value>> parse_true(std::istream &istr)
 		{
-			if (istr.get()=='r' && istr.get()=='u' && istr.get()=='e') {
+			if (!istr.eof() && istr.get()=='r'
+					&& !istr.eof() && istr.get()=='u'
+					&& !istr.eof() && istr.get()=='e') {
 				return std::make_shared<json_value>(json_value_kind::BOOL, true);
 			} else {
-				throw json_parser_exception("Unexpected character parsing boolean true");
+				return std::nullopt;
 			}
 		}
 
-		std::shared_ptr<json_value> parse_false(std::istream &istr)
+		std::optional<std::shared_ptr<json_value>> parse_false(std::istream &istr)
 		{
-			if (istr.get()=='a' && istr.get()=='l' && istr.get()=='s' && istr.get()=='e') {
+			if (!istr.eof() && istr.get()=='a'
+					&& !istr.eof() && istr.get()=='l'
+					&& !istr.eof() && istr.get()=='s'
+					&& !istr.eof() && istr.get()=='e') {
 				return std::make_shared<json_value>(json_value_kind::BOOL, false);
 			} else {
-				throw json_parser_exception("Unexpected character parsing boolean false");
+				return std::nullopt;
 			}
 		}
 
-		std::shared_ptr<json_value> parse_null(std::istream &istr)
+		std::optional<std::shared_ptr<json_value>> parse_null(std::istream &istr)
 		{
-			if (istr.get()=='u' && istr.get()=='l' && istr.get()=='l') {
+			if (!istr.eof() && istr.get()=='u'
+					&& !istr.eof() && istr.get()=='l'
+					&& !istr.eof() && istr.get()=='l') {
 				return std::make_shared<json_value>(json_value_kind::JSON_NULL);
 			} else {
-				throw json_parser_exception("Unexpected character parsing null");
+				return std::nullopt;
 			}
 		}
 	};
