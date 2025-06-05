@@ -20,8 +20,6 @@ namespace hill::lsp {
 	struct listener {
 		static std::optional<std::shared_ptr<utils::json_value>> next()
 		{
-			auto &state = server_state::get();
-
 			auto headers = recv_headers();
 			if (!headers.has_value()) return std::nullopt;
 
@@ -76,7 +74,6 @@ namespace hill::lsp {
 				return std::nullopt;
 			}
 
-			char *endp = nullptr;
 			size_t content_len = std::stoull(headers.at("Content-Length").c_str());
 
 			std::string content;
