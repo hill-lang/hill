@@ -4,6 +4,9 @@
 #include "request.hpp"
 #include "../utils/json_parser.hpp"
 
+#include "methods/initialize.hpp"
+#include "methods/initialized.hpp"
+
 #include <unordered_map>
 #include <functional>
 #include <optional>
@@ -12,14 +15,6 @@
 #include "server_state.hpp"
 
 namespace hill::lsp {
-
-	std::optional<int> initialize(std::optional<std::shared_ptr<::hill::utils::json_value>> params)
-	{
-		auto &state = server_state::get();
-		state.initialized = true;
-		state.log.info("Initialized");
-		return 1;
-	}
 
 	struct router {
 		router() = default;
@@ -40,7 +35,8 @@ namespace hill::lsp {
 		static const std::unordered_map<method, endpoint_t> &get_map()
 		{
 			static const std::unordered_map<method, endpoint_t> map = {
-				{method::INITIALIZE, initialize}
+				{method::INITIALIZE, methods::initialize},
+				{method::INITIALIZED, methods::initialized},
 			};
 			return map;
 		}

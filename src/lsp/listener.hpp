@@ -59,7 +59,7 @@ namespace hill::lsp {
 				} else {
 					if (*b) {
 						auto &state = server_state::get();
-						state.log.error("Received line without ':' that is not empty");
+						state.log.error("Received line without ':' that is not empty [" + std::string(b) + "]");
 						return std::nullopt;
 					}
 

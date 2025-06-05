@@ -10,7 +10,7 @@
 
 namespace hill::lsp::request_handler {
 
-	static std::string foo(size_t id)
+	inline std::string foo(size_t id)
 	{
 		auto oss = std::make_shared<std::ostringstream>();
 		utils::json_writer json(oss);
@@ -27,7 +27,7 @@ namespace hill::lsp::request_handler {
 		return lsp::response_builder::build(id, result);
 	}
 
-	static void handle(std::shared_ptr<request> req)
+	inline void handle(std::shared_ptr<request> req)
 	{
 		auto &state = server_state::get();
 

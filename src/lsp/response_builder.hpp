@@ -11,7 +11,7 @@
 
 namespace hill::lsp::response_builder {
 
-	static std::string build(size_t id, const std::string &result)
+	inline std::string build(size_t id, const std::string &result)
 	{
 		auto oss = std::make_shared<std::ostringstream>();
 
