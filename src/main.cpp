@@ -24,6 +24,7 @@ static int usage(const char *cmd)
 	std::cerr << "Usage: " << cmd << " [command [argument]\n";
 	std::cerr << "Commands:\n";
 	std::cerr << " run <file-path> - Evaluate a file and print the result\n";
+	std::cerr << " lsp - Run language server\n";
 	std::cerr << " repl - Start a Read Evaluate Print Loop\n";
 	std::cerr << " test <subsystem> - Test the selected sub-system (evaluator)\n";
 	std::cerr << "If no command is supplied, all tests will be performed\n";

@@ -7,53 +7,48 @@
 #include "listener.hpp"
 #include "router.hpp"
 #include "response_builder.hpp"
-#include "../exceptions.hpp"
-#include "../utils/json_writer.hpp"
 
 #include <string>
 #include <stddef.h>
 #include <stdint.h>
 
-#ifdef _WIN32
-#include <fcntl.h>
-#include <io.h>
-#endif
+// TODO: Move to response builder?
+#include "../utils/json_writer.hpp"
 
 namespace hill::lsp {
 
 	struct server {
 		server() : running(true)
 		{
-#ifdef _WIN32
-			(void)_setmode(_fileno(stdin), _O_BINARY);
-			(void)_setmode(_fileno(stdout), _O_BINARY);
-#endif
+			auto &state = get_state();
+			state.log.open("./tmp/hill-lsp.log");
 		}
 
 		bool running;
-		logger log;
 		lsp::listener listener;
 		lsp::router router;
-		response_builder res_builder;
+		lsp::response_builder res_builder;
 
 		void run()
 		{
 			running = true;
-			log.open("/tmp/lsp.log");
+
+			auto &state = get_state();
+			state.log.writeln("Server start");
 
 			while (running) {
 				auto req = listener.get_req();
-				if (!req) continue;
+				if (!req.has_value()) continue;
 
-				auto func = router.get(req->metod);
-				if (!func) continue;
+				auto func = router.get(req.value()->metod);
+				if (!func.has_value()) continue;
 
 				//auto result = func(req->content);
-				auto result = func();
+				auto result = func.value()();
 				if (!result) continue;
 
 				// We only have to reply to messages with an id
-				if (req->has_id) continue;
+				if (!req.value()->id.has_value()) continue;
 
 				//auto response = res_builder.build(req->id, result);
 				auto response = handle_request();
@@ -61,6 +56,16 @@ namespace hill::lsp {
 				fwrite(response.c_str(), 1, response.size(), stdout);
 				fflush(stdout);
 			}
+		}
+
+		struct server_state {
+			logger log;
+		};
+
+		static server_state &get_state()
+		{
+			static server_state log;
+			return log;
 		}
 
 	private:

@@ -1,19 +1,31 @@
 #ifndef HILL__LSP__REQUEST_HPP_INCLUDED
 #define HILL__LSP__REQUEST_HPP_INCLUDED
 
+#include "../utils/json_parser.hpp"
+
+#include <stddef.h>
+#include <string>
+#include <optional>
+
 namespace hill::lsp {
 
 	enum class method {
 		INITIALIZE,
 	};
 
-	struct request {
-		request(method metod): has_id(false), id(0), metod(metod) {}
-		request(size_t id, method metod): has_id(true), id(id), metod(metod) {}
+	constexpr std::optional<method> method_parse(const std::string &str)
+	{
+		if (str == "initialize") return method::INITIALIZE;
+		else return std::nullopt;
+	}
 
-		bool has_id;
-		size_t id;
+	struct request {
+		request(method metod, const std::shared_ptr<::hill::utils::json_value> &params): id(std::nullopt), metod(metod), params(params) {}
+		request(method metod, size_t id, const std::shared_ptr<::hill::utils::json_value> &params): metod(metod), id(id), params(params) {}
+
 		method metod;
+		std::optional<size_t> id; // Request id, should be echoed in the response
+		std::shared_ptr<::hill::utils::json_value> params;
 	};
 }
 

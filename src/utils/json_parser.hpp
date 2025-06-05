@@ -53,7 +53,7 @@ namespace hill::utils {
 		double number = 0.0;
 		bool boolean = false;
 
-		std::shared_ptr<json_value> object(const std::string &key)
+		std::optional<std::shared_ptr<json_value>> object(const std::string &key)
 		{
 			auto it = std::find_if(object_entries.begin(), object_entries.end(),
 				[&key](std::pair<std::string, std::shared_ptr<json_value>> pair) {
@@ -64,7 +64,7 @@ namespace hill::utils {
 				auto ix = std::distance(object_entries.begin(), it);
 				return object_entries[ix].second;
 			} else {
-				return nullptr;
+				return std::nullopt;
 			}
 		}
 

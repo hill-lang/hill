@@ -1,12 +1,13 @@
 #ifndef HILL__LSP__RESPONSE_BUILDER_HPP_INCLUDED
 #define HILL__LSP__RESPONSE_BUILDER_HPP_INCLUDED
 
+#include "../utils/json_writer.hpp"
+
 #include <filesystem>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <memory>
-#include "../utils/json_writer.hpp"
 
 namespace hill::lsp {
 
