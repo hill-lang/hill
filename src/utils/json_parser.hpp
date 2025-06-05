@@ -79,7 +79,7 @@ namespace hill::utils {
 			}) != object_entries.end();
 		}
 
-		std::string to_str()
+		std::string to_str() const
 		{
 			std::stringstream ss;
 
@@ -125,7 +125,7 @@ namespace hill::utils {
 			return ss.str();
 		}
 
-		std::string kind_str()
+		std::string kind_str() const
 		{
 			std::stringstream ss;
 
