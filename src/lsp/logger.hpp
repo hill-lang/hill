@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <mutex>
+#include <thread>
 
 namespace hill::lsp {
 
@@ -33,6 +34,7 @@ namespace hill::lsp {
 
 			ofs << std::format("{:%T}", now);
 			ofs << " - ";
+			ofs << '[' << std::setw(5) << std::right << std::this_thread::get_id() << "] ";
 			ofs.write(msg.c_str(), msg.size());
 			ofs.put('\n');
 			ofs.flush();

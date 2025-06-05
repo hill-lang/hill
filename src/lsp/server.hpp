@@ -42,7 +42,7 @@ namespace hill::lsp {
 
 			while (running) {
 				state.log.trace("Receiving ...");
-				auto req = listener::get_req();
+				auto req = listener::next();
 				if (!req.has_value()) continue;
 
 				auto req_ptr = req.value();

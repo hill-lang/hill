@@ -1,7 +1,7 @@
 #ifndef HILL__LSP__LISTENER_HPP_INCLUDED
 #define HILL__LSP__LISTENER_HPP_INCLUDED
 
-#include "request.hpp"
+#include "models.hpp"
 #include "server_state.hpp"
 #include "../exceptions.hpp"
 #include "../utils/json_parser.hpp"
@@ -18,7 +18,7 @@
 namespace hill::lsp {
 
 	struct listener {
-		static std::optional<std::shared_ptr<request>> get_req()
+		static std::optional<std::shared_ptr<utils::json_value>> next()
 		{
 			auto &state = server_state::get();
 
@@ -31,7 +31,7 @@ namespace hill::lsp {
 			auto json = parse_content(content.value());
 			if (!json.has_value()) return std::nullopt;
 
-			return build_request(json.value());
+			return json.value();
 		}
 
 	private:
@@ -99,43 +99,6 @@ namespace hill::lsp {
 				auto &state = server_state::get();
 				state.log.error("Failed to parse json content");
 				return std::nullopt;
-			}
-		}
-
-		static std::optional<std::shared_ptr<request>> build_request(const std::shared_ptr<utils::json_value> &json)
-		{
-			using namespace ::hill::utils;
-
-			if (json->kind != json_value_kind::OBJECT) return std::nullopt;
-			if (!json->object_contains("method") || !json->object_contains("jsonrpc")) {
-				auto &state = server_state::get();
-				state.log.error("Missing required json fields in object - " + json->to_str());
-				return std::nullopt;
-			}
-			
-			auto method_json = json->object("method");
-			if (!method_json.has_value()) return std::nullopt;
-			if (method_json.value()->kind != json_value_kind::STRING) return std::nullopt;
-			auto method = method_parse(method_json.value()->string);
-			if (!method.has_value()) {
-				auto &state = server_state::get();
-				state.log.error("Unknown method [" + method_json.value()->string + "]");
-				return std::nullopt;
-			}
-
-			if (json->object_contains("id")) {
-				auto id = json->object("id");
-				if (!id.has_value()) return std::nullopt;
-				if (id.value()->kind != json_value_kind::NUMBER) return std::nullopt;
-
-				if (!json->object_contains("params")) return std::nullopt;
-				auto params = json->object("params");
-				if (!params.has_value()) return std::nullopt;
-				if (params.value()->kind != json_value_kind::OBJECT) return std::nullopt;
-
-				return std::make_shared<request>(method.value(), (size_t)id.value()->number, params.value());
-			} else {
-				return std::make_shared<request>(method.value());
 			}
 		}
 	};

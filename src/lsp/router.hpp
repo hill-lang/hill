@@ -1,7 +1,7 @@
 #ifndef HILL__LSP__ROUTER_HPP_INCLUDED
 #define HILL__LSP__ROUTER_HPP_INCLUDED
 
-#include "request.hpp"
+#include "models.hpp"
 #include "../utils/json_parser.hpp"
 
 #include "methods/initialize.hpp"
@@ -18,11 +18,22 @@ namespace hill::lsp {
 	struct router {
 		router() = default;
 
-		typedef std::function<std::optional<int>(std::optional<std::shared_ptr<::hill::utils::json_value>> params)> endpoint_t;
+		typedef std::function<std::optional<int>(const models::request_message &req)> request_endpoint_t;
+		typedef std::function<void(std::optional<std::shared_ptr<::hill::utils::json_value>> params)> notify_endpoint_t;
 
-		static std::optional<endpoint_t> get(method m)
+		static std::optional<request_endpoint_t> get_req(models::method m)
 		{
-			auto &map = get_map();
+			auto &map = get_request_map();
+			if (map.contains(m)) {
+				return map.at(m);
+			} else {
+				return std::nullopt;
+			}
+		}
+
+		static std::optional<notify_endpoint_t> get_notify(models::method m)
+		{
+			auto &map = get_notify_map();
 			if (map.contains(m)) {
 				return map.at(m);
 			} else {
@@ -31,11 +42,18 @@ namespace hill::lsp {
 		}
 
 	private:
-		static const std::unordered_map<method, endpoint_t> &get_map()
+		static const std::unordered_map<models::method, request_endpoint_t> &get_request_map()
 		{
-			static const std::unordered_map<method, endpoint_t> map = {
-				{method::INITIALIZE, methods::initialize},
-				{method::INITIALIZED, methods::initialized},
+			static const std::unordered_map<models::method, request_endpoint_t> map = {
+				{models::method::INITIALIZE, methods::initialize},
+			};
+			return map;
+		}
+
+		static const std::unordered_map<models::method, notify_endpoint_t> &get_notify_map()
+		{
+			static const std::unordered_map<models::method, notify_endpoint_t> map = {
+				{models::method::INITIALIZED, methods::initialized},
 			};
 			return map;
 		}

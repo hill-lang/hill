@@ -10,18 +10,17 @@
 namespace hill::lsp::methods {
 
 	// Requset to initialize
-	inline std::optional<int> initialize(std::optional<std::shared_ptr<::hill::utils::json_value>> params)
+	inline std::optional<int> initialize(const models::request_message &req)
 	{
 		return 1;
 	}
 
 	// Awknownlage initialize success
-	inline std::optional<int> initialized(std::optional<std::shared_ptr<::hill::utils::json_value>> params)
+	inline void initialized(std::optional<std::shared_ptr<::hill::utils::json_value>> params)
 	{
 		auto &state = server_state::get();
 		state.initialized = true;
 		state.log.info("Initialized");
-		return 1;
 	}
 };
 
