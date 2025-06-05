@@ -16,7 +16,7 @@ namespace hill::test {
 		const char *src;
 		const char *expected_kind;
 		const char *expected_value;
-	} json_parse_kind_tests[]={
+	} json_parser_tests[]={
 		{"{}", "OBJECT"},
 		{"[]", "ARRAY"},
 		{"\"test\"", "STRING", "\"test\""},
@@ -29,6 +29,20 @@ namespace hill::test {
 			"{\"obj1\":{\"str\":\"str\"},\"arr1\":[true,false,1.23,{}]}"},
 	};
 
+	const char *json_parser_failing_tests[] = {
+		"",
+		"{",
+		"[",
+		"}",
+		"]",
+		"{{}",
+		"{}}",
+		"\"test",
+		"{2}",
+		"tru",
+		"fals",
+	};
+
 	inline bool json_parser(utils::junit_session &test_session)
 	{
 		bool ok = true;
@@ -36,14 +50,14 @@ namespace hill::test {
 
 		std::cout << "Json Parser testing:\n";
 
-		for (size_t ix=0; ix<sizeof json_parse_kind_tests /sizeof json_parse_kind_tests[0]; ++ix) {
+		for (size_t ix=0; ix<sizeof json_parser_tests /sizeof json_parser_tests[0]; ++ix) {
 			utils::timer timer;
-			auto src_ss = get_src(json_parse_kind_tests[ix].src);
-			auto exp_kind_ss = get_src(json_parse_kind_tests[ix].expected_kind);
-			auto exp_value_ss = get_src(json_parse_kind_tests[ix].expected_value);
+			auto src_ss = get_src(json_parser_tests[ix].src);
+			auto exp_kind_ss = get_src(json_parser_tests[ix].expected_kind);
+			auto exp_value_ss = get_src(json_parser_tests[ix].expected_value);
 
 			if (src_ss.str().empty()) {
-				std::cout << "Cannot read source " << utils::color(json_parse_kind_tests[ix].src, utils::ccolor::YELLOW) << '\n';
+				std::cout << "Cannot read source " << utils::color(json_parser_tests[ix].src, utils::ccolor::YELLOW) << '\n';
 				ok = false;
 				continue;
 			}
@@ -54,20 +68,42 @@ namespace hill::test {
 			std::cout << " Kind test  " << test(
 				suite,
 				timer.elapsed_sec(),
-				json_parse_kind_tests[ix].src,
+				json_parser_tests[ix].src,
 				exp_kind_ss.str().c_str(),
-				json->kind_str().c_str(),
+				json.has_value() ? json.value()->kind_str().c_str() : "",
 				&ok);
 
-			if (json_parse_kind_tests[ix].expected_value) {
+			if (json_parser_tests[ix].expected_value) {
 				std::cout << " Kind value " << test(
 					suite,
 					timer.elapsed_sec(),
-					json_parse_kind_tests[ix].src,
+					json_parser_tests[ix].src,
 					exp_value_ss.str().c_str(),
-					json->to_str().c_str(),
+					json.has_value() ? json.value()->to_str().c_str() : "",
 					&ok);
 			}
+		}
+
+		for (size_t ix=0; ix<sizeof json_parser_failing_tests /sizeof json_parser_failing_tests[0]; ++ix) {
+			utils::timer timer;
+			auto src_ss = get_src(json_parser_failing_tests[ix]);
+
+			if (src_ss.str().empty()) {
+				std::cout << "Cannot read source " << utils::color(json_parser_failing_tests[ix], utils::ccolor::YELLOW) << '\n';
+				ok = false;
+				continue;
+			}
+
+			utils::json_parser parser;
+			auto json = parser.parse(src_ss);
+
+			std::cout << " Should fail " << test(
+				suite,
+				timer.elapsed_sec(),
+				json_parser_failing_tests[ix],
+				"",
+				json.has_value() ? json.value()->to_str().c_str() : "",
+				&ok);
 		}
 
 		return ok;

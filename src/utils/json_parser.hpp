@@ -9,15 +9,30 @@
 #include <sstream>
 #include <vector>
 #include <memory>
+#include <optional>
 
 namespace hill::utils {
 
 	class json_parser_exception : public std::exception {
-		const char *what() const noexcept override { return "JSON parser exception"; }
+	public:
+		json_parser_exception(): message("JSON parser exception") {}
+		json_parser_exception(const std::string &msg): message(msg) {}
+
+		const char *what() const noexcept override {return message.c_str();}
+
+	private:
+		std::string message;
 	};
 
 	class json_parser_internal_exception : public std::exception {
-		const char *what() const noexcept override { return "JSON parser internal exception"; }
+	public:
+		json_parser_internal_exception() : message("JSON parser exception") {}
+		json_parser_internal_exception(const std::string &msg) : message(msg) {}
+
+		const char *what() const noexcept override {return message.c_str();}
+
+	private:
+		std::string message;
 	};
 
 	enum class json_value_kind {
@@ -179,13 +194,15 @@ namespace hill::utils {
 		/// <summary>
 		/// Parse a json string
 		/// </summary>
-		/// <returns>A JSON value if successfull, otherwise nullptr.</returns>
-		std::shared_ptr<json_value> parse(std::istream &istr)
+		std::optional<std::shared_ptr<json_value>> parse(std::istream &istr)
 		{
 			try {
-				return parse_value(istr);
+				auto value = parse_value(istr);
+				skip_ws(istr);
+				if (istr.eof()) return value;
+				else return std::nullopt;
 			} catch (const json_parser_exception) {
-				return nullptr;
+				return std::nullopt;
 			}
 		}
 
@@ -325,7 +342,7 @@ namespace hill::utils {
 			if (istr.get()=='r' && istr.get()=='u' && istr.get()=='e') {
 				return std::make_shared<json_value>(json_value_kind::BOOL, true);
 			} else {
-				throw json_parser_exception();
+				throw json_parser_exception("Unexpected character parsing boolean true");
 			}
 		}
 
@@ -334,7 +351,7 @@ namespace hill::utils {
 			if (istr.get()=='a' && istr.get()=='l' && istr.get()=='s' && istr.get()=='e') {
 				return std::make_shared<json_value>(json_value_kind::BOOL, false);
 			} else {
-				throw json_parser_exception();
+				throw json_parser_exception("Unexpected character parsing boolean false");
 			}
 		}
 
@@ -343,7 +360,7 @@ namespace hill::utils {
 			if (istr.get()=='u' && istr.get()=='l' && istr.get()=='l') {
 				return std::make_shared<json_value>(json_value_kind::JSON_NULL);
 			} else {
-				throw json_parser_exception();
+				throw json_parser_exception("Unexpected character parsing null");
 			}
 		}
 	};
