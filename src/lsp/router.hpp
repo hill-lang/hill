@@ -5,7 +5,6 @@
 #include "../utils/json_parser.hpp"
 
 #include "methods/initialize.hpp"
-#include "methods/initialized.hpp"
 
 #include <unordered_map>
 #include <functional>
