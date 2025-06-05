@@ -88,12 +88,6 @@ namespace hill::test {
 			utils::timer timer;
 			auto src_ss = get_src(json_parser_failing_tests[ix]);
 
-			if (src_ss.str().empty()) {
-				std::cout << "Cannot read source " << utils::color(json_parser_failing_tests[ix], utils::ccolor::YELLOW) << '\n';
-				ok = false;
-				continue;
-			}
-
 			utils::json_parser parser;
 			auto json = parser.parse(src_ss);
 
