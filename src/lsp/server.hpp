@@ -6,7 +6,7 @@
 #include "server_state.hpp"
 #include "listener.hpp"
 #include "request_handler.hpp"
-#include "thread_pool.hpp"
+#include "../utils/thread_pool.hpp"
 
 #ifdef _WIN32
 #include <fcntl.h>
@@ -28,7 +28,7 @@ namespace hill::lsp {
 		}
 
 		bool running;
-		lsp::thread_pool thread_pool;
+		utils::thread_pool thread_pool;
 
 		void run()
 		{

@@ -1,5 +1,5 @@
-#ifndef HILL__LSP__THREAD_POOL_HPP_INCLUDED
-#define HILL__LSP__THREAD_POOL_HPP_INCLUDED
+#ifndef HILL__UTILS__THREAD_POOL_HPP_INCLUDED
+#define HILL__UTILS__THREAD_POOL_HPP_INCLUDED
 
 #include <functional>
 #include <vector>
@@ -8,7 +8,7 @@
 #include <queue>
 #include <condition_variable>
 
-namespace hill::lsp {
+namespace hill::utils {
 
 	struct thread_pool {
 		thread_pool(): runnning(false), should_terminate(false) { }
@@ -98,4 +98,4 @@ namespace hill::lsp {
 	};
 }
 
-#endif /* HILL__LSP__THREAD_POOL_HPP_INCLUDED */
+#endif /* HILL__UTILS__THREAD_POOL_HPP_INCLUDED */
