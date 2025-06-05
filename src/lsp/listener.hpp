@@ -18,9 +18,7 @@
 namespace hill::lsp {
 
 	struct listener {
-		listener() = default;
-
-		std::optional<std::shared_ptr<request>> get_req()
+		static std::optional<std::shared_ptr<request>> get_req()
 		{
 			auto &state = server_state::get();
 
@@ -39,7 +37,7 @@ namespace hill::lsp {
 	private:
 		enum {MAX_HTTP_HEADER_LENGTH=512};
 
-		std::optional<std::unordered_map<std::string, std::string>> recv_headers()
+		static std::optional<std::unordered_map<std::string, std::string>> recv_headers()
 		{
 			std::unordered_map<std::string, std::string> headers;
 			char b[MAX_HTTP_HEADER_LENGTH];
@@ -70,7 +68,7 @@ namespace hill::lsp {
 			}
 		}
 
-		std::optional<std::string> recv_content(const std::unordered_map<std::string, std::string> &headers)
+		static std::optional<std::string> recv_content(const std::unordered_map<std::string, std::string> &headers)
 		{
 			if (!headers.contains("Content-Length")) {
 				auto &state = server_state::get();
@@ -89,7 +87,7 @@ namespace hill::lsp {
 			return content;
 		}
 
-		std::optional<std::shared_ptr<utils::json_value>> parse_content(const std::string &content)
+		static std::optional<std::shared_ptr<utils::json_value>> parse_content(const std::string &content)
 		{
 			std::istringstream istr(content);
 			utils::json_parser parser;
@@ -104,7 +102,7 @@ namespace hill::lsp {
 			}
 		}
 
-		std::optional<std::shared_ptr<request>> build_request(const std::shared_ptr<utils::json_value> &json)
+		static std::optional<std::shared_ptr<request>> build_request(const std::shared_ptr<utils::json_value> &json)
 		{
 			using namespace ::hill::utils;
 

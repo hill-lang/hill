@@ -5,8 +5,8 @@
 
 #include "server_state.hpp"
 #include "listener.hpp"
-#include "router.hpp"
-#include "response_builder.hpp"
+#include "request_handler.hpp"
+#include "thread_pool.hpp"
 
 #ifdef _WIN32
 #include <fcntl.h>
@@ -14,7 +14,6 @@
 #endif
 
 namespace hill::lsp {
-
 
 	struct server {
 		server() : running(true)
@@ -29,67 +28,35 @@ namespace hill::lsp {
 		}
 
 		bool running;
-		lsp::listener listener;
-		lsp::router router;
-		lsp::response_builder res_builder;
+		lsp::thread_pool thread_pool;
 
 		void run()
 		{
 			running = true;
 
 			auto &state = server_state::get();
-			state.log.info("Hill language server started");
+			state.log.info("Hill language server starting ...");
+
+			state.log.info("Starting thread pool ...");
+			thread_pool.start();
 
 			while (running) {
 				state.log.trace("Receiving ...");
-				auto req = listener.get_req();
+				auto req = listener::get_req();
 				if (!req.has_value()) continue;
 
-				auto metstr = std::string(method_str(req.value()->metod));
-
-				if (req.value()->is_notification()) {
-					state.log.info("Received notification method [" + metstr + "]");
-				} else {
-					state.log.info("Received request method [" + metstr + "] id: [" + std::to_string(req.value()->id.value()) + "] ");
-				}
-
-				auto func = router.get(req.value()->metod);
-				if (!func.has_value()) {
-					state.log.error("Fail to resolve method " + metstr);
-					continue;
-				}
-
-				auto result = func.value()(req.value()->params);
-				if (!result.has_value()) continue;
-
-				// We only have to reply to messages with an id
-				if (req.value()->is_notification()) continue;
-
-				//auto resp = res_builder.build(req->id, result);
-				auto resp = handle_request(req.value()->id.value());
-				state.log.trace(resp);
-
-				fwrite(resp.c_str(), 1, resp.size(), stdout);
-				fflush(stdout);
+				auto req_ptr = req.value();
+				thread_pool.queue_job([req_ptr] {request_handler::handle(req_ptr);});
 			}
-		}
 
-	private:
-		std::string handle_request(size_t id)
-		{
-			auto oss = std::make_shared<std::ostringstream>();
-			utils::json_writer json(oss);
-			json.obj("capabilities");
-			json.obj("completionProvider");
-			json.pop();
-			json.pop();
-			json.obj("serverInfo");
-			json.obj_str("name", "hill-lsp");
-			json.obj_str("version", "0.0.1");
-			json.close();
-			auto result = oss->str();
+			state.log.info("Shutting down ...");
 
-			return res_builder.build(id, result);
+			state.log.info("Stoping thread pool ...");
+			thread_pool.stop();
+			state.log.info("Joining thread pool ...");
+			thread_pool.join();
+
+			state.log.info("Sucessfully shut down");
 		}
 	};
 }
