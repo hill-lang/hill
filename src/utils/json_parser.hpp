@@ -76,7 +76,7 @@ namespace hill::utils {
 
 		static std::optional<std::shared_ptr<json_value>> parse_object(std::istream &istr)
 		{
-			auto ret = std::make_shared<json_value>(json_value_kind::OBJECT);
+			auto ret = json_value::create(json_value_kind::OBJECT);
 
 			while (true) {
 				skip_ws(istr);
@@ -110,7 +110,7 @@ namespace hill::utils {
 
 		static std::optional<std::shared_ptr<json_value>> parse_array(std::istream &istr)
 		{
-			auto arr = std::make_shared<json_value>(json_value_kind::ARRAY);
+			auto arr = json_value::create(json_value_kind::ARRAY);
 
 			while (true) {
 				skip_ws(istr);
@@ -171,7 +171,7 @@ namespace hill::utils {
 			}
 
 			auto str = ss.str();
-			return std::make_shared<json_value>(json_value_kind::STRING, str);
+			return json_value::create(str);
 		}
 
 		static std::optional<std::shared_ptr<json_value>> parse_number(std::istream &istr)
@@ -192,7 +192,7 @@ namespace hill::utils {
 			char *end = nullptr;
 			double number = std::strtod(str.c_str(), &end);
 
-			return std::make_shared<json_value>(json_value_kind::NUMBER, number);
+			return json_value::create(number);
 		}
 
 		static std::optional<std::shared_ptr<json_value>> parse_true(std::istream &istr)
@@ -200,7 +200,7 @@ namespace hill::utils {
 			if (!istr.eof() && istr.get()=='r'
 					&& !istr.eof() && istr.get()=='u'
 					&& !istr.eof() && istr.get()=='e') {
-				return std::make_shared<json_value>(json_value_kind::BOOL, true);
+				return json_value::create(true);
 			} else {
 				return std::nullopt;
 			}
@@ -212,7 +212,7 @@ namespace hill::utils {
 					&& !istr.eof() && istr.get()=='l'
 					&& !istr.eof() && istr.get()=='s'
 					&& !istr.eof() && istr.get()=='e') {
-				return std::make_shared<json_value>(json_value_kind::BOOL, false);
+				return json_value::create(false);
 			} else {
 				return std::nullopt;
 			}
@@ -223,7 +223,7 @@ namespace hill::utils {
 			if (!istr.eof() && istr.get()=='u'
 					&& !istr.eof() && istr.get()=='l'
 					&& !istr.eof() && istr.get()=='l') {
-				return std::make_shared<json_value>(json_value_kind::JSON_NULL);
+				return json_value::create(json_value_kind::JSON_NULL);
 			} else {
 				return std::nullopt;
 			}

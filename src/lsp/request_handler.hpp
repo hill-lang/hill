@@ -26,7 +26,7 @@ namespace hill::lsp {
 				return;
 			}
 
-			auto method_json = json->object("method");
+			auto method_json = json->obj_get("method");
 			if (!method_json.has_value() || method_json.value()->kind!=json_value_kind::STRING) return;
 			auto method_opt = models::method_parse(method_json.value()->string);
 			if (!method_opt.has_value()) {
@@ -71,7 +71,7 @@ namespace hill::lsp {
 
 			auto &state = server_state::get();
 
-			auto id_json = json->object("id");
+			auto id_json = json->obj_get("id");
 			if (!id_json.has_value() || id_json.value()->kind!=json_value_kind::NUMBER) {
 				state.log.error("Invalid request id");
 				return;
@@ -85,7 +85,7 @@ namespace hill::lsp {
 			models::request_message req = {
 				.id = id,
 				.method = method,
-				.params = json->object("params")};
+				.params = json->obj_get("params")};
 
 			auto func = router::get_req(method);
 			if (!func.has_value()) {
