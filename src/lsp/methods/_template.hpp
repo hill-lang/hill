@@ -1,16 +1,22 @@
 #ifndef HILL__LSP__METHODS_TEMPLATE_HPP_INCLUDED
 #define HILL__LSP__METHODS_TEMPLATE_HPP_INCLUDED
 
-#include "../../utils/json_parser.hpp"
+#include "../models.hpp"
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 namespace hill::lsp::methods {
 
-	inline std::optional<int> _template(std::optional<std::shared_ptr<::hill::utils::json_value>> params)
+	inline std::variant<models::result_t, models::response_error> _request_template(const models::request_message &req)
 	{
-		return 1;
+		throw;
+	}
+
+	inline void _notify_template()
+	{
+		throw;
 	}
 };
 

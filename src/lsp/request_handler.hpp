@@ -3,7 +3,6 @@
 
 #include "models.hpp"
 #include "router.hpp"
-#include "response_builder.hpp"
 #include "../utils/json_parser.hpp"
 
 #include <memory>
@@ -62,7 +61,7 @@ namespace hill::lsp {
 				return;
 			}
 
-			//func.value()(req->params); // TODO
+			func.value()();
 		}
 
 		static inline void handle_request(models::method method, const std::shared_ptr<utils::json_value> &json)
@@ -94,14 +93,27 @@ namespace hill::lsp {
 			}
 
 			auto result = func.value()(req);
-			if (!result.has_value()) {
-				state.log.error("Method [" + method_str + "] did not return a reponse");
-				return;
+			models::response_message resp_msg = {.id=id, .result=std::nullopt, .error=std::nullopt};
+			if (std::holds_alternative<models::result_t>(result)) {
+				resp_msg.result = std::get<models::result_t>(result);
+			} else {
+				resp_msg.error = std::get<models::response_error>(result);
+				state.log.error("Request failed method<" + method_str
+					+ "> id<" + std::to_string(id)
+					+ "> code< "+ std::to_string((int)resp_msg.error.value().code)
+					+ "> message<" + resp_msg.error.value().message + '>');
 			}
 
-			//auto resp = res_builder.build(req->id, result);
-			auto resp = temp(id);
-			//state.log.trace(resp);
+			auto resp_msg_str = resp_msg.str();
+
+			std::string resp_header = "Content-Length: "
+				+ std::to_string(resp_msg_str.size())
+				+ "\r\n\r\n";
+			std::stringstream ss;
+			ss.write(resp_header.c_str(), resp_header.size());
+			ss.write(resp_msg_str.c_str(), resp_msg_str.size());
+
+			auto resp = ss.str();
 
 			{
 				std::lock_guard<std::mutex> guard(get_response_mutex());
@@ -111,23 +123,6 @@ namespace hill::lsp {
 			}
 
 			state.log.info("Sent response to request method<" + method_str + "> id<" + std::to_string(id) + ">");
-		}
-
-		static inline std::string temp(size_t id)
-		{
-			auto oss = std::make_shared<std::ostringstream>();
-			utils::json_writer json(oss);
-			json.obj("capabilities");
-			json.obj("completionProvider");
-			json.pop();
-			json.pop();
-			json.obj("serverInfo");
-			json.obj_str("name", "hill-lsp");
-			json.obj_str("version", "0.0.1");
-			json.close();
-			auto result = oss->str();
-
-			return lsp::response_builder::build(id, result);
 		}
 	};
 };

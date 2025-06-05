@@ -5,11 +5,13 @@
 #include "../utils/json_parser.hpp"
 
 #include "methods/initialize.hpp"
+#include "methods/text_document_completion.hpp"
 
 #include <unordered_map>
 #include <functional>
 #include <optional>
 #include <memory>
+#include <variant>
 
 #include "server_state.hpp"
 
@@ -18,8 +20,8 @@ namespace hill::lsp {
 	struct router {
 		router() = default;
 
-		typedef std::function<std::optional<int>(const models::request_message &req)> request_endpoint_t;
-		typedef std::function<void(std::optional<std::shared_ptr<::hill::utils::json_value>> params)> notify_endpoint_t;
+		typedef std::function<std::variant<models::result_t, models::response_error>(const models::request_message &req)> request_endpoint_t;
+		typedef std::function<void()> notify_endpoint_t;
 
 		static std::optional<request_endpoint_t> get_req(models::method m)
 		{
@@ -46,6 +48,7 @@ namespace hill::lsp {
 		{
 			static const std::unordered_map<models::method, request_endpoint_t> map = {
 				{models::method::INITIALIZE, methods::initialize},
+				{models::method::TEXT_DOCUMENT_COMPLETION, methods::text_document_completion},
 			};
 			return map;
 		}

@@ -2,16 +2,19 @@
 #define HILL__LSP__MODELS_HPP_INCLUDED
 
 #include "../exceptions.hpp"
+#include "../utils/json_writer.hpp"
 #include "../utils/json_parser.hpp"
 
 #include <optional>
 #include <memory>
+#include <string>
 
 namespace hill::lsp::models {
 
 	enum class method {
 		INITIALIZE, // Requset to initialize
 		INITIALIZED, // Awknownlage initialize success
+		TEXT_DOCUMENT_COMPLETION,
 	};
 
 	constexpr const char *method_str(method m)
@@ -19,6 +22,7 @@ namespace hill::lsp::models {
 		switch (m) {
 		case method::INITIALIZE: return "initialize";
 		case method::INITIALIZED: return "initialized";
+		case method::TEXT_DOCUMENT_COMPLETION: return "textDocument/completion";
 		default: throw internal_exception();
 		}
 	}
@@ -26,7 +30,8 @@ namespace hill::lsp::models {
 	constexpr std::optional<method> method_parse(const std::string &str)
 	{
 		if (str==method_str(method::INITIALIZE)) return method::INITIALIZE;
-		if (str==method_str(method::INITIALIZED)) return method::INITIALIZED;
+		else if (str==method_str(method::INITIALIZED)) return method::INITIALIZED;
+		else if (str==method_str(method::TEXT_DOCUMENT_COMPLETION)) return method::TEXT_DOCUMENT_COMPLETION;
 		else return std::nullopt;
 	}
 
@@ -155,7 +160,25 @@ namespace hill::lsp::models {
 		 * information about the error. Can be omitted.
 		 */
 		std::optional<std::shared_ptr<::hill::utils::json_value>> data;
+
+		std::string str()
+		{
+			auto oss = std::make_shared<std::ostringstream>();
+			utils::json_writer json(oss);
+			json.obj_i32("code", (int)code);
+			json.obj_str("message", message);
+
+			if (data.has_value()) {
+				json.obj_raw("data", data.value()->to_str());
+			}
+
+			json.close();
+
+			return oss->str();
+		}
 	};
+
+	typedef std::shared_ptr<::hill::utils::json_value> result_t;
 
 	struct response_message {
 		/**
@@ -166,12 +189,38 @@ namespace hill::lsp::models {
 		 * The result of a request. This member is REQUIRED on success.
 		 * This member MUST NOT exist if there was an error invoking the method.
 		 */
-		std::optional<std::shared_ptr<::hill::utils::json_value>> result;
+		std::optional<result_t> result;
 
 		/**
 		 * The error object in case a request fails.
 		 */
 		std::optional<response_error> error;
+
+		std::string str()
+		{
+			auto oss = std::make_shared<std::ostringstream>();
+			utils::json_writer json(oss);
+			json.obj_i32("id", id);
+
+			if (result.has_value()) {
+				json.obj_raw("result", result.value()->to_str());
+			}
+
+			if (error.has_value()) {
+				json.obj_raw("error", error.value().str());
+			}
+
+			json.close();
+
+			return oss->str();
+		}
+	};
+
+	struct completion_client_capabilities {
+		/**
+		 * Whether completion supports dynamic registration.
+		 */
+		//std::optional<bool> dynamic_registration;
 	};
 };
 
