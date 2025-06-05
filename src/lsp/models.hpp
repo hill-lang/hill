@@ -2,8 +2,8 @@
 #define HILL__LSP__MODELS_HPP_INCLUDED
 
 #include "../exceptions.hpp"
+#include "../utils/json.hpp"
 #include "../utils/json_writer.hpp"
-#include "../utils/json_parser.hpp"
 
 #include <optional>
 #include <memory>

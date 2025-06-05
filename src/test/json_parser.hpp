@@ -62,8 +62,7 @@ namespace hill::test {
 				continue;
 			}
 
-			utils::json_parser parser;
-			auto json = parser.parse(src_ss);
+			auto json = utils::json_parser::parse(src_ss);
 
 			std::cout << " Kind test  " << test(
 				suite,
@@ -88,8 +87,7 @@ namespace hill::test {
 			utils::timer timer;
 			auto src_ss = get_src(json_parser_failing_tests[ix]);
 
-			utils::json_parser parser;
-			auto json = parser.parse(src_ss);
+			auto json = utils::json_parser::parse(src_ss);
 
 			std::cout << " Should fail " << test(
 				suite,

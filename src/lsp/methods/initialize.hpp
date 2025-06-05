@@ -29,8 +29,7 @@ namespace hill::lsp::methods {
 		auto result = oss->str();
 		std::istringstream istr(result);
 
-		utils::json_parser parser;
-		auto res = parser.parse(istr);
+		auto res = utils::json_parser::parse(istr);
 		return res.value();
 	}
 

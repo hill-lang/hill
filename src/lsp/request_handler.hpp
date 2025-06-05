@@ -3,7 +3,7 @@
 
 #include "models.hpp"
 #include "router.hpp"
-#include "../utils/json_parser.hpp"
+#include "../utils/json.hpp"
 
 #include <memory>
 #include <stdio.h>
@@ -12,6 +12,7 @@
 namespace hill::lsp {
 
 	struct request_handler {
+		request_handler() = delete;
 
 		static void handle(const std::shared_ptr<utils::json_value> &json)
 		{

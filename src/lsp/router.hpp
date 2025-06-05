@@ -2,7 +2,6 @@
 #define HILL__LSP__ROUTER_HPP_INCLUDED
 
 #include "models.hpp"
-#include "../utils/json_parser.hpp"
 
 #include "methods/initialize.hpp"
 #include "methods/text_document_completion.hpp"
@@ -18,7 +17,7 @@
 namespace hill::lsp {
 
 	struct router {
-		router() = default;
+		router() = delete;
 
 		typedef std::function<std::variant<models::result_t, models::response_error>(const models::request_message &req)> request_endpoint_t;
 		typedef std::function<void()> notify_endpoint_t;

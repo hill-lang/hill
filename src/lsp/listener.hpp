@@ -18,6 +18,8 @@
 namespace hill::lsp {
 
 	struct listener {
+		listener() = delete;
+
 		static std::optional<std::shared_ptr<utils::json_value>> next()
 		{
 			auto headers = recv_headers();
@@ -87,8 +89,7 @@ namespace hill::lsp {
 		static std::optional<std::shared_ptr<utils::json_value>> parse_content(const std::string &content)
 		{
 			std::istringstream istr(content);
-			utils::json_parser parser;
-			auto json = parser.parse(istr);
+			auto json = utils::json_parser::parse(istr);
 
 			if (json.has_value()) {
 				return json.value();
