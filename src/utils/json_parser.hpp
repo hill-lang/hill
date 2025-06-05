@@ -264,10 +264,33 @@ namespace hill::utils {
 		{
 			std::stringstream ss;
 
-			int ch;
-			while ((ch=istr.get()) != '"') {
-				// Skip escaped character
-				if (ch != '\\') {
+			while (true) {
+				if (istr.eof()) throw json_parser_exception("Unexpected EOF in string");
+
+				auto ch = istr.get();
+				if (ch == '"') break;
+
+				if (ch == '\\') { // Handle escaped character
+					if (istr.eof()) throw json_parser_exception("Unexpected EOF in escape sequence");
+					ch = istr.get();
+
+					switch (ch) {
+					case '"':
+					case '\\':
+					case '/':
+						ss.put(ch);
+						break;
+					case 'n': ss.put('\n'); break;
+					case 't': ss.put('\t'); break;
+					case 'r': ss.put('\r'); break;
+					case 'b': ss.put('\b'); break;
+					case 'f': ss.put('\f'); break;
+					case 'u': // Handle \uHHHH (Unicode)
+						// Add Unicode parsing logic here
+						throw json_parser_exception("Unicode escape sequences not supported");
+					default: throw json_parser_exception("Invalid escape sequence");
+					}
+				} else {
 					ss.put(ch);
 				}
 			}
