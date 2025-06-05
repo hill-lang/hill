@@ -50,7 +50,7 @@ namespace hill::utils {
 
 		json_value_kind kind;
 
-		std::vector<std::pair<std::string, std::shared_ptr<json_value>>> object_entires;
+		std::vector<std::pair<std::string, std::shared_ptr<json_value>>> object_entries;
 		std::vector<std::shared_ptr<json_value>> array;
 		std::string string;
 		double number = 0.0;
@@ -58,14 +58,14 @@ namespace hill::utils {
 
 		std::shared_ptr<json_value> object(const std::string &key)
 		{
-			auto it = std::find_if(object_entires.begin(), object_entires.end(),
+			auto it = std::find_if(object_entries.begin(), object_entries.end(),
 				[&key](std::pair<std::string, std::shared_ptr<json_value>> pair) {
 					return pair.first == key;
 				});
 
-			if (it != object_entires.end()) {
-				auto ix = std::distance(object_entires.begin(), it);
-				return object_entires[ix].second;
+			if (it != object_entries.end()) {
+				auto ix = std::distance(object_entries.begin(), it);
+				return object_entries[ix].second;
 			} else {
 				return nullptr;
 			}
@@ -73,10 +73,10 @@ namespace hill::utils {
 
 		bool object_contains(const std::string &key) const
 		{
-			return std::find_if(object_entires.begin(), object_entires.end(),
+			return std::find_if(object_entries.begin(), object_entries.end(),
 				[&key](std::pair<std::string, std::shared_ptr<json_value>> pair) {
 					return pair.first == key;
-			}) != object_entires.end();
+			}) != object_entries.end();
 		}
 
 		std::string to_str()
@@ -88,7 +88,7 @@ namespace hill::utils {
 			{
 				ss << '{';
 				size_t ix=0;
-				for (auto &[key, value] : object_entires) {
+				for (auto &[key, value] : object_entries) {
 					if (ix++>0) ss << ',';
 					ss << '"' << key << "\":" << value->to_str();
 				}
@@ -134,8 +134,8 @@ namespace hill::utils {
 			switch (kind) {
 			case json_value_kind::OBJECT:
 			{
-				if (object_entires.size()) {
-					for (auto &[key, value] : object_entires) {
+				if (object_entries.size()) {
+					for (auto &[key, value] : object_entries) {
 						ss << ',' << value->kind_str();
 					}
 					ss << ",END";
@@ -218,7 +218,7 @@ namespace hill::utils {
 				if (istr.get()!=':') throw json_parser_exception();
 				if (ret->object_contains(member_name->string)) throw json_parser_exception();
 
-				ret->object_entires.emplace_back(member_name->string, parse_value(istr));
+				ret->object_entries.emplace_back(member_name->string, parse_value(istr));
 
 				skip_ws(istr);
 				if (istr.peek()==',') (void)istr.get();
