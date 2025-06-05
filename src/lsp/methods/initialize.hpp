@@ -3,8 +3,7 @@
 
 #include "../models.hpp"
 #include "../server_state.hpp"
-#include "../../utils/json_parser.hpp"
-#include "../../utils/json_writer.hpp"
+#include "../../utils/json.hpp"
 
 #include <memory>
 #include <optional>
@@ -15,22 +14,16 @@ namespace hill::lsp::methods {
 	// Requset to initialize
 	inline std::variant<models::result_t, models::response_error> initialize(const models::request_message &req)
 	{
-		auto oss = std::make_shared<std::ostringstream>();
-		utils::json_writer json(oss);
-		json.obj("capabilities");
-		json.obj("completionProvider");
-		json.pop();
-		json.pop();
-		json.obj("serverInfo");
-		json.obj_str("name", "hill-lsp");
-		json.obj_str("version", "0.0.1");
-		json.close();
+		auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
 
-		auto result = oss->str();
-		std::istringstream istr(result);
+		auto capabilities = json->obj_add_obj("capabilities").value();
+		auto completion_provider = json->obj_add_obj("completionProvider").value();
 
-		auto res = utils::json_parser::parse(istr);
-		return res.value();
+		auto server_info = json->obj_add_obj("serverInfo").value();
+		server_info->obj_add_str("name", "hill-lsp");
+		server_info->obj_add_str("version", "0.0.1");
+
+		return json;
 	}
 
 	// Awknownlage initialize success
