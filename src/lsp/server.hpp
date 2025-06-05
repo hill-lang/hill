@@ -3,24 +3,28 @@
 
 // https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/
 
-#include "logger.hpp"
+#include "server_state.hpp"
 #include "listener.hpp"
 #include "router.hpp"
 #include "response_builder.hpp"
 
-#include <string>
-#include <stddef.h>
-#include <stdint.h>
-
-// TODO: Move to response builder?
-#include "../utils/json_writer.hpp"
+#ifdef _WIN32
+#include <fcntl.h>
+#include <io.h>
+#endif
 
 namespace hill::lsp {
+
 
 	struct server {
 		server() : running(true)
 		{
-			auto &state = get_state();
+#ifdef _WIN32
+			(void)_setmode(_fileno(stdin), _O_BINARY);
+			(void)_setmode(_fileno(stdout), _O_BINARY);
+#endif
+
+			auto &state = server_state::get();
 			state.log.open("./tmp/hill-lsp.log");
 		}
 
@@ -33,43 +37,45 @@ namespace hill::lsp {
 		{
 			running = true;
 
-			auto &state = get_state();
-			state.log.writeln("Server start");
+			auto &state = server_state::get();
+			state.log.info("Hill language server started");
 
 			while (running) {
+				state.log.trace("Receiving ...");
 				auto req = listener.get_req();
 				if (!req.has_value()) continue;
 
-				auto func = router.get(req.value()->metod);
-				if (!func.has_value()) continue;
+				auto metstr = std::string(method_str(req.value()->metod));
 
-				//auto result = func(req->content);
-				auto result = func.value()();
-				if (!result) continue;
+				if (req.value()->is_notification()) {
+					state.log.info("Received notification method [" + metstr + "]");
+				} else {
+					state.log.info("Received request method [" + metstr + "] id: [" + std::to_string(req.value()->id.value()) + "] ");
+				}
+
+				auto func = router.get(req.value()->metod);
+				if (!func.has_value()) {
+					state.log.error("Fail to resolve method " + metstr);
+					continue;
+				}
+
+				auto result = func.value()(req.value()->params);
+				if (!result.has_value()) continue;
 
 				// We only have to reply to messages with an id
-				if (!req.value()->id.has_value()) continue;
+				if (req.value()->is_notification()) continue;
 
-				//auto response = res_builder.build(req->id, result);
-				auto response = handle_request();
+				//auto resp = res_builder.build(req->id, result);
+				auto resp = handle_request(req.value()->id.value());
+				state.log.trace(resp);
 
-				fwrite(response.c_str(), 1, response.size(), stdout);
+				fwrite(resp.c_str(), 1, resp.size(), stdout);
 				fflush(stdout);
 			}
 		}
 
-		struct server_state {
-			logger log;
-		};
-
-		static server_state &get_state()
-		{
-			static server_state log;
-			return log;
-		}
-
 	private:
-		std::string handle_request()
+		std::string handle_request(size_t id)
 		{
 			auto oss = std::make_shared<std::ostringstream>();
 			utils::json_writer json(oss);
@@ -83,7 +89,7 @@ namespace hill::lsp {
 			json.close();
 			auto result = oss->str();
 
-			return res_builder.build(0, result);
+			return res_builder.build(id, result);
 		}
 	};
 }

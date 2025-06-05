@@ -38,11 +38,11 @@ namespace hill::lsp {
 			ofs.flush();
 		}
 
-		void trace(const std::string &msg) {if (level <= log_level::TRACE) writeln("[TRACE]: " + msg);}
-		void info(const std::string &msg) {if (level <= log_level::INFO) writeln("[INFO]: " + msg);}
-		void warn(const std::string &msg) {if (level <= log_level::WARN) writeln("[WARN]: " + msg);}
-		void error(const std::string &msg) {if (level <= log_level::ERROR) writeln("[ERROR]: " + msg);}
-		void critical(const std::string &msg) {if (level <= log_level::CRITICAL) writeln("[CRITICAL]: " + msg);}
+		void trace(const std::string &msg) {if (level <= log_level::TRACE) writeln("[TRACE] " + msg);}
+		void info(const std::string &msg) {if (level <= log_level::INFO) writeln("[INFO] " + msg);}
+		void warn(const std::string &msg) {if (level <= log_level::WARN) writeln("[WARN] " + msg);}
+		void error(const std::string &msg) {if (level <= log_level::ERROR) writeln("[ERROR] " + msg);}
+		void critical(const std::string &msg) {if (level <= log_level::CRITICAL) writeln("[CRITICAL] " + msg);}
 
 	private:
 		std::ofstream ofs;
