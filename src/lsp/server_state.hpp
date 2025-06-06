@@ -1,17 +1,16 @@
 #ifndef HILL__LSP__SERVER_STATE_HPP_INCLUDED
 #define HILL__LSP__SERVER_STATE_HPP_INCLUDED
 
-#include "logger.hpp"
 #include "document_store.hpp"
+
 #include <atomic>
 
 namespace hill::lsp {
 
 	struct server_state {
-		logger log;
+		std::atomic<bool> running = true;
+		std::atomic<bool> initialized = false;
 
-		std::atomic_bool running = true;
-		std::atomic_bool initialized = false;
 		lsp::document_store document_store;
 
 		static server_state &get()

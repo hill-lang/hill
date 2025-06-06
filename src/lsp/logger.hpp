@@ -18,37 +18,54 @@ namespace hill::lsp {
 	};
 
 	struct logger {
-		log_level level = log_level::TRACE;
 
-		void open(const std::filesystem::path &fpath)
+		static void set_log_level(log_level level)
+		{
+			auto &l = get();
+			l.level = level;
+		}
+
+		static void open(const std::filesystem::path &fpath)
 		{
 			std::filesystem::create_directories(fpath.parent_path());
-			ofs.open(fpath, std::ios::binary);
+			get().ofs.open(fpath, std::ios::binary);
 		}
 
-		void writeln(const std::string &msg)
+		static void writeln(const std::string &msg)
 		{
+			auto &l = get();
+
 			auto now = std::chrono::system_clock::now();
 
-			std::lock_guard<std::mutex> guard(mutex);
+			std::lock_guard<std::mutex> guard(l.mutex);
 
-			ofs << std::format("{:%T}", now);
-			ofs << " - ";
-			ofs << '[' << std::setw(5) << std::right << std::this_thread::get_id() << "] ";
-			ofs.write(msg.c_str(), msg.size());
-			ofs.put('\n');
-			ofs.flush();
+			l.ofs << std::format("{:%T}", now);
+			l.ofs << " - ";
+			l.ofs << '[' << std::setw(5) << std::right << std::this_thread::get_id() << "] ";
+			l.ofs.write(msg.c_str(), msg.size());
+			l.ofs.put('\n');
+			l.ofs.flush();
 		}
 
-		void trace(const std::string &msg) {if (level <= log_level::TRACE) writeln("[TRACE] " + msg);}
-		void info(const std::string &msg) {if (level <= log_level::INFO) writeln("[INFO] " + msg);}
-		void warn(const std::string &msg) {if (level <= log_level::WARN) writeln("[WARN] " + msg);}
-		void error(const std::string &msg) {if (level <= log_level::ERROR) writeln("[ERROR] " + msg);}
-		void critical(const std::string &msg) {if (level <= log_level::CRITICAL) writeln("[CRITICAL] " + msg);}
+		static void trace(const std::string &msg) {if (get().level <= log_level::TRACE) writeln("[TRACE] " + msg);}
+		static void info(const std::string &msg) {if (get().level <= log_level::INFO) writeln("[INFO] " + msg);}
+		static void warn(const std::string &msg) {if (get().level <= log_level::WARN) writeln("[WARN] " + msg);}
+		static void error(const std::string &msg) {if (get().level <= log_level::ERROR) writeln("[ERROR] " + msg);}
+		static void critical(const std::string &msg) {if (get().level <= log_level::CRITICAL) writeln("[CRITICAL] " + msg);}
+
+	private:
+		logger() = default;
+
+		static logger &get()
+		{
+			static logger l;
+			return l;
+		}
 
 	private:
 		std::ofstream ofs;
 		std::mutex mutex;
+		log_level level = log_level::TRACE;
 	};
 }
 

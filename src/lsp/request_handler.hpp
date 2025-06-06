@@ -3,6 +3,7 @@
 
 #include "models.hpp"
 #include "router.hpp"
+#include "logger.hpp"
 #include "../utils/json.hpp"
 
 #include <memory>
@@ -18,11 +19,9 @@ namespace hill::lsp {
 		{
 			using namespace ::hill::utils;
 
-			auto &state = server_state::get();
-
 			if (json->kind != json_value_kind::OBJECT) return;
 			if (!json->object_contains("jsonrpc") || !json->object_contains("method")) {
-				state.log.error("Missing required json fields in object - " + json->to_str());
+				logger::error("Missing required json fields in object - " + json->to_str());
 				return;
 			}
 
@@ -30,7 +29,7 @@ namespace hill::lsp {
 			if (!method_json.has_value() || method_json.value()->kind!=json_value_kind::STRING) return;
 			auto method_opt = models::method_parse(method_json.value()->string);
 			if (!method_opt.has_value()) {
-				state.log.error("Unknown method [" + method_json.value()->string + "]");
+				logger::error("Unknown method [" + method_json.value()->string + "]");
 				return;
 			}
 			auto method = method_opt.value();
@@ -51,14 +50,12 @@ namespace hill::lsp {
 
 		static void handle_notification(models::method method, const std::shared_ptr<utils::json_value> &json)
 		{
-			auto &state = server_state::get();
-
 			auto method_str = std::string(models::method_str(method));
 
-			state.log.info("Received notification method<" + method_str + ">");
+			logger::info("Received notification method<" + method_str + ">");
 			auto func = router::get_notify(method);
 			if (!func.has_value()) {
-				state.log.error("Fail to resolve notification method " + method_str);
+				logger::error("Fail to resolve notification method " + method_str);
 				return;
 			}
 
@@ -69,18 +66,16 @@ namespace hill::lsp {
 		{
 			using namespace ::hill::utils;
 
-			auto &state = server_state::get();
-
 			auto id_json = json->obj_get("id");
 			if (!id_json.has_value() || id_json.value()->kind!=json_value_kind::NUMBER) {
-				state.log.error("Invalid request id");
+				logger::error("Invalid request id");
 				return;
 			};
 
 			auto id = (int)id_json.value()->number;
 			auto method_str = std::string(models::method_str(method));
 
-			state.log.info("Received request method<" + method_str + "> id<" + std::to_string(id) + ">");
+			logger::info("Received request method<" + method_str + "> id<" + std::to_string(id) + ">");
 
 			models::request_message req = {
 				.id = id,
@@ -89,7 +84,7 @@ namespace hill::lsp {
 
 			auto func = router::get_req(method);
 			if (!func.has_value()) {
-				state.log.error("Fail to resolve request method " + method_str);
+				logger::error("Fail to resolve request method " + method_str);
 				return;
 			}
 
@@ -99,7 +94,7 @@ namespace hill::lsp {
 				resp_msg.result = std::get<models::result_t>(result);
 			} else {
 				resp_msg.error = std::get<models::response_error>(result);
-				state.log.error("Request failed method<" + method_str
+				logger::error("Request failed method<" + method_str
 					+ "> id<" + std::to_string(id)
 					+ "> code< "+ std::to_string((int)resp_msg.error.value().code)
 					+ "> message<" + resp_msg.error.value().message + '>');
@@ -123,7 +118,7 @@ namespace hill::lsp {
 				fflush(stdout);
 			}
 
-			state.log.info("Sent response to request method<" + method_str + "> id<" + std::to_string(id) + ">");
+			logger::info("Sent response to request method<" + method_str + "> id<" + std::to_string(id) + ">");
 		}
 	};
 };

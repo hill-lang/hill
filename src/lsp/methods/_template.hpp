@@ -2,6 +2,7 @@
 #define HILL__LSP__METHODS_TEMPLATE_HPP_INCLUDED
 
 #include "../models.hpp"
+#include "../logger.hpp"
 
 #include <memory>
 #include <optional>

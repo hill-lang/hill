@@ -12,8 +12,6 @@
 #include <memory>
 #include <variant>
 
-#include "server_state.hpp"
-
 namespace hill::lsp {
 
 	struct router {

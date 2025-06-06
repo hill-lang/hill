@@ -5,6 +5,7 @@
 
 #include "server_state.hpp"
 #include "listener.hpp"
+#include "logger.hpp"
 #include "request_handler.hpp"
 #include "../utils/thread_pool.hpp"
 
@@ -22,9 +23,7 @@ namespace hill::lsp {
 			(void)_setmode(_fileno(stdin), _O_BINARY);
 			(void)_setmode(_fileno(stdout), _O_BINARY);
 #endif
-
-			auto &state = server_state::get();
-			state.log.open("./tmp/hill-lsp.log");
+			logger::open("./tmp/hill-lsp.log");
 		}
 
 		void run()
@@ -32,14 +31,14 @@ namespace hill::lsp {
 			auto &state = server_state::get();
 			state.running = true;
 
-			state.log.info("Hill language server starting ...");
+			logger::info("Hill language server starting ...");
 
-			state.log.info("Starting thread pool ...");
+			logger::info("Starting thread pool ...");
 			utils::thread_pool thread_pool;
 			thread_pool.start();
 
 			while (state.running) {
-				state.log.trace("Receiving ...");
+				logger::trace("Receiving ...");
 				auto req = listener::next();
 				if (!req.has_value()) continue;
 
@@ -47,14 +46,14 @@ namespace hill::lsp {
 				thread_pool.queue_job([req_ptr] {request_handler::handle(req_ptr);});
 			}
 
-			state.log.info("Shutting down ...");
+			logger::info("Shutting down ...");
 
-			state.log.info("Stoping thread pool ...");
+			logger::info("Stoping thread pool ...");
 			thread_pool.stop();
-			state.log.info("Joining thread pool ...");
+			logger::info("Joining thread pool ...");
 			thread_pool.join();
 
-			state.log.info("Sucessfully shut down");
+			logger::info("Sucessfully shut down");
 		}
 	};
 }

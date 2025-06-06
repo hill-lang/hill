@@ -2,7 +2,7 @@
 #define HILL__LSP__LISTENER_HPP_INCLUDED
 
 #include "models.hpp"
-#include "server_state.hpp"
+#include "logger.hpp"
 #include "../exceptions.hpp"
 #include "../utils/json_parser.hpp"
 
@@ -58,8 +58,7 @@ namespace hill::lsp {
 					headers[b] = p;
 				} else {
 					if (*b) {
-						auto &state = server_state::get();
-						state.log.error("Received line without ':' that is not empty [" + std::string(b) + "]");
+						logger::error("Received line without ':' that is not empty [" + std::string(b) + "]");
 						return std::nullopt;
 					}
 
@@ -71,8 +70,7 @@ namespace hill::lsp {
 		static std::optional<std::string> recv_content(const std::unordered_map<std::string, std::string> &headers)
 		{
 			if (!headers.contains("Content-Length")) {
-				auto &state = server_state::get();
-				state.log.error("Request missing required header [Content-Length]");
+				logger::error("Request missing required header [Content-Length]");
 				return std::nullopt;
 			}
 
@@ -94,8 +92,7 @@ namespace hill::lsp {
 			if (json.has_value()) {
 				return json.value();
 			} else {
-				auto &state = server_state::get();
-				state.log.error("Failed to parse json content");
+				logger::error("Failed to parse json content");
 				return std::nullopt;
 			}
 		}

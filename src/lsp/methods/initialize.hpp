@@ -2,6 +2,7 @@
 #define HILL__LSP__METHODS_INITIALIZE_HPP_INCLUDED
 
 #include "../models.hpp"
+#include "../logger.hpp"
 #include "../server_state.hpp"
 
 #include <memory>
@@ -31,7 +32,7 @@ namespace hill::lsp::methods {
 	{
 		auto &state = server_state::get();
 		state.initialized = true;
-		state.log.info("Initialized");
+		logger::info("Initialized");
 	}
 };
 
