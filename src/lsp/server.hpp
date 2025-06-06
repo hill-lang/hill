@@ -27,8 +27,6 @@ namespace hill::lsp {
 			state.log.open("./tmp/hill-lsp.log");
 		}
 
-		utils::thread_pool thread_pool;
-
 		void run()
 		{
 			auto &state = server_state::get();
@@ -37,6 +35,7 @@ namespace hill::lsp {
 			state.log.info("Hill language server starting ...");
 
 			state.log.info("Starting thread pool ...");
+			utils::thread_pool thread_pool;
 			thread_pool.start();
 
 			while (state.running) {

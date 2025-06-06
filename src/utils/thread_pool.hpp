@@ -11,19 +11,20 @@
 namespace hill::utils {
 
 	struct thread_pool {
-		thread_pool(): runnning(false), should_terminate(false) { }
+		thread_pool(): should_terminate(false) { }
+		~thread_pool()
+		{
+			stop();
+			join();
+		}
 
 		bool start()
 		{
-			if (runnning) {
-				return false;
-			}
-
 			if (threads.size() != 0) {
+				stop();
 				join();
 			}
 
-			runnning = true;
 			should_terminate = false;
 
 			const uint32_t thread_count = std::thread::hardware_concurrency();
@@ -70,8 +71,6 @@ namespace hill::utils {
 		}
 
 	private:
-		bool runnning;
-
 		std::vector<std::thread> threads;
 		bool should_terminate;
 		std::queue<std::function<void()>> jobs;
