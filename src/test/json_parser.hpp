@@ -78,7 +78,7 @@ namespace hill::test {
 					timer.elapsed_sec(),
 					json_parser_tests[ix].src,
 					exp_value_ss.str().c_str(),
-					json.has_value() ? json.value()->to_str().c_str() : "",
+					json.has_value() ? json.value()->stringify().c_str() : "",
 					&ok);
 			}
 		}
@@ -94,7 +94,7 @@ namespace hill::test {
 				timer.elapsed_sec(),
 				json_parser_failing_tests[ix],
 				"",
-				json.has_value() ? json.value()->to_str().c_str() : "",
+				json.has_value() ? json.value()->stringify().c_str() : "",
 				&ok);
 		}
 

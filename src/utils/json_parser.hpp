@@ -76,7 +76,7 @@ namespace hill::utils {
 
 		static std::optional<std::shared_ptr<json_value>> parse_object(std::istream &istr)
 		{
-			auto ret = json_value::create(json_value_kind::OBJECT);
+			auto ret = json_value::create<json_value_kind::OBJECT>();
 
 			while (true) {
 				skip_ws(istr);
@@ -93,12 +93,12 @@ namespace hill::utils {
 				if (istr.eof()) return std::nullopt;
 
 				if (istr.get()!=':') return std::nullopt; // Member without value?
-				if (ret->object_contains(key.value()->string)) return std::nullopt; // Duplicate key
+				if (ret->obj_has(key.value()->str().value())) return std::nullopt; // Duplicate key
 
 				auto value = parse_value(istr);
 				if (!value.has_value()) return std::nullopt;
 
-				ret->object_entries.emplace_back(key.value()->string, value.value());
+				std::get<json_value::object_t>(ret->value).emplace_back(key.value()->str().value(), value.value());
 
 				skip_ws(istr);
 				if (istr.eof()) return std::nullopt;
@@ -110,7 +110,7 @@ namespace hill::utils {
 
 		static std::optional<std::shared_ptr<json_value>> parse_array(std::istream &istr)
 		{
-			auto arr = json_value::create(json_value_kind::ARRAY);
+			auto arr = json_value::create<json_value_kind::ARRAY>();
 
 			while (true) {
 				skip_ws(istr);
@@ -124,8 +124,8 @@ namespace hill::utils {
 
 				auto value = parse_value(istr);
 				if (!value.has_value()) return std::nullopt;
-
-				arr->array.push_back(value.value());
+				
+				std::get<json_value::array_t>(arr->value).push_back(value.value());
 
 				skip_ws(istr);
 				if (istr.eof()) return std::nullopt;
@@ -223,7 +223,7 @@ namespace hill::utils {
 			if (!istr.eof() && istr.get()=='u'
 					&& !istr.eof() && istr.get()=='l'
 					&& !istr.eof() && istr.get()=='l') {
-				return json_value::create(json_value_kind::JSON_NULL);
+				return json_value::create<json_value_kind::JSON_NULL>();
 			} else {
 				return std::nullopt;
 			}

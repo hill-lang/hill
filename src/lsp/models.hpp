@@ -163,7 +163,8 @@ namespace hill::lsp::models {
 
 		std::shared_ptr<utils::json_value> json() const
 		{
-			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+			using namespace ::hill::utils;
+			auto json = json_value::create<json_value_kind::OBJECT>();
 
 			json->obj_add_num("code", (double)code);
 			json->obj_add_str("message", message);
@@ -197,7 +198,7 @@ namespace hill::lsp::models {
 
 		std::shared_ptr<utils::json_value> json() const
 		{
-			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 
 			json->obj_add_num("id", (double)id);
 
@@ -217,7 +218,7 @@ namespace hill::lsp::models {
 
 		std::shared_ptr<utils::json_value> json() const
 		{
-			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 
 			return json;
 		}
@@ -235,7 +236,7 @@ namespace hill::lsp::models {
 
 		std::shared_ptr<utils::json_value> json() const
 		{
-			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 
 			if (completion_provider.has_value()) {
 				json->obj_add_obj("completionProvider", completion_provider.value().json());
@@ -261,7 +262,7 @@ namespace hill::lsp::models {
 
 		std::shared_ptr<utils::json_value> json() const
 		{
-			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 
 			json->obj_add_str("name", name);
 
@@ -279,7 +280,7 @@ namespace hill::lsp::models {
 
 		std::shared_ptr<utils::json_value> json() const
 		{
-			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 
 			json->obj_add_obj("capabilities", capabilities.json());
 
@@ -476,7 +477,7 @@ namespace hill::lsp::models {
 #endif
 		std::shared_ptr<utils::json_value> json() const
 		{
-			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 
 			json->obj_add_str("label", label);
 
@@ -561,7 +562,7 @@ namespace hill::lsp::models {
 
 		std::shared_ptr<utils::json_value> json() const
 		{
-			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 
 			json->obj_add_bool("isIncomplete", is_incomplete);
 

@@ -19,22 +19,22 @@ namespace hill::lsp {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind != json_value_kind::OBJECT) return;
-			if (!json->object_contains("jsonrpc") || !json->object_contains("method")) {
-				logger::error("Missing required json fields in object - " + json->to_str());
+			if (json->kind()!=json_value_kind::OBJECT) return;
+			if (!json->obj_has("jsonrpc") || !json->obj_has("method")) {
+				logger::error("Missing required json fields in object - " + json->stringify());
 				return;
 			}
 
 			auto method_json = json->obj_get("method");
-			if (!method_json.has_value() || method_json.value()->kind!=json_value_kind::STRING) return;
-			auto method_opt = models::method_parse(method_json.value()->string);
+			if (!method_json.has_value() || method_json.value()->kind()!=json_value_kind::STRING) return;
+			auto method_opt = models::method_parse(method_json.value()->str().value());
 			if (!method_opt.has_value()) {
-				logger::error("Unknown method [" + method_json.value()->string + "]");
+				logger::error("Unknown method [" + method_json.value()->str().value() + "]");
 				return;
 			}
 			auto method = method_opt.value();
 
-			if (json->object_contains("id")) {
+			if (json->obj_has("id")) {
 				handle_request(method, json);
 			} else {
 				handle_notification(method, json);
@@ -67,12 +67,12 @@ namespace hill::lsp {
 			using namespace ::hill::utils;
 
 			auto id_json = json->obj_get("id");
-			if (!id_json.has_value() || id_json.value()->kind!=json_value_kind::NUMBER) {
+			if (!id_json.has_value() || id_json.value()->kind()!=json_value_kind::NUMBER) {
 				logger::error("Invalid request id");
 				return;
 			};
 
-			auto id = (int)id_json.value()->number;
+			auto id = (int)id_json.value()->num().value();
 			auto method_str = std::string(models::method_str(method));
 
 			logger::info("Received request method<" + method_str + "> id<" + std::to_string(id) + ">");
@@ -100,7 +100,7 @@ namespace hill::lsp {
 					+ "> message<" + resp_msg.error.value().message + '>');
 			}
 
-			auto resp_msg_str = resp_msg.json()->to_str();
+			auto resp_msg_str = resp_msg.json()->stringify();
 
 			std::string resp_header = "Content-Length: "
 				+ std::to_string(resp_msg_str.size())
