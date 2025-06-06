@@ -15,7 +15,47 @@ namespace hill::lsp::methods {
 	{
 		auto &state = server_state::get();
 		state.log.trace("text_document_completion() " + req.params.value()->to_str());
-		throw;
+
+		models::completion_list completion_list = {
+			.is_incomplete = false,
+			.items = {
+				models::completion_item {.label="@i8"},
+				models::completion_item {.label="@i16"},
+				models::completion_item {.label="@i32"},
+				models::completion_item {.label="@i64"},
+				models::completion_item {.label="@i128"},
+
+				models::completion_item {.label="i8"},
+				models::completion_item {.label="i16"},
+				models::completion_item {.label="i32"},
+				models::completion_item {.label="i64"},
+				models::completion_item {.label="i128"},
+
+				models::completion_item {.label="@u8"},
+				models::completion_item {.label="@u16"},
+				models::completion_item {.label="@u32"},
+				models::completion_item {.label="@u64"},
+				models::completion_item {.label="@u128"},
+
+				models::completion_item {.label="u8"},
+				models::completion_item {.label="u16"},
+				models::completion_item {.label="u32"},
+				models::completion_item {.label="u64"},
+				models::completion_item {.label="u128"},
+
+				models::completion_item {.label="@f8"},
+				models::completion_item {.label="@f16"},
+				models::completion_item {.label="@f32"},
+				models::completion_item {.label="@f64"},
+
+				models::completion_item {.label="f8"},
+				models::completion_item {.label="f16"},
+				models::completion_item {.label="f32"},
+				models::completion_item {.label="f64"},
+			}
+		};
+
+		return completion_list.json();
 	}
 };
 
