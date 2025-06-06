@@ -15,7 +15,7 @@ namespace hill::lsp::methods {
 		throw;
 	}
 
-	inline void _notify_template()
+	inline void _notify_template(const models::notification_message &req)
 	{
 		throw;
 	}

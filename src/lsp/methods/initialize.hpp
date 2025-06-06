@@ -28,7 +28,7 @@ namespace hill::lsp::methods {
 	}
 
 	// Awknownlage initialize success
-	inline void initialized()
+	inline void initialized(const models::notification_message &req)
 	{
 		auto &state = server_state::get();
 		state.initialized = true;

@@ -13,7 +13,12 @@ namespace hill::lsp::methods {
 	// Requset to initialize
 	inline std::variant<models::result_t, models::response_error> text_document_completion(const models::request_message &req)
 	{
-		auto params = models::text_document_position_params::from_json(req.params.value());
+		auto params = models::text_document_position_params::from_json(req.params.value()).value();
+
+		//params.position.line;
+		//params.position.character;
+
+		//params.text_document.uri;
 
 		models::completion_list completion_list = {
 			.is_incomplete = false,

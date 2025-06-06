@@ -53,13 +53,18 @@ namespace hill::lsp {
 			auto method_str = std::string(models::method_str(method));
 
 			logger::info("Received notification method<" + method_str + ">");
+
+			models::notification_message notification = {
+				.method = method,
+				.params = json->obj_get("params")};
+
 			auto func = router::get_notify(method);
 			if (!func.has_value()) {
 				logger::error("Fail to resolve notification method " + method_str);
 				return;
 			}
 
-			func.value()();
+			func.value()(notification);
 		}
 
 		static inline void handle_request(models::method method, const std::shared_ptr<utils::json_value> &json)

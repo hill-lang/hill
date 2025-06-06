@@ -5,6 +5,7 @@
 
 #include "methods/initialize.hpp"
 #include "methods/text_document/completion.hpp"
+#include "methods/text_document/did_change.hpp"
 
 #include <unordered_map>
 #include <functional>
@@ -18,7 +19,7 @@ namespace hill::lsp {
 		router() = delete;
 
 		typedef std::function<std::variant<models::result_t, models::response_error>(const models::request_message &req)> request_endpoint_t;
-		typedef std::function<void()> notify_endpoint_t;
+		typedef std::function<void(const models::notification_message &req)> notify_endpoint_t;
 
 		static std::optional<request_endpoint_t> get_req(models::method m)
 		{
@@ -54,6 +55,7 @@ namespace hill::lsp {
 		{
 			static const std::unordered_map<models::method, notify_endpoint_t> map = {
 				{models::method::INITIALIZED, methods::initialized},
+				{models::method::TEXT_DOCUMENT_DID_CHANGE, methods::text_document_did_change},
 			};
 			return map;
 		}

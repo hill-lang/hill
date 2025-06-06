@@ -16,6 +16,7 @@ namespace hill::lsp::models {
 		INITIALIZE, // Requset to initialize
 		INITIALIZED, // Awknownlage initialize success
 		TEXT_DOCUMENT_COMPLETION,
+		TEXT_DOCUMENT_DID_CHANGE,
 	};
 
 	constexpr const char *method_str(method m)
@@ -42,6 +43,18 @@ namespace hill::lsp::models {
 		 */
 		int id;
 
+		/**
+		 * The method to be invoked.
+		 */
+		models::method method;
+
+		/**
+		 * The method's params.
+		 */
+		std::optional<std::shared_ptr<::hill::utils::json_value>> params;
+	};
+
+	struct notification_message {
 		/**
 		 * The method to be invoked.
 		 */
