@@ -16,8 +16,8 @@ namespace hill::lsp {
 
 		static server_state &get()
 		{
-			static server_state log;
-			return log;
+			static server_state state;
+			return state;
 		}
 	};
 }
