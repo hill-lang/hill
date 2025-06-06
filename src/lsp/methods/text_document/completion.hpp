@@ -19,8 +19,8 @@ namespace hill::lsp::methods {
 		//params.position.line;
 		//params.position.character;
 
-		auto content = state.document_store.get(params.text_document.uri).value();
-		logger::trace(content);
+		//auto content = state.document_store.get(params.text_document.uri).value();
+		//logger::trace(content);
 
 		models::completion_list completion_list = {
 			.is_incomplete = false,
