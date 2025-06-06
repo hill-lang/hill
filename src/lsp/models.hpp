@@ -254,7 +254,7 @@ namespace hill::lsp::models {
 
 	struct initialize_result {
 		server_capabilities capabilities;
-		std::optional<server_info> server_info;
+		std::optional<models::server_info> server_info;
 
 		std::shared_ptr<utils::json_value> json()
 		{
