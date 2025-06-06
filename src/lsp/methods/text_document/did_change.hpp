@@ -5,9 +5,6 @@
 #include "../../logger.hpp"
 #include "../../server_state.hpp"
 
-#include <memory>
-#include <optional>
-#include <variant>
 #include <string>
 
 namespace hill::lsp::methods {

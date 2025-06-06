@@ -5,10 +5,6 @@
 #include "../../logger.hpp"
 #include "../../server_state.hpp"
 
-#include <memory>
-#include <optional>
-#include <variant>
-
 namespace hill::lsp::methods {
 
 	// Requset to initialize
