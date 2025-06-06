@@ -14,16 +14,15 @@ namespace hill::lsp::methods {
 	// Requset to initialize
 	inline std::variant<models::result_t, models::response_error> initialize(const models::request_message &req)
 	{
-		auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+		models::initialize_result result = {
+			.capabilities = {},
+			.server_info = models::server_info{
+				.name = "hill-lsp",
+				.version = "0.0.1",
+			}
+		};
 
-		auto capabilities = json->obj_add_obj("capabilities").value();
-		auto completion_provider = json->obj_add_obj("completionProvider").value();
-
-		auto server_info = json->obj_add_obj("serverInfo").value();
-		server_info->obj_add_str("name", "hill-lsp");
-		server_info->obj_add_str("version", "0.0.1");
-
-		return json;
+		return result.json();
 	}
 
 	// Awknownlage initialize success

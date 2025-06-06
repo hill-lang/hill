@@ -182,6 +182,7 @@ namespace hill::lsp::models {
 		 * The request id.
 		 */
 		int id;
+
 		/**
 		 * The result of a request. This member is REQUIRED on success.
 		 * This member MUST NOT exist if there was an error invoking the method.
@@ -205,6 +206,64 @@ namespace hill::lsp::models {
 
 			if (error.has_value()) {
 				json->obj_add_obj("error", error.value().json());
+			}
+
+			return json;
+		}
+	};
+
+	/**
+	 * The capabilities the language server provides.
+	 */
+	struct server_capabilities {
+		std::shared_ptr<utils::json_value> json()
+		{
+			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+			
+			return json;
+		}
+	};
+
+	/**
+	 * Information about the server
+	 */
+	struct server_info {
+		/**
+		 * The name of the server as defined by the server.
+		 */
+		std::string name;
+
+		/**
+		 * The server's version as defined by the server.
+		 */
+		std::optional<std::string> version;
+
+		std::shared_ptr<utils::json_value> json()
+		{
+			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+
+			json->obj_add_str("name", name);
+
+			if (version.has_value()) {
+				json->obj_add_str("version", version.value());
+			}
+
+			return json;
+		}
+	};
+
+	struct initialize_result {
+		server_capabilities capabilities;
+		std::optional<server_info> server_info;
+
+		std::shared_ptr<utils::json_value> json()
+		{
+			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+
+			json->obj_add_obj("capabilities", capabilities.json());
+
+			if (server_info.has_value()) {
+				json->obj_add_obj("serverInfo", server_info.value().json());
 			}
 
 			return json;
