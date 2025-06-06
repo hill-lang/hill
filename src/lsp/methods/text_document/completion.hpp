@@ -51,6 +51,9 @@ namespace hill::lsp::methods {
 				models::completion_item {.label="f16"},
 				models::completion_item {.label="f32"},
 				models::completion_item {.label="f64"},
+
+				models::completion_item {.label="mut"},
+				models::completion_item {.label="@mut"},
 			}
 		};
 
