@@ -2,13 +2,14 @@
 #define HILL__LSP__SERVER_STATE_HPP_INCLUDED
 
 #include "logger.hpp"
+#include <atomic>
 
 namespace hill::lsp {
 
 	struct server_state {
 		logger log;
 
-		bool initialized = false;
+		std::atomic_bool initialized = false;
 
 		static server_state &get()
 		{
