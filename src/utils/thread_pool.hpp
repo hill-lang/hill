@@ -21,8 +21,7 @@ namespace hill::utils {
 		bool start()
 		{
 			if (threads.size() != 0) {
-				stop();
-				join();
+				return false;
 			}
 
 			should_terminate = false;
