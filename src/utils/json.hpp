@@ -143,6 +143,7 @@ namespace hill::utils {
 
 			auto obj = create(json_value_kind::OBJECT);
 			array.push_back(obj);
+			return obj;
 		}
 
 		/// <summary>
@@ -153,6 +154,7 @@ namespace hill::utils {
 			if (kind!=json_value_kind::ARRAY) return std::nullopt;
 
 			array.push_back(obj);
+			return obj;
 		}
 
 		/// <summary>
@@ -182,7 +184,7 @@ namespace hill::utils {
 		/// <summary>
 		/// Add number to array
 		/// </summary>
-		std::optional<std::shared_ptr<json_value>> obj_add_arr(double number)
+		std::optional<std::shared_ptr<json_value>> arr_add_num(double number)
 		{
 			if (kind!=json_value_kind::ARRAY) return std::nullopt;
 
@@ -194,7 +196,7 @@ namespace hill::utils {
 		/// <summary>
 		/// Add boolean to array
 		/// </summary>
-		std::optional<std::shared_ptr<json_value>> obj_add_bool(bool boolean)
+		std::optional<std::shared_ptr<json_value>> arr_add_bool(bool boolean)
 		{
 			if (kind!=json_value_kind::ARRAY) return std::nullopt;
 
