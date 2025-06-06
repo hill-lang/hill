@@ -48,12 +48,12 @@ namespace hill::lsp {
 
 			logger::info("Shutting down ...");
 
-			logger::info("Stoping thread pool ...");
+			logger::info("Stopping thread pool ...");
 			thread_pool.stop();
 			logger::info("Joining thread pool ...");
 			thread_pool.join();
 
-			logger::info("Sucessfully shut down");
+			logger::info("Successfully shut down");
 		}
 	};
 }
