@@ -292,6 +292,81 @@ namespace hill::lsp::models {
 		}
 	};
 
+	struct position {
+
+		// TODO:
+
+		static std::optional<position> from_json(const std::shared_ptr<utils::json_value> &json)
+		{
+			using namespace ::hill::utils;
+
+			return position{};
+		}
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+
+			return json;
+		}
+	};
+
+	struct text_document_identifier {
+		std::string uri;
+
+		static std::optional<text_document_identifier> from_json(const std::shared_ptr<utils::json_value> &json)
+		{
+			using namespace ::hill::utils;
+
+			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (!json->obj_has("uri")) return std::nullopt;
+
+			auto uri_json = json->obj_get("uri").value();
+			if (uri_json->kind()!=json_value_kind::STRING) return std::nullopt;
+
+			return text_document_identifier{.uri = uri_json->str().value()};
+		}
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_str("uri", "uri");
+			return json;
+		}
+	};
+
+	struct text_document_position_params {
+		text_document_identifier text_document;
+		models::position position;
+
+		static std::optional<text_document_position_params> from_json(const std::shared_ptr<utils::json_value> &json)
+		{
+			using namespace ::hill::utils;
+
+			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (!json->obj_has("textDocument")) return std::nullopt;
+			if (!json->obj_has("position")) return std::nullopt;
+
+			auto text_document = text_document_identifier::from_json(json->obj_get("textDocument").value());
+			if (!text_document.has_value()) return std::nullopt;
+			auto position = models::position::from_json(json->obj_get("position").value());
+			if (!position.has_value()) return std::nullopt;
+
+			return text_document_position_params{
+				.text_document = text_document.value(),
+				.position = position.value(),
+			};
+		}
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_obj("textDocument", text_document.json());
+			json->obj_add_obj("position", position.json());
+			return json;
+		}
+	};
+
 	struct completion_item {
 		/**
 		 * The label of this completion item.
@@ -303,8 +378,8 @@ namespace hill::lsp::models {
 		 * be an unqualified name of the completion item.
 		 */
 		std::string label;
-#if 0
 
+#if 0
 		/**
 		 * Additional details for the label
 		 *
