@@ -15,6 +15,7 @@ namespace hill::lsp::models {
 	enum class method {
 		INITIALIZE, // Requset to initialize
 		INITIALIZED, // Awknownlage initialize success
+		SHUTDOWN, // Requset shutdown
 		TEXT_DOCUMENT_COMPLETION,
 		TEXT_DOCUMENT_DID_CHANGE,
 	};
@@ -24,6 +25,7 @@ namespace hill::lsp::models {
 		switch (m) {
 		case method::INITIALIZE: return "initialize";
 		case method::INITIALIZED: return "initialized";
+		case method::SHUTDOWN: return "shutdown";
 		case method::TEXT_DOCUMENT_COMPLETION: return "textDocument/completion";
 		case method::TEXT_DOCUMENT_DID_CHANGE: return "textDocument/didChange";
 		default: throw internal_exception();
@@ -34,6 +36,7 @@ namespace hill::lsp::models {
 	{
 		if (str==method_str(method::INITIALIZE)) return method::INITIALIZE;
 		else if (str==method_str(method::INITIALIZED)) return method::INITIALIZED;
+		else if (str==method_str(method::SHUTDOWN)) return method::SHUTDOWN;
 		else if (str==method_str(method::TEXT_DOCUMENT_COMPLETION)) return method::TEXT_DOCUMENT_COMPLETION;
 		else if (str==method_str(method::TEXT_DOCUMENT_DID_CHANGE)) return method::TEXT_DOCUMENT_DID_CHANGE;
 		else return std::nullopt;

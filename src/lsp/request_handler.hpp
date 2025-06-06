@@ -95,8 +95,8 @@ namespace hill::lsp {
 
 			auto result = func.value()(req);
 			models::response_message resp_msg = {.id=id, .result=std::nullopt, .error=std::nullopt};
-			if (std::holds_alternative<models::result_t>(result)) {
-				resp_msg.result = std::get<models::result_t>(result);
+			if (std::holds_alternative<std::optional<models::result_t>>(result)) {
+				resp_msg.result = std::get<std::optional<models::result_t>>(result);
 			} else {
 				resp_msg.error = std::get<models::response_error>(result);
 				logger::error("Request failed method<" + method_str

@@ -6,7 +6,7 @@
 
 namespace hill::lsp::methods {
 
-	inline std::variant<models::result_t, models::response_error> _request_template(const models::request_message &req)
+	inline std::variant<std::optional<models::result_t>, models::response_error> _request_template(const models::request_message &req)
 	{
 		throw;
 	}

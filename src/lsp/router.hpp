@@ -4,6 +4,7 @@
 #include "models.hpp"
 
 #include "methods/initialize.hpp"
+#include "methods/shutdown.hpp"
 #include "methods/text_document/completion.hpp"
 #include "methods/text_document/did_change.hpp"
 
@@ -18,7 +19,9 @@ namespace hill::lsp {
 	struct router {
 		router() = delete;
 
-		typedef std::function<std::variant<models::result_t, models::response_error>(const models::request_message &req)> request_endpoint_t;
+		typedef std::variant<std::optional<models::result_t>, models::response_error> request_result_t;
+		typedef std::function<request_result_t(const models::request_message &req)> request_endpoint_t;
+
 		typedef std::function<void(const models::notification_message &req)> notify_endpoint_t;
 
 		static std::optional<request_endpoint_t> get_req(models::method m)
@@ -46,6 +49,7 @@ namespace hill::lsp {
 		{
 			static const std::unordered_map<models::method, request_endpoint_t> map = {
 				{models::method::INITIALIZE, methods::initialize},
+				{models::method::SHUTDOWN, methods::shutdown},
 				{models::method::TEXT_DOCUMENT_COMPLETION, methods::text_document_completion},
 			};
 			return map;

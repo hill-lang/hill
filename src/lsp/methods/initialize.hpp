@@ -8,7 +8,7 @@
 namespace hill::lsp::methods {
 
 	// Requset to initialize
-	inline std::variant<models::result_t, models::response_error> initialize(const models::request_message &req)
+	inline std::variant<std::optional<models::result_t>, models::response_error> initialize(const models::request_message &req)
 	{
 		auto &state = server_state::get();
 		models::initialize_result result = {
