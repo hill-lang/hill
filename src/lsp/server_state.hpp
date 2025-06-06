@@ -10,6 +10,7 @@ namespace hill::lsp {
 	struct server_state {
 		logger log;
 
+		std::atomic_bool running = true;
 		std::atomic_bool initialized = false;
 		lsp::document_store document_store;
 

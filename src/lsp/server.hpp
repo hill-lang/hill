@@ -16,7 +16,7 @@
 namespace hill::lsp {
 
 	struct server {
-		server() : running(true)
+		server()
 		{
 #ifdef _WIN32
 			(void)_setmode(_fileno(stdin), _O_BINARY);
@@ -27,20 +27,19 @@ namespace hill::lsp {
 			state.log.open("./tmp/hill-lsp.log");
 		}
 
-		bool running;
 		utils::thread_pool thread_pool;
 
 		void run()
 		{
-			running = true;
-
 			auto &state = server_state::get();
+			state.running = true;
+
 			state.log.info("Hill language server starting ...");
 
 			state.log.info("Starting thread pool ...");
 			thread_pool.start();
 
-			while (running) {
+			while (state.running) {
 				state.log.trace("Receiving ...");
 				auto req = listener::next();
 				if (!req.has_value()) continue;
