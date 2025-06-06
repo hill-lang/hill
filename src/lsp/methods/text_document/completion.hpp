@@ -15,9 +15,6 @@ namespace hill::lsp::methods {
 	{
 		auto params = models::text_document_position_params::from_json(req.params.value());
 
-		logger::trace("text_document_completion() " + req.params.value()->stringify());
-		logger::trace("parsed " + params.value().json()->stringify());
-
 		models::completion_list completion_list = {
 			.is_incomplete = false,
 			.items = {

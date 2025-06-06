@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <stdint.h>
 
 namespace hill::lsp::models {
 
@@ -293,20 +294,34 @@ namespace hill::lsp::models {
 	};
 
 	struct position {
-
-		// TODO:
+		uint32_t line;
+		uint32_t character;
 
 		static std::optional<position> from_json(const std::shared_ptr<utils::json_value> &json)
 		{
 			using namespace ::hill::utils;
 
-			return position{};
+			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (!json->obj_has("line")) return std::nullopt;
+			if (!json->obj_has("character")) return std::nullopt;
+
+			auto ln_json = json->obj_get("line").value();
+			auto ch_json = json->obj_get("character").value();
+
+			if (ln_json->kind()!=json_value_kind::NUMBER) return std::nullopt;
+			if (ch_json->kind()!=json_value_kind::NUMBER) return std::nullopt;
+
+			return position{
+				.line = (uint32_t)ln_json->num().value(),
+				.character = (uint32_t)ch_json->num().value(),
+			};
 		}
 
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
-
+			json->obj_add_num("line", (double)line);
+			json->obj_add_num("character", (double)character);
 			return json;
 		}
 	};
@@ -330,7 +345,7 @@ namespace hill::lsp::models {
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
-			json->obj_add_str("uri", "uri");
+			json->obj_add_str("uri", uri);
 			return json;
 		}
 	};
@@ -338,6 +353,7 @@ namespace hill::lsp::models {
 	struct text_document_position_params {
 		text_document_identifier text_document;
 		models::position position;
+		//TODO: context
 
 		static std::optional<text_document_position_params> from_json(const std::shared_ptr<utils::json_value> &json)
 		{
