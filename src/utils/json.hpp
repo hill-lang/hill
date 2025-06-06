@@ -89,6 +89,13 @@ namespace hill::utils {
 			return std::get<array_t>(value);
 		}*/
 
+		const array_t * arr() const
+		{
+			if (value_kind!=json_value_kind::ARRAY) return nullptr;
+			if (!std::holds_alternative<array_t>(value)) return nullptr;
+			return &std::get<array_t>(value);
+		}
+
 		std::optional<std::string> str() const
 		{
 			if (value_kind!=json_value_kind::STRING) return std::nullopt;

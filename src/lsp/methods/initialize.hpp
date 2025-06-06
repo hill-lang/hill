@@ -14,10 +14,9 @@ namespace hill::lsp::methods {
 	// Requset to initialize
 	inline std::variant<models::result_t, models::response_error> initialize(const models::request_message &req)
 	{
+		auto &state = server_state::get();
 		models::initialize_result result = {
-			.capabilities = {
-				.completion_provider = models::completion_options{}
-			},
+			.capabilities = state.server_capabilities,
 			.server_info = models::server_info{
 				.name = "hill-lsp",
 				.version = "0.0.1",
