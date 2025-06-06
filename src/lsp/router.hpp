@@ -4,7 +4,7 @@
 #include "models.hpp"
 
 #include "methods/initialize.hpp"
-#include "methods/text_document_completion.hpp"
+#include "methods/text_document/completion.hpp"
 
 #include <unordered_map>
 #include <functional>

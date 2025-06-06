@@ -1,8 +1,8 @@
-#ifndef HILL__LSP__METHODS_TEXT_DOCUMENT_COMPLETION_HPP_INCLUDED
-#define HILL__LSP__METHODS_TEXT_DOCUMENT_COMPLETION_HPP_INCLUDED
+#ifndef HILL__LSP__METHODS_TEXT_DOCUMENT__COMPLETION_HPP_INCLUDED
+#define HILL__LSP__METHODS_TEXT_DOCUMENT__COMPLETION_HPP_INCLUDED
 
-#include "../models.hpp"
-#include "../server_state.hpp"
+#include "../../models.hpp"
+#include "../../server_state.hpp"
 
 #include <memory>
 #include <optional>
@@ -19,4 +19,4 @@ namespace hill::lsp::methods {
 	}
 };
 
-#endif /* HILL__LSP__METHODS_TEXT_DOCUMENT_COMPLETION_HPP_INCLUDED */
+#endif /* HILL__LSP__METHODS_TEXT_DOCUMENT__COMPLETION_HPP_INCLUDED */
