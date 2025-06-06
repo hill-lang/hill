@@ -15,7 +15,9 @@ namespace hill::lsp::methods {
 	inline std::variant<models::result_t, models::response_error> initialize(const models::request_message &req)
 	{
 		models::initialize_result result = {
-			.capabilities = {},
+			.capabilities = {
+				.completion_provider = models::completion_options{}
+			},
 			.server_info = models::server_info{
 				.name = "hill-lsp",
 				.version = "0.0.1",

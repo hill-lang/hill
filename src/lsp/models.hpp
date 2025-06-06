@@ -212,13 +212,33 @@ namespace hill::lsp::models {
 		}
 	};
 
+	struct completion_options {
+
+		std::shared_ptr<utils::json_value> json()
+		{
+			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+
+			return json;
+		}
+	};
+
 	/**
 	 * The capabilities the language server provides.
 	 */
 	struct server_capabilities {
+
+		/**
+		 * The server provides completion support.
+		 */
+		std::optional<completion_options> completion_provider;
+
 		std::shared_ptr<utils::json_value> json()
 		{
 			auto json = utils::json_value::create(utils::json_value_kind::OBJECT);
+
+			if (completion_provider.has_value()) {
+				json->obj_add_obj("completionProvider", completion_provider.value().json());
+			}
 			
 			return json;
 		}
@@ -268,13 +288,6 @@ namespace hill::lsp::models {
 
 			return json;
 		}
-	};
-
-	struct completion_client_capabilities {
-		/**
-		 * Whether completion supports dynamic registration.
-		 */
-		//std::optional<bool> dynamic_registration;
 	};
 };
 
