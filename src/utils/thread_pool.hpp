@@ -90,7 +90,9 @@ namespace hill::utils {
 					job = jobs.front();
 					jobs.pop();
 				}
-				job();
+				try {
+					job();
+				} catch (const std::exception &) {}
 			}
 		}
 	};
