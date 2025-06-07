@@ -18,8 +18,8 @@ namespace hill::lsp::models {
 		INITIALIZED,
 		// TODO: Register capability
 		// TODO: Unregister capability
-		// TODO: Set trace
-		// TODO: Log trace
+		SET_TRACE,
+		LOG_TRACE,
 		SHUTDOWN,
 		EXIT,
 		// Document Synchronization
@@ -39,6 +39,8 @@ namespace hill::lsp::models {
 		switch (m) {
 		case method::INITIALIZE: return "initialize";
 		case method::INITIALIZED: return "initialized";
+		case method::SET_TRACE: return "$/setTrace";
+		case method::LOG_TRACE: return "$/logTrace";
 		case method::SHUTDOWN: return "shutdown";
 		case method::EXIT: return "exit";
 		case method::TEXT_DOCUMENT_DID_OPEN: return "textDocument/didOpen";
@@ -57,6 +59,8 @@ namespace hill::lsp::models {
 	{
 		if (str==method_str(method::INITIALIZE)) return method::INITIALIZE;
 		else if (str==method_str(method::INITIALIZED)) return method::INITIALIZED;
+		else if (str==method_str(method::SET_TRACE)) return method::SET_TRACE;
+		else if (str==method_str(method::LOG_TRACE)) return method::LOG_TRACE;
 		else if (str==method_str(method::SHUTDOWN)) return method::SHUTDOWN;
 		else if (str==method_str(method::EXIT)) return method::EXIT;
 		else if (str==method_str(method::TEXT_DOCUMENT_DID_OPEN)) return method::TEXT_DOCUMENT_DID_OPEN;

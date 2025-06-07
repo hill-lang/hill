@@ -7,7 +7,9 @@
 
 namespace hill::lsp::methods {
 
-	// Requset to initialize
+	/**
+	 * Requset to initialize
+	 */
 	inline std::variant<std::optional<models::result_t>, models::response_error> initialize(const models::request_message &req)
 	{
 		auto &state = server_state::get();
@@ -22,7 +24,9 @@ namespace hill::lsp::methods {
 		return result.json();
 	}
 
-	// Awknownlage initialize success
+	/**
+	 * Awknownlage initialize success
+	 */
 	inline void initialized(const models::notification_message &notify)
 	{
 		auto &state = server_state::get();
@@ -30,7 +34,18 @@ namespace hill::lsp::methods {
 		logger::info("Initialized");
 	}
 
-	// The server should shut down, but not exit
+	/**
+	 * A notification that should be used by the client to modify the trace setting of the server
+	 */
+	inline void set_trace(const models::notification_message &notify)
+	{
+		// TODO: Implement
+		logger::info("Set trace ??");
+	}
+
+	/**
+	 * The server should shut down, but not exit
+	 */
 	inline std::variant<std::optional<models::result_t>, models::response_error> shutdown(const models::request_message &req)
 	{
 		auto &state = server_state::get();
@@ -39,7 +54,9 @@ namespace hill::lsp::methods {
 		return std::nullopt;
 	}
 
-	// The server should shut down, but not exit
+	/**
+	 * The server should exit
+	 */
 	inline void exit(const models::notification_message &notify)
 	{
 		auto &state = server_state::get();

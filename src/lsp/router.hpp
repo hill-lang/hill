@@ -58,6 +58,7 @@ namespace hill::lsp {
 		{
 			static const std::unordered_map<models::method, notify_endpoint_t> map = {
 				{models::method::INITIALIZED, methods::initialized},
+				{models::method::SET_TRACE, methods::set_trace},
 				{models::method::EXIT, methods::exit},
 				{models::method::TEXT_DOCUMENT_DID_OPEN, methods::text_document_did_open},
 				{models::method::TEXT_DOCUMENT_DID_CHANGE, methods::text_document_did_change},
