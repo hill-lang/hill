@@ -52,7 +52,7 @@ namespace hill::lsp {
 		{
 			auto method_str = std::string(models::method_str(method));
 
-			logger::info("Received notification method<" + method_str + ">");
+			logger::info("Received notify method<" + method_str + ">");
 
 			models::notification_message notification = {
 				.method = method,
@@ -60,7 +60,7 @@ namespace hill::lsp {
 
 			auto func = router::get_notify(method);
 			if (!func.has_value()) {
-				logger::error("Fail to resolve notification method " + method_str);
+				logger::error("Fail to resolve notify method " + method_str);
 				return;
 			}
 
@@ -80,7 +80,7 @@ namespace hill::lsp {
 			auto id = (int)id_json.value()->num().value();
 			auto method_str = std::string(models::method_str(method));
 
-			logger::info("Received request method<" + method_str + "> id<" + std::to_string(id) + ">");
+			logger::info("Received method<" + method_str + "> id<" + std::to_string(id) + ">");
 
 			models::request_message req = {
 				.id = id,
@@ -123,7 +123,7 @@ namespace hill::lsp {
 				fflush(stdout);
 			}
 
-			logger::info("Sent response to request method<" + method_str + "> id<" + std::to_string(id) + ">");
+			logger::info("Sent response method<" + method_str + "> id<" + std::to_string(id) + ">");
 		}
 	};
 };
