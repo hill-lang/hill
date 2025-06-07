@@ -3,8 +3,7 @@
 
 #include "models.hpp"
 
-#include "methods/initialize.hpp"
-#include "methods/shutdown.hpp"
+#include "methods/lifecycle.hpp"
 #include "methods/text_document/completion.hpp"
 #include "methods/text_document/did_change.hpp"
 
@@ -59,6 +58,7 @@ namespace hill::lsp {
 		{
 			static const std::unordered_map<models::method, notify_endpoint_t> map = {
 				{models::method::INITIALIZED, methods::initialized},
+				{models::method::EXIT, methods::exit},
 				{models::method::TEXT_DOCUMENT_DID_CHANGE, methods::text_document_did_change},
 			};
 			return map;
