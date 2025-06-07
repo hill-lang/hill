@@ -16,11 +16,22 @@ namespace hill::lsp::models {
 		// Lifecycle
 		INITIALIZE,
 		INITIALIZED,
+		// TODO: Register capability
+		// TODO: Unregister capability
+		// TODO: Set trace
+		// TODO: Log trace
 		SHUTDOWN,
 		EXIT,
+		// Document Synchronization
+		TEXT_DOCUMENT_DID_OPEN,
+		TEXT_DOCUMENT_DID_CHANGE,
+		TEXT_DOCUMENT_WILL_SAVE,
+		TEXT_DOCUMENT_WILL_SAVE_WAIT_UNTIL,
+		TEXT_DOCUMENT_DID_SAVE,
+		TEXT_DOCUMENT_DID_CLOSE,
+		WORKSPACE_DOCUMENT_DID_RENAME,
 		// Text document
 		TEXT_DOCUMENT_COMPLETION,
-		TEXT_DOCUMENT_DID_CHANGE,
 	};
 
 	constexpr const char *method_str(method m)
@@ -30,8 +41,14 @@ namespace hill::lsp::models {
 		case method::INITIALIZED: return "initialized";
 		case method::SHUTDOWN: return "shutdown";
 		case method::EXIT: return "exit";
-		case method::TEXT_DOCUMENT_COMPLETION: return "textDocument/completion";
+		case method::TEXT_DOCUMENT_DID_OPEN: return "textDocument/didOpen";
 		case method::TEXT_DOCUMENT_DID_CHANGE: return "textDocument/didChange";
+		case method::TEXT_DOCUMENT_WILL_SAVE: return "textDocument/willSave";
+		case method::TEXT_DOCUMENT_WILL_SAVE_WAIT_UNTIL: return "textDocument/willSaveWaitUntil";
+		case method::TEXT_DOCUMENT_DID_SAVE: return "textDocument/didSave";
+		case method::TEXT_DOCUMENT_DID_CLOSE: return "textDocument/didClose";
+		case method::WORKSPACE_DOCUMENT_DID_RENAME: return "workspace/didRenameFiles";
+		case method::TEXT_DOCUMENT_COMPLETION: return "textDocument/completion";
 		default: throw internal_exception();
 		}
 	}
@@ -42,8 +59,14 @@ namespace hill::lsp::models {
 		else if (str==method_str(method::INITIALIZED)) return method::INITIALIZED;
 		else if (str==method_str(method::SHUTDOWN)) return method::SHUTDOWN;
 		else if (str==method_str(method::EXIT)) return method::EXIT;
-		else if (str==method_str(method::TEXT_DOCUMENT_COMPLETION)) return method::TEXT_DOCUMENT_COMPLETION;
+		else if (str==method_str(method::TEXT_DOCUMENT_DID_OPEN)) return method::TEXT_DOCUMENT_DID_OPEN;
 		else if (str==method_str(method::TEXT_DOCUMENT_DID_CHANGE)) return method::TEXT_DOCUMENT_DID_CHANGE;
+		else if (str==method_str(method::TEXT_DOCUMENT_WILL_SAVE)) return method::TEXT_DOCUMENT_WILL_SAVE;
+		else if (str==method_str(method::TEXT_DOCUMENT_WILL_SAVE_WAIT_UNTIL)) return method::TEXT_DOCUMENT_WILL_SAVE_WAIT_UNTIL;
+		else if (str==method_str(method::TEXT_DOCUMENT_DID_SAVE)) return method::TEXT_DOCUMENT_DID_SAVE;
+		else if (str==method_str(method::TEXT_DOCUMENT_DID_CLOSE)) return method::TEXT_DOCUMENT_DID_CLOSE;
+		else if (str==method_str(method::WORKSPACE_DOCUMENT_DID_RENAME)) return method::WORKSPACE_DOCUMENT_DID_RENAME;
+		else if (str==method_str(method::TEXT_DOCUMENT_COMPLETION)) return method::TEXT_DOCUMENT_COMPLETION;
 		else return std::nullopt;
 	}
 
@@ -316,6 +339,110 @@ namespace hill::lsp::models {
 		}
 	};
 
+	struct range {
+		position start;
+		position end;
+
+		static std::optional<range> from_json(const std::shared_ptr<utils::json_value> &json)
+		{
+			using namespace ::hill::utils;
+
+			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (!json->obj_has("start")) return std::nullopt;
+
+			auto start = position::from_json(json->obj_get("start").value());
+			if (!start.has_value()) return std::nullopt;
+
+			auto end = position::from_json(json->obj_get("end").value());
+			if (!end.has_value()) return std::nullopt;
+
+			return range{
+				.start = start.value(),
+				.end = end.value(),
+			};
+		}
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_obj("start", start.json());
+			json->obj_add_obj("end", end.json());
+			return json;
+		}
+	};
+
+	struct text_document_item
+	{
+		std::string uri;
+		std::string language_id;
+		int version;
+		std::string text;
+
+		static std::optional<text_document_item> from_json(const std::shared_ptr<utils::json_value> &json)
+		{
+			using namespace ::hill::utils;
+
+			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+
+			if (!json->obj_has("uri")) return std::nullopt;
+			auto uri = json->obj_get("uri").value();
+			if (uri->kind()!=json_value_kind::STRING) return std::nullopt;
+
+			if (!json->obj_has("languageId")) return std::nullopt;
+			auto language_id = json->obj_get("languageId").value();
+			if (language_id->kind()!=json_value_kind::STRING) return std::nullopt;
+
+			if (!json->obj_has("version")) return std::nullopt;
+			auto version = json->obj_get("version").value();
+			if (version->kind()!=json_value_kind::NUMBER) return std::nullopt;
+
+			if (!json->obj_has("text")) return std::nullopt;
+			auto text = json->obj_get("text").value();
+			if (text->kind()!=json_value_kind::STRING) return std::nullopt;
+
+			return text_document_item{
+				.uri = uri->str().value(),
+				.language_id = language_id->str().value(),
+				.version = (int)version->num().value(),
+				.text = text->str().value(),
+			};
+		}
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_str("uri", uri);
+			json->obj_add_str("languageId", language_id);
+			json->obj_add_num("version", (double)version);
+			json->obj_add_str("text", text);
+			return json;
+		}
+	};
+
+	struct did_open_text_document_params {
+		text_document_item text_document;
+
+		static std::optional<did_open_text_document_params> from_json(const std::shared_ptr<utils::json_value> &json)
+		{
+			using namespace ::hill::utils;
+
+			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (!json->obj_has("textDocument")) return std::nullopt;
+
+			auto text_document = text_document_item::from_json(json->obj_get("textDocument").value());
+			if (!text_document.has_value()) return std::nullopt;
+
+			return did_open_text_document_params{.text_document=text_document.value()};
+		}
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_obj("textDocument", text_document.json());
+			return json;
+		}
+	};
+
 	struct text_document_identifier {
 		std::string uri;
 
@@ -336,6 +463,60 @@ namespace hill::lsp::models {
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 			json->obj_add_str("uri", uri);
+			return json;
+		}
+	};
+
+	struct versioned_text_document_identifier {
+		std::string uri;
+		int version;
+
+		static std::optional<versioned_text_document_identifier> from_json(const std::shared_ptr<utils::json_value> &json)
+		{
+			using namespace ::hill::utils;
+
+			if (!json->obj_has("uri")) return std::nullopt;
+			auto uri_json = json->obj_get("uri").value();
+			if (uri_json->kind() != json_value_kind::STRING) return std::nullopt;
+
+			if (!json->obj_has("version")) return std::nullopt;
+			auto version_json = json->obj_get("version").value();
+			if (version_json->kind()!=json_value_kind::NUMBER) return std::nullopt;
+			
+			return versioned_text_document_identifier{
+				.uri = uri_json->str().value(),
+				.version = (int)version_json->num().value(),
+			};
+		}
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			return json;
+		}
+	};
+
+
+	struct did_close_text_document_params {
+		text_document_identifier text_document;
+
+		static std::optional<did_close_text_document_params> from_json(const std::shared_ptr<utils::json_value> &json)
+		{
+			using namespace ::hill::utils;
+
+			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (!json->obj_has("textDocument")) return std::nullopt;
+
+			auto text_document = text_document_identifier::from_json(json->obj_get("textDocument").value());
+			if (!text_document.has_value()) return std::nullopt;
+
+			return did_close_text_document_params{.text_document=text_document.value()};
+		}
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_obj("textDocument", text_document.json());
 			return json;
 		}
 	};
@@ -441,35 +622,6 @@ namespace hill::lsp::models {
 				itemsArr->arr_add_obj(item.json());
 			}
 
-			return json;
-		}
-	};
-
-	struct versioned_text_document_identifier {
-		std::string uri;
-		int version;
-
-		static std::optional<versioned_text_document_identifier> from_json(const std::shared_ptr<utils::json_value> &json)
-		{
-			using namespace ::hill::utils;
-
-			if (!json->obj_has("uri")) return std::nullopt;
-			auto uri_json = json->obj_get("uri").value();
-			if (uri_json->kind() != json_value_kind::STRING) return std::nullopt;
-
-			if (!json->obj_has("version")) return std::nullopt;
-			auto version_json = json->obj_get("version").value();
-			if (version_json->kind()!=json_value_kind::NUMBER) return std::nullopt;
-			
-			return versioned_text_document_identifier{
-				.uri = uri_json->str().value(),
-				.version = (int)version_json->num().value(),
-			};
-		}
-
-		std::shared_ptr<utils::json_value> json() const
-		{
-			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 			return json;
 		}
 	};

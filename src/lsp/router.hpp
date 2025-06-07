@@ -5,7 +5,7 @@
 
 #include "methods/lifecycle.hpp"
 #include "methods/text_document/completion.hpp"
-#include "methods/text_document/did_change.hpp"
+#include "methods/text_document/synchronization.hpp"
 
 #include <unordered_map>
 #include <functional>
@@ -59,7 +59,9 @@ namespace hill::lsp {
 			static const std::unordered_map<models::method, notify_endpoint_t> map = {
 				{models::method::INITIALIZED, methods::initialized},
 				{models::method::EXIT, methods::exit},
+				{models::method::TEXT_DOCUMENT_DID_OPEN, methods::text_document_did_open},
 				{models::method::TEXT_DOCUMENT_DID_CHANGE, methods::text_document_did_change},
+				{models::method::TEXT_DOCUMENT_DID_CLOSE, methods::text_document_did_close},
 			};
 			return map;
 		}

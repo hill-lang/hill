@@ -11,11 +11,11 @@ namespace hill::lsp {
 	struct document_store {
 		document_store() = default;
 
-		bool exists(const std::string &fpath)
+		/*bool contains(const std::string &fpath)
 		{
 			std::lock_guard<std::mutex> guard(access_mutex);
 			return store.contains(fpath);
-		}
+		}*/
 
 		std::optional<std::string> get(const std::string &fpath)
 		{
