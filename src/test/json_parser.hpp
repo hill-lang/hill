@@ -17,8 +17,8 @@ namespace hill::test {
 		const char *expected_kind;
 		const char *expected_value;
 	} json_parser_tests[]={
-		{"{}", "OBJECT"},
-		{"[]", "ARRAY"},
+		{"{}", "OBJECT", nullptr},
+		{"[]", "ARRAY", nullptr},
 		{"\"test\"", "STRING", "\"test\""},
 		{"42", "NUMBER", "42"},
 		{"3.14", "NUMBER", "3.14"},

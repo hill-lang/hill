@@ -93,7 +93,10 @@ namespace hill {
 					type_spec res_ts = ts.top();
 					instrs.push_back(instr{
 						.op = op_code::END,
-						.res_ts = res_ts});
+						.res_ts = res_ts,
+						.val = 0,
+						.arg1_ts = type_spec(),
+						.arg2_ts = type_spec()});
 					ts.push(res_ts);
 				}
 				break;
@@ -108,7 +111,9 @@ namespace hill {
 							instrs.push_back(instr{
 								.op = op_code::LOAD,
 								.res_ts = val->ts,
-								.val = {.ix=val->ix}});
+								.val = {.ix=val->ix},
+								.arg1_ts = type_spec(),
+								.arg2_ts = type_spec()});
 						} else if (val->mt == mem_type::LITERAL) {
 							if (val->ts.first()==basic_type::FUNC) {
 								instrs.push_back(make_instr(op_code::LOADI, val->ts, val->p));
@@ -132,7 +137,9 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
 							.res_ts = res_ts,
-							.val = {.imm_f64 = static_cast<double>(std::strtold(t.get_text().c_str(), &endp))}});
+							.val = {.imm_f64 = static_cast<double>(std::strtold(t.get_text().c_str(), &endp))},
+							.arg1_ts = type_spec(),
+							.arg2_ts = type_spec()});
 #else
 						auto vix = values.add(std::strtold(t.get_text().c_str(), &endp));
 						instrs.push_back(instr{
@@ -147,7 +154,9 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
 							.res_ts = res_ts,
-							.val = {.imm_i32 = static_cast<int32_t>(std::strtol(t.get_text().c_str(), &endp, 10))}});
+							.val = {.imm_i32 = static_cast<int32_t>(std::strtol(t.get_text().c_str(), &endp, 10))},
+							.arg1_ts = type_spec(),
+							.arg2_ts = type_spec()});
 #else
 						auto vix = values.add(std::strtoll(t.get_text().c_str(), &endp, 10));
 						instrs.push_back(instr{
@@ -170,6 +179,7 @@ namespace hill {
 					instrs.push_back(instr{
 						.op = op_code::ADD,
 						.res_ts = res_ts,
+						.val = 0,
 						.arg1_ts = ts.top(1),
 						.arg2_ts = ts.top()});
 					ts.pop();
@@ -189,7 +199,9 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::NEG,
 							.res_ts = res_ts,
-							.arg1_ts = ts.top()});
+							.val = 0,
+							.arg1_ts = ts.top(),
+							.arg2_ts = type_spec()});
 						ts.pop();
 						ts.push(res_ts);
 					} else if (t.get_arity()==tt_arity::BINARY) {
@@ -197,6 +209,7 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::SUB,
 							.res_ts = res_ts,
+							.val = 0,
 							.arg1_ts = ts.top(1),
 							.arg2_ts = ts.top()});
 						ts.pop();
@@ -218,6 +231,7 @@ namespace hill {
 					instrs.push_back(instr{
 						.op = op_code::MUL,
 						.res_ts = res_ts,
+						.val = 0,
 						.arg1_ts = ts.top(1),
 						.arg2_ts = ts.top()});
 					ts.pop();
@@ -253,6 +267,7 @@ namespace hill {
 						.op = op_code::COPY,
 						.res_ts = val.ts,
 						.val = {.ix=val.ix},
+						.arg1_ts = type_spec(),
 						.arg2_ts = ts.top()});
 					ts.pop();
 					ts.push(res_ts);
@@ -275,6 +290,7 @@ namespace hill {
 						.op = op_code::COPY,
 						.res_ts = res_ts,
 						.val = {.ix=val->ix},
+						.arg1_ts = type_spec(),
 						.arg2_ts = ts.top()});
 					ts.pop();
 					ts.push(res_ts);
@@ -291,7 +307,10 @@ namespace hill {
 
 					instrs.push_back(instr{
 						.op = op_code::TUPLE,
-						.res_ts = res_ts});
+						.res_ts = res_ts,
+						.val = 0,
+						.arg1_ts = type_spec(),
+						.arg2_ts = type_spec()});
 
 					ts.pop();
 					ts.pop();
@@ -309,9 +328,9 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::CALL,
 							.res_ts = res_ts,
+							.val = 0,
 							.arg1_ts = ts.top(),
-							.arg2_ts = arg_ts
-							});
+							.arg2_ts = arg_ts});
 					} else {
 						throw semantic_error_exception();
 					}
