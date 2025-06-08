@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <fstream>
 #include <stddef.h>
+#include <stdio.h>
 #include <string>
 #include <sstream>
 #include <unordered_map>
@@ -46,7 +47,9 @@ namespace hill::lsp {
 
 			while (true) {
 				char *p = NULL;
-				(void)fgets(b, MAX_HTTP_HEADER_LENGTH, stdin);
+				if (!fgets(b, MAX_HTTP_HEADER_LENGTH, stdin)) {
+					continue;
+				}
 
 				p = strchr(b, '\r');
 				if (p) {
