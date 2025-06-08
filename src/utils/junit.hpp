@@ -253,8 +253,8 @@ namespace hill::utils {
 
 			xml->set_attribute("timestamp", std::format("{:%FT%TZ}", suite->timestamp));
 
-			for (const auto &suite : suite->test_suites) {
-				write_suite(suite, xml);
+			for (const auto &inner_suite : suite->test_suites) {
+				write_suite(inner_suite, xml);
 			}
 
 			for (const auto &test_case : suite->test_cases) {

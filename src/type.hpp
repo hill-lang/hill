@@ -133,6 +133,7 @@ namespace hill {
 
 		type_spec inner_type(size_t ix) const
 		{
+			(void)ix; // Unused for now
 			std::vector<basic_type> inner_types;
 			
 			if (types.size()>1 && types[0]==basic_type::TUPLE) {

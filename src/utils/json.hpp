@@ -303,9 +303,9 @@ namespace hill::utils {
 				auto &entries = std::get<object_t>(value);
 				ss << '{';
 				size_t ix=0;
-				for (auto &[key, value] : entries) {
+				for (auto &[k, v] : entries) {
 					if (ix++>0) ss << ',';
-					ss << '"' << key << "\":" << value->stringify();
+					ss << '"' << k << "\":" << v->stringify();
 				}
 				ss << '}';
 				break;
@@ -315,9 +315,9 @@ namespace hill::utils {
 				auto &array = std::get<array_t>(value);
 				ss << '[';
 				size_t ix=0;
-				for (auto &value : array) {
+				for (auto &v : array) {
 					if (ix++>0) ss << ',';
-					ss << value->stringify();
+					ss << v->stringify();
 				}
 				ss << ']';
 				break;
@@ -352,8 +352,8 @@ namespace hill::utils {
 			{
 				auto &entries = std::get<object_t>(value);
 				if (entries.size()) {
-					for (auto &[key, value] : entries) {
-						ss << ',' << value->kind_str();
+					for (auto &[k, v] : entries) {
+						ss << ',' << v->kind_str();
 					}
 					ss << ",END";
 				}
@@ -363,8 +363,8 @@ namespace hill::utils {
 			{
 				auto &array = std::get<array_t>(value);
 				if (array.size()) {
-					for (auto &value : array) {
-						ss << ',' << value->kind_str();
+					for (auto &v : array) {
+						ss << ',' << v->kind_str();
 					}
 					ss << ",END";
 				}

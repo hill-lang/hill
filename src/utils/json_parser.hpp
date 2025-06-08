@@ -13,7 +13,7 @@
 
 namespace hill::utils {
 
-	inline constexpr bool is_json_ws(char ch)
+	constexpr bool is_json_ws(char ch)
 	{
 		switch (ch) {
 		case ' ':
@@ -49,7 +49,7 @@ namespace hill::utils {
 			while (true) {
 				if (istr.eof()) return;
 
-				auto ch = istr.peek();
+				auto ch = (char)istr.peek();
 				if (is_json_ws(ch)) {
 					(void)istr.get();
 				} else {
@@ -142,13 +142,13 @@ namespace hill::utils {
 			while (true) {
 				if (istr.eof()) return std::nullopt;
 
-				auto ch = istr.get();
+				auto ch = (char)istr.get();
 				if (ch == '"') break;
 
 				if (ch == '\\') { // Handle escaped character
 					if (istr.eof()) return std::nullopt;
 
-					ch = istr.get();
+					ch = (char)istr.get();
 					switch (ch) {
 					case '"':
 					case '\\':
@@ -178,10 +178,10 @@ namespace hill::utils {
 		{
 			std::stringstream ss;
 
-			auto ch = istr.peek();
+			auto ch = (char)istr.peek();
 			while (ch=='-' || ch=='.' || isdigit(ch)) {
-				ss.put(istr.get());
-				ch = istr.peek();
+				ss.put((char)istr.get());
+				ch = (char)istr.peek();
 			}
 
 			auto str = ss.str();
@@ -190,7 +190,7 @@ namespace hill::utils {
 			}
 
 			char *end = nullptr;
-			double number = std::strtod(str.c_str(), &end);
+			auto number = std::strtod(str.c_str(), &end);
 
 			return json_value::create(number);
 		}

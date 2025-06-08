@@ -19,12 +19,12 @@ namespace hill {
 		int lix = 0, cix = 0;
 		int plix = -1, pcix = -1;
 
-		int get(std::istream &istr)
+		char get(std::istream &istr)
 		{
 			if (istr.eof()) {
 				return 0;
 			}
-			int ch = istr.get();
+			auto ch = (char)istr.get();
 
 			plix = lix;
 			pcix = cix;
@@ -39,9 +39,9 @@ namespace hill {
 			return ch;
 		}
 
-		int peek(std::istream &istr)
+		char peek(std::istream &istr)
 		{
-			return istr.peek();
+			return (char)istr.peek();
 		}
 
 		void unget(std::istream &istr)

@@ -78,7 +78,7 @@ namespace hill::lsp {
 
 			std::string content;
 			while (content.size() < content_len) {
-				content.push_back(getchar());
+				content.push_back((char)getchar());
 			}
 
 			return content;

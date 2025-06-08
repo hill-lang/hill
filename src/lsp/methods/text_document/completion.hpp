@@ -10,8 +10,9 @@ namespace hill::lsp::methods {
 	// Requset to initialize
 	inline std::variant<std::optional<models::result_t>, models::response_error> text_document_completion(const models::request_message &req)
 	{
-		auto &state = server_state::get();
-		auto params = models::text_document_position_params::from_json(req.params.value()).value();
+		(void)req; // Unused
+		//auto &state = server_state::get();
+		//auto params = models::text_document_position_params::from_json(req.params.value()).value();
 
 		// TODO: We kinda need the document
 		//state.document_store.exists(params.text_document.uri);

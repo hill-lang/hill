@@ -12,6 +12,7 @@ namespace hill::lsp::methods {
 	 */
 	inline std::variant<std::optional<models::result_t>, models::response_error> initialize(const models::request_message &req)
 	{
+		(void)req; // Unused
 		auto &state = server_state::get();
 		models::initialize_result result = {
 			.capabilities = state.server_capabilities,
@@ -29,6 +30,7 @@ namespace hill::lsp::methods {
 	 */
 	inline void initialized(const models::notification_message &notify)
 	{
+		(void)notify; // Unused
 		auto &state = server_state::get();
 		state.initialized = true;
 		logger::info("Initialized");
@@ -39,6 +41,7 @@ namespace hill::lsp::methods {
 	 */
 	inline void set_trace(const models::notification_message &notify)
 	{
+		(void)notify; // Unused
 		// TODO: Implement
 		logger::info("Set trace ??");
 	}
@@ -48,6 +51,7 @@ namespace hill::lsp::methods {
 	 */
 	inline std::variant<std::optional<models::result_t>, models::response_error> shutdown(const models::request_message &req)
 	{
+		(void)req; // Unused
 		auto &state = server_state::get();
 		state.initialized = false;
 		logger::info("Shutdown");
@@ -59,6 +63,7 @@ namespace hill::lsp::methods {
 	 */
 	inline void exit(const models::notification_message &notify)
 	{
+		(void)notify; // Unused
 		auto &state = server_state::get();
 		state.running = false;
 		logger::info("Exit");

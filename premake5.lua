@@ -11,6 +11,8 @@ project "hill"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"
+	warnings "Extra"
+	fatalwarnings "All"
 
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/bin-int/%{cfg.buildcfg}"

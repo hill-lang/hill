@@ -256,6 +256,7 @@ namespace hill {
 
 		void tuple(const instr &ins)
 		{
+			(void)ins; // Unused for now
 /*			const uint8_t *right = s.top(ins.arg2_ts.size());
 			s.pop(ins.arg2_ts.size());
 			const uint8_t *left = s.top(ins.arg1_ts.size());
@@ -269,6 +270,8 @@ namespace hill {
 
 		void call(const instr &ins)
 		{
+			(void)ins; // Unused for now
+
 			int32_t arg = s.pop<int32_t>(); // TODO: Make generic
 			void *func = s.pop<void *>();
 
