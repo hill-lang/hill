@@ -94,7 +94,7 @@ namespace hill {
 					instrs.push_back(instr{
 						.op = op_code::END,
 						.res_ts = res_ts,
-						.val = 0,
+						.val = {},
 						.arg1_ts = type_spec(),
 						.arg2_ts = type_spec()});
 					ts.push(res_ts);
@@ -179,7 +179,7 @@ namespace hill {
 					instrs.push_back(instr{
 						.op = op_code::ADD,
 						.res_ts = res_ts,
-						.val = 0,
+						.val = {},
 						.arg1_ts = ts.top(1),
 						.arg2_ts = ts.top()});
 					ts.pop();
@@ -199,7 +199,7 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::NEG,
 							.res_ts = res_ts,
-							.val = 0,
+							.val = {},
 							.arg1_ts = ts.top(),
 							.arg2_ts = type_spec()});
 						ts.pop();
@@ -209,7 +209,7 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::SUB,
 							.res_ts = res_ts,
-							.val = 0,
+							.val = {},
 							.arg1_ts = ts.top(1),
 							.arg2_ts = ts.top()});
 						ts.pop();
@@ -231,7 +231,7 @@ namespace hill {
 					instrs.push_back(instr{
 						.op = op_code::MUL,
 						.res_ts = res_ts,
-						.val = 0,
+						.val = {},
 						.arg1_ts = ts.top(1),
 						.arg2_ts = ts.top()});
 					ts.pop();
@@ -308,7 +308,7 @@ namespace hill {
 					instrs.push_back(instr{
 						.op = op_code::TUPLE,
 						.res_ts = res_ts,
-						.val = 0,
+						.val = {},
 						.arg1_ts = type_spec(),
 						.arg2_ts = type_spec()});
 
@@ -328,7 +328,7 @@ namespace hill {
 						instrs.push_back(instr{
 							.op = op_code::CALL,
 							.res_ts = res_ts,
-							.val = 0,
+							.val = {},
 							.arg1_ts = ts.top(),
 							.arg2_ts = arg_ts});
 					} else {

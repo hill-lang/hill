@@ -46,13 +46,15 @@ namespace hill::lsp {
 
 			while (true) {
 				char *p = NULL;
-				fgets(b, MAX_HTTP_HEADER_LENGTH, stdin);
+				(void)fgets(b, MAX_HTTP_HEADER_LENGTH, stdin);
 
-				if ((p = strchr(b, '\r'))) {
+				p = strchr(b, '\r');
+				if (p) {
 					*p = '\0';
 				}
 
-				if ((p = strchr(b, ':'))) {
+				p = strchr(b, ':');
+				if (p) {
 					*p++ = '\0';
 					while (isspace(*p)) ++p;
 					headers[b] = p;
