@@ -13,7 +13,6 @@
 #include "test/analyzer.hpp"
 #include "test/evaluator.hpp"
 
-#include "test/json_writer.hpp"
 #include "test/json_parser.hpp"
 
 #include <stdlib.h>
@@ -55,7 +54,6 @@ int main(int argc, char *argv[])
 				else if (!strcmp(argv[2], "parser")) {ok = hill::test::parser(test_session);}
 				//else if (!strcmp(argv[2], "analyzer")) {/*ok = hill::test::analyzer(test_session); */ }
 				else if (!strcmp(argv[2], "evaluator")) {ok = hill::test::evaluator(test_session);}
-				else if (!strcmp(argv[2], "json_writer")) {ok = hill::test::json_writer(test_session);}
 				else if (!strcmp(argv[2], "json_parser")) {ok = hill::test::json_parser(test_session);}
 				else {return usage(argv[0]);}
 			} else {
@@ -63,7 +61,6 @@ int main(int argc, char *argv[])
 				if (!hill::test::parser(test_session)) ok = false;
 				//if (!hill::test::analyzer(test_session)) ok = false;
 				if (!hill::test::evaluator(test_session)) ok = false;
-				if (!hill::test::json_writer(test_session)) ok = false;
 				if (!hill::test::json_parser(test_session)) ok = false;
 			}
 		}
@@ -73,7 +70,6 @@ int main(int argc, char *argv[])
 		if (!hill::test::parser(test_session)) ok = false;
 		//if (!hill::test::analyzer(test_session)) ok = false;
 		if (!hill::test::evaluator(test_session)) ok = false;
-		if (!hill::test::json_writer(test_session)) ok = false;
 		if (!hill::test::json_parser(test_session)) ok = false;
 	}
 
