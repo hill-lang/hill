@@ -772,7 +772,21 @@ namespace hill::lsp::models {
 		std::string command;
 		std::optional<std::vector<std::shared_ptr<utils::json_value>>> arguments;
 
-		// TODO: parsing and serializing
+		// TODO: parsing
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_str("title", title);
+			json->obj_add_str("command", command);
+			if (arguments.has_value()) {
+				auto arr = json->obj_add_arr("arguments").value();
+				for (const auto &arg : arguments.value()) {
+					arr->arr_add_obj(arg);
+				}
+			}
+			return json;
+		}
 	};
 
 	enum class markup_kind {
@@ -1333,43 +1347,213 @@ namespace hill::lsp::models {
 		}
 	};
 
+	struct completion_item_label_details {
+		std::optional<std::string> detail;
+		std::optional<std::string> description;
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			if (detail.has_value()) {json->obj_add_str("detail", detail.value());}
+			if (description.has_value()) {json->obj_add_str("description", description.value());}
+			return json;
+		}
+	};
+
+	enum class completion_item_kind: int {
+		TEXT = 1,
+		METHOD = 2,
+		FUNCTION = 3,
+		CONSTRUCTOR = 4,
+		FIELD = 5,
+		VARIABLE = 6,
+		CLASS = 7,
+		INTERFACE = 8,
+		MODULE = 9,
+		PROPERTY = 10,
+		UNIT = 11,
+		VALUE = 12,
+		ENUM = 13,
+		KEYWORD = 14,
+		SNIPPET = 15,
+		COLOR = 16,
+		FILE = 17,
+		REFERENCE = 18,
+		FOLDER = 19,
+		ENUMMEMBER = 20,
+		CONSTANT = 21,
+		STRUCT = 22,
+		EVENT = 23,
+		OPERATOR = 24,
+		TYPEPARAMETER = 25,
+	};
+
+	constexpr const char *completion_item_kind_str(completion_item_kind kind)
+	{
+		switch (kind) {
+		case completion_item_kind::TEXT: return "TEXT";
+		case completion_item_kind::METHOD: return "METHOD";
+		case completion_item_kind::FUNCTION: return "FUNCTION";
+		case completion_item_kind::CONSTRUCTOR: return "CONSTRUCTOR";
+		case completion_item_kind::FIELD: return "FIELD";
+		case completion_item_kind::VARIABLE: return "VARIABLE";
+		case completion_item_kind::CLASS: return "CLASS";
+		case completion_item_kind::INTERFACE: return "INTERFACE";
+		case completion_item_kind::MODULE: return "MODULE";
+		case completion_item_kind::PROPERTY: return "PROPERTY";
+		case completion_item_kind::UNIT: return "UNIT";
+		case completion_item_kind::VALUE: return "VALUE";
+		case completion_item_kind::ENUM: return "ENUM";
+		case completion_item_kind::KEYWORD: return "KEYWORD";
+		case completion_item_kind::SNIPPET: return "SNIPPET";
+		case completion_item_kind::COLOR: return "COLOR";
+		case completion_item_kind::FILE: return "FILE";
+		case completion_item_kind::REFERENCE: return "REFERENCE";
+		case completion_item_kind::FOLDER: return "FOLDER";
+		case completion_item_kind::ENUMMEMBER: return "ENUMMEMBER";
+		case completion_item_kind::CONSTANT: return "CONSTANT";
+		case completion_item_kind::STRUCT: return "STRUCT";
+		case completion_item_kind::EVENT: return "EVENT";
+		case completion_item_kind::OPERATOR: return "OPERATOR";
+		case completion_item_kind::TYPEPARAMETER: return "TYPEPARAMETER";
+		default: throw internal_exception();
+		}
+	}
+
+	enum class completion_item_tag : int {
+		DEPRECATED = 1,
+	};
+
+	constexpr const char *completion_item_tag_str(completion_item_tag tag)
+	{
+		switch (tag) {
+		case completion_item_tag::DEPRECATED: return "DEPRECATED";
+		default: throw internal_exception();
+		}
+	}
+
+	enum class insert_text_format: int {
+		PLAIN_TEXT = 1,
+		SNIPPET = 2,
+	};
+
+	constexpr const char *insert_text_format_str(insert_text_format fmt)
+	{
+		switch (fmt) {
+		case insert_text_format::PLAIN_TEXT: return "PLAIN_TEXT";
+		case insert_text_format::SNIPPET: return "SNIPPET";
+		default: throw internal_exception();
+		}
+	}
+
+	struct insert_replace_edit {
+		std::string new_text;
+		range insert;
+		range replace;
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_str("newText", new_text);
+			json->obj_add_obj("insert", insert.json());
+			json->obj_add_obj("replace", replace.json());
+			return json;
+		}
+	};
+
+	enum class insert_text_mode: int {
+		AS_IS = 1,
+		ADJUST_INDENTATION = 2,
+	};
+
+	constexpr const char *insert_text_mode_str(insert_text_mode mode)
+	{
+		switch (mode) {
+		case insert_text_mode::AS_IS: return "AS_IS";
+		case insert_text_mode::ADJUST_INDENTATION: return "ADJUST_INDENTATION";
+		default: throw internal_exception();
+		}
+	}
+
 	struct completion_item {
 		std::string label;
+		std::optional<completion_item_label_details> label_details;
+		std::optional<completion_item_kind> kind;
+		std::optional<std::vector<completion_item_tag>> tags;
+		std::optional<std::string> detail;
+		std::optional<std::variant<std::string, markup_content>> documentation;
+		std::optional<bool> preselect;
+		std::optional<std::string> sort_text;
+		std::optional<std::string> filter_text;
+		std::optional<std::string> insert_text;
+		std::optional<models::insert_text_format> insert_text_format;
+		std::optional<models::insert_text_mode> insert_text_mode;
+		std::optional<std::variant<text_edit, insert_replace_edit>> text_edit;
+		std::optional<std::string> text_edit_text;
+		std::optional<std::vector<models::text_edit>> additional_text_edits;
+		std::optional<std::vector<std::string>> commit_characters;
+		std::optional<models::command> command;
+		std::optional<std::shared_ptr<utils::json_value>> data;
 
-#if 0
-		labelDetails?: CompletionItemLabelDetails;
-		kind?: CompletionItemKind;
-		tags?: CompletionItemTag[];
-		detail?: string;
-		documentation?: string | MarkupContent;
-		deprecated?: boolean;
-		preselect?: boolean;
-		sortText?: string;
-		filterText?: string;
-		insertText?: string;
-		insertTextFormat?: InsertTextFormat;
-		insertTextMode?: InsertTextMode;
-		textEdit?: TextEdit | InsertReplaceEdit;
-		textEditText?: string;
-		additionalTextEdits?: TextEdit[];
-		commitCharacters?: string[];
-		command?: Command;
-		data?: LSPAny;
-#endif
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 
 			json->obj_add_str("label", label);
+			if (label_details.has_value()) {json->obj_add_obj("labelDetails", label_details.value().json());}
+			json->obj_add_str("label", label);
+			if (kind.has_value()) {json->obj_add_num("kind", (double)kind.value());}
+			if (tags.has_value()) {
+				auto arr = json->obj_add_arr("tags").value();
+				for (auto tag : tags.value()) {
+					arr->arr_add_num((double)tag);
+				}
+			}
+			if (detail.has_value()) {json->obj_add_str("detail", detail.value());}
+			if (documentation.has_value()) {
+				auto &doc = documentation.value();
+				if (std::holds_alternative<std::string>(doc)) {
+					json->obj_add_str("documentation", std::get<std::string>(doc));
+				} else {
+					json->obj_add_obj("documentation", std::get<markup_content>(doc).json());
+				}
+			}
+			if (preselect.has_value()) {json->obj_add_bool("preselect", preselect.value());}
+			if (sort_text.has_value()) {json->obj_add_str("sortText", sort_text.value());}
+			if (filter_text.has_value()) {json->obj_add_str("filterText", filter_text.value());}
+			if (insert_text.has_value()) {json->obj_add_str("insertText", insert_text.value());}
+			if (insert_text_format.has_value()) {json->obj_add_num("InsertTextFormat", (double)insert_text_format.value());}
+			if (insert_text_mode.has_value()) {json->obj_add_num("insertTextMode", (double)insert_text_mode.value());}
+			if (text_edit.has_value()) {
+				if (std::holds_alternative<models::text_edit>(text_edit.value())) {
+					json->obj_add_obj("textEdit", std::get<models::text_edit>(text_edit.value()).json());
+				} else {
+					json->obj_add_obj("textEdit", std::get<insert_replace_edit>(text_edit.value()).json());
+				}
+			}
+			if (text_edit_text.has_value()) {json->obj_add_str("textEditText", text_edit_text.value());}
+			if (additional_text_edits.has_value()) {
+				auto arr = json->obj_add_arr("additionalTextEdits").value();
+				for (const auto &edit : additional_text_edits.value()) {
+					arr->arr_add_obj(edit.json());
+				}
+			}
+			if (commit_characters.has_value()) {
+				auto arr = json->obj_add_arr("commitCharacters").value();
+				for (const auto &chars : commit_characters.value()) {
+					arr->arr_add_str(chars);
+				}
+			}
+			if (command.has_value()) {
+				json->obj_add_obj("command", command.value().json());
+			}
+
+			if (data.has_value()) {json->obj_add_obj("data", data.value());}
 
 			return json;
 		}
 	};
 
-	/**
-	 * Represents a collection of [completion items](#CompletionItem) to be
-	 * presented in the editor.
-	 */
 	struct completion_list {
 		bool is_incomplete;
 
@@ -1396,9 +1580,9 @@ namespace hill::lsp::models {
 
 			json->obj_add_bool("isIncomplete", is_incomplete);
 
-			auto itemsArr = json->obj_add_arr("items").value();
+			auto items_arr = json->obj_add_arr("items").value();
 			for (const auto &item : items) {
-				itemsArr->arr_add_obj(item.json());
+				items_arr->arr_add_obj(item.json());
 			}
 
 			return json;

@@ -23,46 +23,87 @@ namespace hill::lsp::methods {
 		//auto content = state.document_store.get(params.text_document.uri).value();
 		//logger::trace(content);
 
+		std::vector<models::completion_item> result = {
+			{.label = "@i8", .kind = models::completion_item_kind::FUNCTION, .detail = "8-bit signed integer"},
+			{.label="@i16", .kind = models::completion_item_kind::FUNCTION, .detail = "16-bit signed integer"},
+			{.label="@i32", .kind = models::completion_item_kind::FUNCTION, .detail = "32-bit signed integer"},
+			{.label="@i64", .kind = models::completion_item_kind::FUNCTION, .detail = "64-bit signed integer"},
+			{.label="@i128", .kind = models::completion_item_kind::FUNCTION, .detail = "128-bit signed integer"},
+
+			{.label="i8", .kind = models::completion_item_kind::FUNCTION, .detail = "8-bit integer"},
+			{.label="i16", .kind = models::completion_item_kind::FUNCTION, .detail = "16-bit integer"},
+			{.label="i32", .kind = models::completion_item_kind::FUNCTION, .detail = "32-bit integer"},
+			{.label="i64", .kind = models::completion_item_kind::FUNCTION, .detail = "64-bit integer"},
+			{.label="i128", .kind = models::completion_item_kind::FUNCTION, .detail = "128-bit integer"},
+
+			{.label="@u8", .kind = models::completion_item_kind::FUNCTION, .detail = "8-bit unsigned integer"},
+			{.label="@u16", .kind = models::completion_item_kind::FUNCTION, .detail = "16-bit unsigned integer"},
+			{.label="@u32", .kind = models::completion_item_kind::FUNCTION, .detail = "32-bit unsigned integer"},
+			{.label="@u64", .kind = models::completion_item_kind::FUNCTION, .detail = "64-bit unsigned integer"},
+			{.label="@u128", .kind = models::completion_item_kind::FUNCTION, .detail = "128-bit unsigned integer"},
+
+			{.label="u8", .kind = models::completion_item_kind::FUNCTION, .detail = "8-bit unsigned integer"},
+			{.label="u16", .kind = models::completion_item_kind::FUNCTION, .detail = "16-bit unsigned integer"},
+			{.label="u32", .kind = models::completion_item_kind::FUNCTION, .detail = "32-bit unsigned integer"},
+			{.label="u64", .kind = models::completion_item_kind::FUNCTION, .detail = "64-bit unsigned integer"},
+			{.label="u128", .kind = models::completion_item_kind::FUNCTION, .detail = "128-bit unsigned integer"},
+
+			{.label="@f32", .kind = models::completion_item_kind::FUNCTION, .detail = "32-bit floating point (single)"},
+			{.label="@f64", .kind = models::completion_item_kind::FUNCTION, .detail = "64-bit floating point (double)"},
+
+			{.label="f32", .kind = models::completion_item_kind::FUNCTION, .detail = "32-bit floating point (single)"},
+			{.label="f64", .kind = models::completion_item_kind::FUNCTION, .detail = "64-bit floating point (double)"},
+
+			{.label="mut", .kind = models::completion_item_kind::FUNCTION, .detail = "Mutable modifier"},
+			{.label="@mut", .kind = models::completion_item_kind::FUNCTION, .detail = "Mutable modifier"},
+		};
+
+		/*std::vector<models::completion_item> example = {
+			{.label = "TEXT", .kind = models::completion_item_kind::TEXT},
+			{
+				.label = "TEXT deprecated",
+				.kind = models::completion_item_kind::TEXT,
+				.tags = {{models::completion_item_tag::DEPRECATED}}},
+			{
+				.label = "TEXT w details",
+				.kind = models::completion_item_kind::TEXT,
+				.detail = "Details go here"},
+			{
+				.label = "TEXT label details",
+				.label_details = models::completion_item_label_details {
+					.detail = "Details",
+					.description = "Description"},
+				.kind = models::completion_item_kind::TEXT},
+			{.label = "METHOD", .kind = models::completion_item_kind::METHOD},
+			{.label = "FUNCTION", .kind = models::completion_item_kind::FUNCTION},
+			{.label = "CONSTRUCTOR", .kind = models::completion_item_kind::CONSTRUCTOR},
+			{.label = "FIELD", .kind = models::completion_item_kind::FIELD},
+			{.label = "VARIABLE", .kind = models::completion_item_kind::VARIABLE},
+			{.label = "CLASS", .kind = models::completion_item_kind::CLASS},
+			{.label = "INTERFACE", .kind = models::completion_item_kind::INTERFACE},
+			{.label = "MODULE", .kind = models::completion_item_kind::MODULE},
+			{.label = "PROPERTY", .kind = models::completion_item_kind::PROPERTY},
+			{.label = "UNIT", .kind = models::completion_item_kind::UNIT},
+			{.label = "VALUE", .kind = models::completion_item_kind::VALUE},
+			{.label = "ENUM", .kind = models::completion_item_kind::ENUM},
+			{.label = "KEYWORD", .kind = models::completion_item_kind::KEYWORD},
+			{.label = "SNIPPET", .kind = models::completion_item_kind::SNIPPET},
+			{.label = "COLOR", .kind = models::completion_item_kind::COLOR},
+			{.label = "FILE", .kind = models::completion_item_kind::FILE},
+			{.label = "REFERENCE", .kind = models::completion_item_kind::REFERENCE},
+			{.label = "FOLDER", .kind = models::completion_item_kind::FOLDER},
+			{.label = "ENUMMEMBER", .kind = models::completion_item_kind::ENUMMEMBER},
+			{.label = "CONSTANT", .kind = models::completion_item_kind::CONSTANT},
+			{.label = "STRUCT", .kind = models::completion_item_kind::STRUCT},
+			{.label = "EVENT", .kind = models::completion_item_kind::EVENT},
+			{.label = "OPERATOR", .kind = models::completion_item_kind::OPERATOR},
+			{.label = "TYPEPARAMETER", .kind = models::completion_item_kind::TYPEPARAMETER}
+		};*/
+
 		models::completion_list completion_list = {
 			.is_incomplete = false,
-			.items = {
-				models::completion_item {.label="@i8"},
-				models::completion_item {.label="@i16"},
-				models::completion_item {.label="@i32"},
-				models::completion_item {.label="@i64"},
-				models::completion_item {.label="@i128"},
-
-				models::completion_item {.label="i8"},
-				models::completion_item {.label="i16"},
-				models::completion_item {.label="i32"},
-				models::completion_item {.label="i64"},
-				models::completion_item {.label="i128"},
-
-				models::completion_item {.label="@u8"},
-				models::completion_item {.label="@u16"},
-				models::completion_item {.label="@u32"},
-				models::completion_item {.label="@u64"},
-				models::completion_item {.label="@u128"},
-
-				models::completion_item {.label="u8"},
-				models::completion_item {.label="u16"},
-				models::completion_item {.label="u32"},
-				models::completion_item {.label="u64"},
-				models::completion_item {.label="u128"},
-
-				models::completion_item {.label="@f8"},
-				models::completion_item {.label="@f16"},
-				models::completion_item {.label="@f32"},
-				models::completion_item {.label="@f64"},
-
-				models::completion_item {.label="f8"},
-				models::completion_item {.label="f16"},
-				models::completion_item {.label="f32"},
-				models::completion_item {.label="f64"},
-
-				models::completion_item {.label="mut"},
-				models::completion_item {.label="@mut"},
-			}
+			//.items = example,
+			.items = result,
 		};
 
 		return completion_list.json();
