@@ -9,6 +9,7 @@ namespace hill::lsp::methods {
 
 	inline std::variant<std::optional<models::result_t>, models::response_error> text_document_hover(const models::request_message &req)
 	{
+		(void)req; // Unused
 		return std::nullopt;
 	}
 }
