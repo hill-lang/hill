@@ -1382,7 +1382,7 @@ namespace hill::lsp::models {
 
 	struct hover {
 		std::variant<marked_string_t, std::vector<marked_string_t>, markup_content> contents;
-		std::optional<models::range> range;
+		std::optional<models::range> range = {};
 
 		std::shared_ptr<utils::json_value> json() const
 		{
