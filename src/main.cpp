@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 			hill::fmt::formatter fmt;
 			// TODO: Handle flags
 			// TODO: Maybe allow formatting whatever is on stdin and printing it to stdout?
-			for (size_t i=2; i<argc; ++i) {
+			for (int i=2; i<argc; ++i) {
 				fmt.format(argv[i]);
 			}
 		} else if (!strcmp(argv[1], "lsp")) {
