@@ -30,7 +30,6 @@ Uri: ")" + params.text_document.uri
 + "\\\nChar: "s + std::to_string(params.position.character)
 			},
 		};
-		logger::trace(res.json()->stringify());
 		return res.json();
 	}
 }
