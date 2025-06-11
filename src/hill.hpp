@@ -71,6 +71,7 @@ namespace hill {
 		analyzer.analyze(parser.get_rpn());
 
 		// Debug only!
+		std::filesystem::create_directories("./tmp/");
 		serializer s(serializer_mode::ASCII);
 		s.serialize("./tmp/output.hill_c.txt", analyzer.get_main_block());
 		s = serializer(serializer_mode::BIN);
