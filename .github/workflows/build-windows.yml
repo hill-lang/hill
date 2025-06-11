@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        visual-studio: [vs2019, vs2022]
+        visual-studio: [vs2022]
         compiler: [msc, clang]
         config: [debug, release]
 
