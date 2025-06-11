@@ -17,7 +17,15 @@ namespace hill::lsp {
 		const models::server_capabilities server_capabilities = {
 			.text_document_sync = models::text_document_sync_kind::FULL,
 			.completion_provider = models::completion_options{},
+			.hover_provider = true,
 		};
+
+		bool should_cancel(int request_id)
+		{
+			(void)request_id;
+			// TODO: Implement cancelation
+			return false;
+		}
 
 		static server_state &get()
 		{

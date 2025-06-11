@@ -37,6 +37,21 @@ namespace hill::utils {
 		}
 	}
 
+	inline std::string json_escape_str(const char *s)
+	{
+		std::stringstream ss;
+		while (*s) {
+			switch (*s) {
+			case '\\': ss << "\\\\"; break;
+			case '\n': ss << "\\n"; break;
+			case '"': ss << "\\\""; break;
+			default: ss << *s;
+			}
+			++s;
+		}
+		return ss.str();
+	}
+
 	struct json_value {
 	private:
 		friend struct json_parser;
@@ -323,7 +338,7 @@ namespace hill::utils {
 				break;
 			}
 			case json_value_kind::STRING:
-				ss << '"' << std::get<std::string>(value) << '"';
+				ss << '"' << json_escape_str(std::get<std::string>(value).c_str()) << '"';
 				break;
 			case json_value_kind::NUMBER:
 				ss << std::get<number_t>(value);

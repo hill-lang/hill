@@ -9,8 +9,29 @@ namespace hill::lsp::methods {
 
 	inline std::variant<std::optional<models::result_t>, models::response_error> text_document_hover(const models::request_message &req)
 	{
-		(void)req; // Unused
-		return std::nullopt;
+		using namespace std::literals::string_literals;
+
+		auto params = models::hover_params::from_json(req.params.value()).value();
+
+		//params.text_document.uri
+
+		auto res = models::hover {
+			.contents = models::markup_content {
+				.kind = models::markup_kind::MARKDOWN,
+				.value =
+R"(### This is a hover
+
+```typescript
+someCode();
+```
+
+Uri: ")" + params.text_document.uri
++ "\"\\\nLine: "s + std::to_string(params.position.line)
++ "\\\nChar: "s + std::to_string(params.position.character)
+			},
+		};
+		logger::trace(res.json()->stringify());
+		return res.json();
 	}
 }
 

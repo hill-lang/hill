@@ -38,6 +38,8 @@ namespace hill::lsp::models {
 
 	constexpr const char *method_str(method m)
 	{
+		// This string is used as part of the protocl
+		// and is therefor case sensitive.
 		switch (m) {
 		case method::INITIALIZE: return "initialize";
 		case method::INITIALIZED: return "initialized";
@@ -207,17 +209,9 @@ namespace hill::lsp::models {
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
-
 			json->obj_add_num("id", (double)id);
-
-			if (result.has_value()) {
-				json->obj_add_obj("result", result.value());
-			}
-
-			if (error.has_value()) {
-				json->obj_add_obj("error", error.value().json());
-			}
-
+			if (result.has_value()) {json->obj_add_obj("result", result.value());}
+			if (error.has_value()) {json->obj_add_obj("error", error.value().json());}
 			return json;
 		}
 	};
@@ -228,20 +222,15 @@ namespace hill::lsp::models {
 	};
 
 	struct cancel_params {
-		/**
-		 * The request id to cancel
-		 */
 		int id;
 
 		static std::optional<cancel_params> from_json(const std::shared_ptr<utils::json_value> &json)
 		{
 			using namespace ::hill::utils;
-
 			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
 			if (!json->obj_has("id")) return std::nullopt;
 			auto id = json->obj_get("id").value();
 			if (id->kind()!=json_value_kind::NUMBER) return std::nullopt;
-
 			return cancel_params{.id = (int)id->num().value()};
 		}
 
@@ -254,14 +243,7 @@ namespace hill::lsp::models {
 	};
 
 	struct progress_params {
-		/**
-		 * The progress token provided by the client or server.
-		 */
 		int token;
-
-		/**
-		 * The progress data.
-		 */
 		std::shared_ptr<::hill::utils::json_value> value;
 	};
 
@@ -330,8 +312,7 @@ namespace hill::lsp::models {
 		}
 	};
 
-	struct text_document_item
-	{
+	struct text_document_item {
 		std::string uri;
 		std::string language_id;
 		int version;
@@ -436,7 +417,6 @@ namespace hill::lsp::models {
 	struct text_document_position_params {
 		text_document_identifier text_document;
 		models::position position;
-		//TODO: context
 
 		static std::optional<text_document_position_params> from_json(const std::shared_ptr<utils::json_value> &json)
 		{
@@ -799,6 +779,8 @@ namespace hill::lsp::models {
 
 	constexpr const char *markup_kind_str(markup_kind kind)
 	{
+		// This string is used as part of the protocl
+		// and is therefor case sensitive.
 		switch (kind) {
 		case markup_kind::PLAIN_TEXT: return "plaintext";
 		case markup_kind::MARKDOWN: return "markdown";
@@ -842,6 +824,7 @@ namespace hill::lsp::models {
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_str("kind", markup_kind_str(kind));
 			json->obj_add_str("value", value);
 			return json;
 		}
@@ -863,6 +846,8 @@ namespace hill::lsp::models {
 
 	constexpr const char *resource_operation_kind_str(resource_operation_kind kind)
 	{
+		// This string is used as part of the protocl
+		// and is therefor case sensitive.
 		switch (kind) {
 		case resource_operation_kind::CREATE: return "create";
 		case resource_operation_kind::RENAME: return "rename";
@@ -937,6 +922,8 @@ namespace hill::lsp::models {
 
 	constexpr const char *failure_handling_kind_str(failure_handling_kind kind)
 	{
+		// This string is used as part of the protocl
+		// and is therefor case sensitive.
 		switch (kind) {
 		case failure_handling_kind::ABORT: return "abort";
 		case failure_handling_kind::TRANSACTIONAL: return "transactional";
@@ -1092,9 +1079,7 @@ namespace hill::lsp::models {
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
-			if (work_done_token.has_value()) {
-				json->obj_add_num("workDoneToken", (double)work_done_token.value());
-			}
+			if (work_done_token.has_value()) {json->obj_add_num("workDoneToken", (double)work_done_token.value());}
 			return json;
 		}
 	};
@@ -1142,6 +1127,8 @@ namespace hill::lsp::models {
 
 	constexpr const char *trace_value_str(trace_value value)
 	{
+		// This string is used as part of the protocl
+		// and is therefor case sensitive.
 		switch (value) {
 		case trace_value::OFF: return "off";
 		case trace_value::MESSAGE: return "message";
@@ -1248,19 +1235,15 @@ namespace hill::lsp::models {
 	struct server_capabilities {
 		std::optional<text_document_sync_kind> text_document_sync = {};
 		std::optional<completion_options> completion_provider = {};
+		//std::optional<std::variant<bool, hover_options>> hoverProvider = {};
+		std::optional<bool> hover_provider = {};
 
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
-
-			if (text_document_sync.has_value()) {
-				json->obj_add_num("textDocumentSync", (int)text_document_sync.value());
-			}
-
-			if (completion_provider.has_value()) {
-				json->obj_add_obj("completionProvider", completion_provider.value().json());
-			}
-			
+			if (text_document_sync.has_value()) {json->obj_add_num("textDocumentSync", (double)text_document_sync.value());}
+			if (completion_provider.has_value()) {json->obj_add_obj("completionProvider", completion_provider.value().json());}
+			if (hover_provider.has_value()) {json->obj_add_bool("hoverProvider", hover_provider.value());}
 			return json;
 		}
 	};
@@ -1345,6 +1328,90 @@ namespace hill::lsp::models {
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 			json->obj_add_obj("textDocument", text_document.json());
+			return json;
+		}
+	};
+
+	// Extends text_document_position_params, work_done_progress_params
+	struct hover_params {
+		// text_document_position_params
+		text_document_identifier text_document;
+		models::position position;
+
+		// work_done_progress_params
+		std::optional<int> work_done_token = {};
+
+		static std::optional<hover_params> from_json(const std::shared_ptr<utils::json_value> &json)
+		{
+			using namespace ::hill::utils;
+
+			auto pos_params = text_document_position_params::from_json(json);
+			auto work_done_prog_params = work_done_progress_params::from_json(json);
+
+			return hover_params{
+				.text_document = pos_params.value().text_document,
+				.position = pos_params.value().position,
+				.work_done_token = work_done_prog_params.value().work_done_token
+			};
+		}
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_obj("textDocument", text_document.json());
+			json->obj_add_obj("position", position.json());
+			if (work_done_token.has_value()) {json->obj_add_num("workDoneToken", (double)work_done_token.value());}
+			return json;
+		}
+	};
+
+	struct marked_lang_string {
+		std::string language;
+		std::string value;
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_str("language", language);
+			json->obj_add_str("value", value);
+			return json;
+		}
+	};
+
+	typedef std::variant<std::string, marked_lang_string> marked_string_t;
+
+	struct hover {
+		std::variant<marked_string_t, std::vector<marked_string_t>, markup_content> contents;
+		std::optional<models::range> range;
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+
+			if (std::holds_alternative<marked_string_t>(contents)) {
+				const auto &marked_str = std::get<marked_string_t>(contents);
+				if (std::holds_alternative<std::string>(marked_str)) {
+					json->obj_add_str("contents", std::get<std::string>(marked_str));
+				} else {
+					json->obj_add_obj("contents", std::get<marked_lang_string>(marked_str).json());
+				}
+			} else if (std::holds_alternative<std::vector<marked_string_t>>(contents)) {
+				auto arr = json->obj_add_arr("contents").value();
+				for (const auto &marked_str : std::get<std::vector<marked_string_t>>(contents)) {
+					if (std::holds_alternative<std::string>(marked_str)) {
+						arr->arr_add_str(std::get<std::string>(marked_str));
+					} else {
+						arr->arr_add_obj(std::get<marked_lang_string>(marked_str).json());
+					}
+				}
+			} else {
+				json->obj_add_obj("contents", std::get<markup_content>(contents).json());
+			}
+
+			if (range.has_value()) {
+				json->obj_add_obj("range", range.value().json());
+			}
+
 			return json;
 		}
 	};
