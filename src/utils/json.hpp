@@ -60,6 +60,12 @@ namespace hill::utils {
 		typedef std::vector<std::shared_ptr<json_value>> array_t;
 		typedef double number_t;
 
+		struct json_array_ref {
+			const json_value::array_t &value;
+			json_value::array_t::const_iterator begin() const { return value.cbegin(); }
+			json_value::array_t::const_iterator end() const { return value.cend(); }
+		};
+
 		json_value_kind value_kind;
 		std::variant<object_t, array_t, std::string, number_t, bool> value;
 
@@ -95,20 +101,14 @@ namespace hill::utils {
 			if (value_kind!=json_value_kind::OBJECT) return std::nullopt;
 			if (!std::holds_alternative<object_t>(value)) return std::nullopt;
 			return std::get<object_t>(value);
-		}
+		}*/
 
-		std::optional<const array_t &> arr() const
+		// NEVER extend the lifetine of this return value!
+		std::optional<json_array_ref> arr() const
 		{
 			if (value_kind!=json_value_kind::ARRAY) return std::nullopt;
 			if (!std::holds_alternative<array_t>(value)) return std::nullopt;
-			return std::get<array_t>(value);
-		}*/
-
-		const array_t * arr() const
-		{
-			if (value_kind!=json_value_kind::ARRAY) return nullptr;
-			if (!std::holds_alternative<array_t>(value)) return nullptr;
-			return &std::get<array_t>(value);
+			return json_array_ref {std::get<array_t>(value)};
 		}
 
 		std::optional<std::string> str() const
