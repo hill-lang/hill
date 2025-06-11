@@ -33,6 +33,7 @@ namespace hill::lsp::models {
 		WORKSPACE_DOCUMENT_DID_RENAME,
 		// Text document
 		TEXT_DOCUMENT_COMPLETION,
+		TEXT_DOCUMENT_HOVER,
 	};
 
 	constexpr const char *method_str(method m)
@@ -52,6 +53,7 @@ namespace hill::lsp::models {
 		case method::TEXT_DOCUMENT_DID_CLOSE: return "textDocument/didClose";
 		case method::WORKSPACE_DOCUMENT_DID_RENAME: return "workspace/didRenameFiles";
 		case method::TEXT_DOCUMENT_COMPLETION: return "textDocument/completion";
+		case method::TEXT_DOCUMENT_HOVER: return "textDocument/hover";
 		default: throw internal_exception();
 		}
 	}
@@ -72,6 +74,7 @@ namespace hill::lsp::models {
 		else if (str==method_str(method::TEXT_DOCUMENT_DID_CLOSE)) return method::TEXT_DOCUMENT_DID_CLOSE;
 		else if (str==method_str(method::WORKSPACE_DOCUMENT_DID_RENAME)) return method::WORKSPACE_DOCUMENT_DID_RENAME;
 		else if (str==method_str(method::TEXT_DOCUMENT_COMPLETION)) return method::TEXT_DOCUMENT_COMPLETION;
+		else if (str==method_str(method::TEXT_DOCUMENT_HOVER)) return method::TEXT_DOCUMENT_HOVER;
 		else return std::nullopt;
 	}
 

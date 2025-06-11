@@ -5,6 +5,7 @@
 
 #include "methods/lifecycle.hpp"
 #include "methods/text_document/completion.hpp"
+#include "methods/text_document/hover.hpp"
 #include "methods/text_document/synchronization.hpp"
 
 #include <unordered_map>
@@ -50,6 +51,7 @@ namespace hill::lsp {
 				{models::method::INITIALIZE, methods::initialize},
 				{models::method::SHUTDOWN, methods::shutdown},
 				{models::method::TEXT_DOCUMENT_COMPLETION, methods::text_document_completion},
+				{models::method::TEXT_DOCUMENT_HOVER, methods::text_document_hover},
 			};
 			return map;
 		}
