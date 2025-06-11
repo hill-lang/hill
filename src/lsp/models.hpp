@@ -1724,11 +1724,12 @@ namespace hill::lsp::models {
 			if (!text_document.has_value()) return std::nullopt;
 
 			if (!json->obj_has("contentChanges")) return std::nullopt;
-			auto content_changes_arr = json->obj_get("contentChanges").value();
-			if (content_changes_arr->kind()!=json_value_kind::ARRAY) return std::nullopt;
+			auto content_changes_arr_json = json->obj_get("contentChanges").value();
+			if (content_changes_arr_json->kind()!=json_value_kind::ARRAY) return std::nullopt;
 
 			std::vector<text_document_content_change_all> content_changes;
-			for (const auto &el : content_changes_arr->arr().value()) {
+			auto content_changes_arr = content_changes_arr_json->arr().value();
+			for (const auto &el : content_changes_arr) {
 				auto content_change = models::text_document_content_change_all::from_json(el);
 				if (!content_change.has_value()) return std::nullopt;
 				content_changes.push_back(content_change.value());
