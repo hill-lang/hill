@@ -23,7 +23,7 @@ namespace hill::lsp::methods {
 		//auto content = state.document_store.get(params.text_document.uri).value();
 		//logger::trace(content);
 
-		std::vector<models::completion_item> result = {
+		 auto result = std::vector<models::completion_item> {
 			{.label = "@i8", .kind = models::completion_item_kind::FUNCTION, .detail = "8-bit signed integer"},
 			{.label="@i16", .kind = models::completion_item_kind::FUNCTION, .detail = "16-bit signed integer"},
 			{.label="@i32", .kind = models::completion_item_kind::FUNCTION, .detail = "32-bit signed integer"},
@@ -58,7 +58,7 @@ namespace hill::lsp::methods {
 			{.label="@mut", .kind = models::completion_item_kind::FUNCTION, .detail = "Mutable modifier"},
 		};
 
-		/*std::vector<models::completion_item> example = {
+		/*auto example = std::vector<models::completion_item> {
 			{.label = "TEXT", .kind = models::completion_item_kind::TEXT},
 			{
 				.label = "TEXT deprecated",

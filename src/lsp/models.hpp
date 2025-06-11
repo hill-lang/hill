@@ -170,13 +170,13 @@ namespace hill::lsp::models {
 	struct request_message {
 		int id;
 		models::method method;
-		std::optional<std::shared_ptr<::hill::utils::json_value>> params;
+		std::optional<std::shared_ptr<::hill::utils::json_value>> params = {};
 	};
 
 	struct response_error {
 		error_code code;
 		std::string message;
-		std::optional<std::shared_ptr<::hill::utils::json_value>> data;
+		std::optional<std::shared_ptr<::hill::utils::json_value>> data = {};
 
 		std::shared_ptr<utils::json_value> json() const
 		{
@@ -198,8 +198,8 @@ namespace hill::lsp::models {
 
 	struct response_message {
 		int id;
-		std::optional<result_t> result;
-		std::optional<response_error> error;
+		std::optional<result_t> result = {};
+		std::optional<response_error> error = {};
 
 		std::shared_ptr<utils::json_value> json() const
 		{
@@ -221,7 +221,7 @@ namespace hill::lsp::models {
 
 	struct notification_message {
 		models::method method;
-		std::optional<std::shared_ptr<::hill::utils::json_value>> params;
+		std::optional<std::shared_ptr<::hill::utils::json_value>> params = {};
 	};
 
 	struct cancel_params {
@@ -464,9 +464,9 @@ namespace hill::lsp::models {
 	};
 
 	struct document_filter {
-		std::optional<std::string> language;
-		std::optional<std::string> scheme;
-		std::optional<std::string> pattern;
+		std::optional<std::string> language = {};
+		std::optional<std::string> scheme = {};
+		std::optional<std::string> pattern = {};
 
 		static std::optional<document_filter> from_json(const std::shared_ptr<utils::json_value> &json)
 		{
@@ -548,8 +548,8 @@ namespace hill::lsp::models {
 
 	struct change_annotation {
 		std::string label;
-		std::optional<bool> needs_confirmation;
-		std::optional<std::string> description;
+		std::optional<bool> needs_confirmation = {};
+		std::optional<std::string> description = {};
 
 		static std::optional<change_annotation> from_json(const std::shared_ptr<utils::json_value> &json)
 		{
@@ -561,8 +561,8 @@ namespace hill::lsp::models {
 			auto label = json->obj_get("label").value();
 			if (label->kind()!=json_value_kind::STRING) return std::nullopt;
 
-			std::optional<bool> needs_confirmation = std::nullopt;
-			std::optional<std::string> description = std::nullopt;
+			std::optional<bool> needs_confirmation = {};
+			std::optional<std::string> description = {};
 
 			auto needs_confirmation_json = json->obj_get("needsConfirmation");
 			if (needs_confirmation_json.has_value()) {
@@ -755,14 +755,14 @@ namespace hill::lsp::models {
 
 	struct diagnostic {
 		models::range range;
-		std::optional<diagnostic_severity> severity;
-		std::optional<int> code; // TODO: Int or string?
-		std::optional<models::code_description> code_description;
-		std::optional<std::string> source;
+		std::optional<diagnostic_severity> severity = {};
+		std::optional<int> code = {}; // TODO: Int or string?
+		std::optional<models::code_description> code_description = {};
+		std::optional<std::string> source = {};
 		std::string message;
-		std::optional<std::vector<diagnostic_tag>> tags;
-		std::optional<std::vector<diagnostic_related_information>> related_information;
-		std::optional<std::shared_ptr<::hill::utils::json_value>> data;
+		std::optional<std::vector<diagnostic_tag>> tags = {};
+		std::optional<std::vector<diagnostic_related_information>> related_information = {};
+		std::optional<std::shared_ptr<::hill::utils::json_value>> data = {};
 
 		// TODO: parsing and serializing
 	};
@@ -770,7 +770,7 @@ namespace hill::lsp::models {
 	struct command {
 		std::string title;
 		std::string command;
-		std::optional<std::vector<std::shared_ptr<utils::json_value>>> arguments;
+		std::optional<std::vector<std::shared_ptr<utils::json_value>>> arguments = {};
 
 		// TODO: parsing
 
@@ -846,8 +846,8 @@ namespace hill::lsp::models {
 
 	struct markdown_client_capabilities {
 		std::string parser;
-		std::optional<std::string> version;
-		std::optional<std::vector<std::string>> allowed_tags;
+		std::optional<std::string> version = {};
+		std::optional<std::vector<std::string>> allowed_tags = {};
 
 		// TODO: parsing and serializing
 	};
@@ -877,8 +877,8 @@ namespace hill::lsp::models {
 	}
 
 	struct create_file_options {
-		std::optional<bool> overwrite;
-		std::optional<bool> ignore_if_exists;
+		std::optional<bool> overwrite = {};
+		std::optional<bool> ignore_if_exists = {};
 
 		// TODO: parsing and serializing
 	};
@@ -886,15 +886,15 @@ namespace hill::lsp::models {
 	struct create_file {
 		//resource_operation_kind kind; // == CREATE
 		std::string uri;
-		std::optional<create_file_options> options;
-		std::optional<std::string> annotation_id;
+		std::optional<create_file_options> options = {};
+		std::optional<std::string> annotation_id = {};
 
 		// TODO: parsing and serializing
 	};
 
 	struct rename_file_options {
-		std::optional<bool> overwrite;
-		std::optional<bool> ignore_if_exists;
+		std::optional<bool> overwrite = {};
+		std::optional<bool> ignore_if_exists = {};
 
 		// TODO: parsing and serializing
 	};
@@ -903,15 +903,15 @@ namespace hill::lsp::models {
 		//resource_operation_kind kind; // == RENAME
 		std::string old_uri;
 		std::string new_uri;
-		std::optional<rename_file_options> options;
-		std::optional<std::string> annotation_id;
+		std::optional<rename_file_options> options = {};
+		std::optional<std::string> annotation_id = {};
 
 		// TODO: parsing and serializing
 	};
 
 	struct delete_file_options {
-		std::optional<bool> recursive;
-		std::optional<bool> ignore_if_not_exists;
+		std::optional<bool> recursive = {};
+		std::optional<bool> ignore_if_not_exists = {};
 
 		// TODO: parsing and serializing
 	};
@@ -919,8 +919,8 @@ namespace hill::lsp::models {
 	struct delete_file {
 		//resource_operation_kind kind; // == DELETE
 		std::string uri;
-		std::optional<delete_file_options> options;
-		std::optional<std::string> annotation_id;
+		std::optional<delete_file_options> options = {};
+		std::optional<std::string> annotation_id = {};
 
 		// TODO: parsing and serializing
 	};
@@ -954,7 +954,7 @@ namespace hill::lsp::models {
 
 	struct workspace_edit {
 		// uri => text_edit[]
-		std::optional<std::unordered_map<std::string, std::vector<text_edit>>> changes;
+		std::optional<std::unordered_map<std::string, std::vector<text_edit>>> changes = {};
 
 #if 0
 	documentChanges?: (
@@ -963,23 +963,23 @@ namespace hill::lsp::models {
 	);
 #endif
 		// annotation_id => change_annotation[]
-		std::optional<std::unordered_map<std::string, std::vector<change_annotation>>> change_annotations;
+		std::optional<std::unordered_map<std::string, std::vector<change_annotation>>> change_annotations = {};
 
 		// TODO: parsing and serializing
 	};
 
 	struct workspace_edit_client_capabilities_change_annotation_support {
-		std::optional<bool> groups_on_label;
+		std::optional<bool> groups_on_label = {};
 
 		// TODO: parsing and serializing
 	};
 
 	struct workspace_edit_client_capabilities {
-		std::optional<bool> document_changes;
-		std::optional<std::vector<resource_operation_kind>> resource_operations;
-		std::optional<failure_handling_kind> failure_handling;
-		std::optional<bool> normalizes_line_endings;
-		std::optional<workspace_edit_client_capabilities_change_annotation_support> change_annotation_support;
+		std::optional<bool> document_changes = {};
+		std::optional<std::vector<resource_operation_kind>> resource_operations = {};
+		std::optional<failure_handling_kind> failure_handling = {};
+		std::optional<bool> normalizes_line_endings = {};
+		std::optional<workspace_edit_client_capabilities_change_annotation_support> change_annotation_support = {};
 
 		// TODO: parsing and serializing
 	};
@@ -1044,31 +1044,31 @@ namespace hill::lsp::models {
 	struct work_done_progress_begin {
 		//work_done_progress_kind kind; // == BEGIN
 		std::string title;
-		std::optional<bool> cancellable;
-		std::optional<std::string> message;
-		std::optional<uint32_t> percentage;
+		std::optional<bool> cancellable = {};
+		std::optional<std::string> message = {};
+		std::optional<uint32_t> percentage = {};
 
 		// TODO: parsing and serializing
 	};
 
 	struct work_done_progress_report {
 		//work_done_progress_kind kind; // == REPORT
-		std::optional<bool> cancellable;
-		std::optional<std::string> message;
-		std::optional<uint32_t> percentage;
+		std::optional<bool> cancellable = {};
+		std::optional<std::string> message = {};
+		std::optional<uint32_t> percentage = {};
 
 		// TODO: parsing and serializing
 	};
 
 	struct work_done_progress_end {
 		//work_done_progress_kind kind; // == END
-		std::optional<std::string> message;
+		std::optional<std::string> message = {};
 
 		// TODO: parsing and serializing
 	};
 
 	struct work_done_progress_params {
-		std::optional<int> work_done_token;
+		std::optional<int> work_done_token = {};
 
 		static std::optional<work_done_progress_params> from_json(const std::shared_ptr<utils::json_value> &json)
 		{
@@ -1097,7 +1097,7 @@ namespace hill::lsp::models {
 	};
 
 	struct work_done_progress_options {
-		std::optional<bool> work_done_progress;
+		std::optional<bool> work_done_progress = {};
 
 		static std::optional<work_done_progress_options> from_json(const std::shared_ptr<utils::json_value> &json)
 		{
@@ -1126,7 +1126,7 @@ namespace hill::lsp::models {
 	};
 
 	struct partial_result_params {
-		std::optional<int> partial_result_token; // int or string?
+		std::optional<int> partial_result_token = {}; // int or string?
 
 		// TODO: parsing and serializing
 	};
@@ -1157,7 +1157,7 @@ namespace hill::lsp::models {
 
 	struct client_info {
 		std::string name;
-		std::optional<std::string> version;
+		std::optional<std::string> version = {};
 
 		// TODO: parsing and serializing
 	};
@@ -1169,16 +1169,16 @@ namespace hill::lsp::models {
 
 	// Extends: work_done_progress_params
 	struct initialize_params {
-		std::optional<int> work_done_token;
-		std::optional<int> process_id; // int or null
+		std::optional<int> work_done_token = {};
+		std::optional<int> process_id = {}; // int or null
 		models::client_info client_info;
-		std::optional<std::string> locale;
-		std::optional<std::string> root_path; // string or null
-		std::optional<std::string> root_uri; // string or null
-		std::optional<std::shared_ptr<utils::json_value>> initialization_options;
+		std::optional<std::string> locale = {};
+		std::optional<std::string> root_path = {}; // string or null
+		std::optional<std::string> root_uri = {}; // string or null
+		std::optional<std::shared_ptr<utils::json_value>> initialization_options = {};
 		client_capabilities capabilities;
-		std::optional<trace_value> trace;
-		std::optional<std::vector<workspace_folder>> workspace_folders; // workspace_folder[] or null
+		std::optional<trace_value> trace = {};
+		std::optional<std::vector<workspace_folder>> workspace_folders = {}; // workspace_folder[] or null
 
 		// TODO: parsing and serializing
 
@@ -1243,9 +1243,8 @@ namespace hill::lsp::models {
 	};
 
 	struct server_capabilities {
-
-		std::optional<text_document_sync_kind> text_document_sync;
-		std::optional<completion_options> completion_provider;
+		std::optional<text_document_sync_kind> text_document_sync = {};
+		std::optional<completion_options> completion_provider = {};
 
 		std::shared_ptr<utils::json_value> json() const
 		{
@@ -1265,7 +1264,7 @@ namespace hill::lsp::models {
 
 	struct server_info {
 		std::string name;
-		std::optional<std::string> version;
+		std::optional<std::string> version = {};
 
 		std::shared_ptr<utils::json_value> json() const
 		{
@@ -1283,7 +1282,7 @@ namespace hill::lsp::models {
 
 	struct initialize_result {
 		server_capabilities capabilities;
-		std::optional<models::server_info> server_info;
+		std::optional<models::server_info> server_info = {};
 
 		std::shared_ptr<utils::json_value> json() const
 		{
@@ -1348,8 +1347,8 @@ namespace hill::lsp::models {
 	};
 
 	struct completion_item_label_details {
-		std::optional<std::string> detail;
-		std::optional<std::string> description;
+		std::optional<std::string> detail = {};
+		std::optional<std::string> description = {};
 
 		std::shared_ptr<utils::json_value> json() const
 		{
@@ -1477,23 +1476,23 @@ namespace hill::lsp::models {
 
 	struct completion_item {
 		std::string label;
-		std::optional<completion_item_label_details> label_details;
-		std::optional<completion_item_kind> kind;
-		std::optional<std::vector<completion_item_tag>> tags;
-		std::optional<std::string> detail;
-		std::optional<std::variant<std::string, markup_content>> documentation;
-		std::optional<bool> preselect;
-		std::optional<std::string> sort_text;
-		std::optional<std::string> filter_text;
-		std::optional<std::string> insert_text;
-		std::optional<models::insert_text_format> insert_text_format;
-		std::optional<models::insert_text_mode> insert_text_mode;
-		std::optional<std::variant<text_edit, insert_replace_edit>> text_edit;
-		std::optional<std::string> text_edit_text;
-		std::optional<std::vector<models::text_edit>> additional_text_edits;
-		std::optional<std::vector<std::string>> commit_characters;
-		std::optional<models::command> command;
-		std::optional<std::shared_ptr<utils::json_value>> data;
+		std::optional<completion_item_label_details> label_details = {};
+		std::optional<completion_item_kind> kind = {};
+		std::optional<std::vector<completion_item_tag>> tags = {};
+		std::optional<std::string> detail = {};
+		std::optional<std::variant<std::string, markup_content>> documentation = {};
+		std::optional<bool> preselect = {};
+		std::optional<std::string> sort_text = {};
+		std::optional<std::string> filter_text = {};
+		std::optional<std::string> insert_text = {};
+		std::optional<models::insert_text_format> insert_text_format = {};
+		std::optional<models::insert_text_mode> insert_text_mode = {};
+		std::optional<std::variant<models::text_edit, insert_replace_edit>> text_edit = {};
+		std::optional<std::string> text_edit_text = {};
+		std::optional<std::vector<models::text_edit>> additional_text_edits = {};
+		std::optional<std::vector<std::string>> commit_characters = {};
+		std::optional<models::command> command = {};
+		std::optional<std::shared_ptr<utils::json_value>> data = {};
 
 		std::shared_ptr<utils::json_value> json() const
 		{
@@ -1593,7 +1592,7 @@ namespace hill::lsp::models {
 #if 0
 		range: Range;
 #endif
-		std::optional<uint32_t> range_length; // rangeLength
+		std::optional<uint32_t> range_length = {}; // rangeLength
 		std::string text;
 
 		static std::optional<text_document_content_change_event> from_json(const std::shared_ptr<utils::json_value> &json)
