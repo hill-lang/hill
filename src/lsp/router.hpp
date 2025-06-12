@@ -5,6 +5,7 @@
 
 #include "methods/lifecycle.hpp"
 #include "methods/text_document/completion.hpp"
+#include "methods/text_document/formatting.hpp"
 #include "methods/text_document/hover.hpp"
 #include "methods/text_document/synchronization.hpp"
 
@@ -52,6 +53,7 @@ namespace hill::lsp {
 				{models::method::SHUTDOWN, methods::shutdown},
 				{models::method::TEXT_DOCUMENT_COMPLETION, methods::text_document_completion},
 				{models::method::TEXT_DOCUMENT_HOVER, methods::text_document_hover},
+				{models::method::TEXT_DOCUMENT_FORMATTING, methods::text_document_formatting},
 			};
 			return map;
 		}

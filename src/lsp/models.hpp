@@ -34,6 +34,7 @@ namespace hill::lsp::models {
 		// Text document
 		TEXT_DOCUMENT_COMPLETION,
 		TEXT_DOCUMENT_HOVER,
+		TEXT_DOCUMENT_FORMATTING,
 	};
 
 	constexpr const char *method_str(method m)
@@ -56,6 +57,7 @@ namespace hill::lsp::models {
 		case method::WORKSPACE_DOCUMENT_DID_RENAME: return "workspace/didRenameFiles";
 		case method::TEXT_DOCUMENT_COMPLETION: return "textDocument/completion";
 		case method::TEXT_DOCUMENT_HOVER: return "textDocument/hover";
+		case method::TEXT_DOCUMENT_FORMATTING: return "textDocument/formatting";
 		default: throw internal_exception();
 		}
 	}
@@ -77,6 +79,7 @@ namespace hill::lsp::models {
 		else if (str==method_str(method::WORKSPACE_DOCUMENT_DID_RENAME)) return method::WORKSPACE_DOCUMENT_DID_RENAME;
 		else if (str==method_str(method::TEXT_DOCUMENT_COMPLETION)) return method::TEXT_DOCUMENT_COMPLETION;
 		else if (str==method_str(method::TEXT_DOCUMENT_HOVER)) return method::TEXT_DOCUMENT_HOVER;
+		else if (str==method_str(method::TEXT_DOCUMENT_FORMATTING)) return method::TEXT_DOCUMENT_FORMATTING;
 		else return std::nullopt;
 	}
 
@@ -1198,25 +1201,133 @@ namespace hill::lsp::models {
 		}*/
 	};
 
+	struct formatting_options {
+		uint32_t tab_size;
+		bool insert_spaces;
+		std::optional<bool> trim_trailing_whitespace = {};
+		std::optional<bool> insert_final_newline = {};
+		std::optional<bool> trim_final_newlines = {};
+
+		static std::optional<formatting_options> from_json(const std::shared_ptr<utils::json_value> &json)
+		{
+			using namespace ::hill::utils;
+
+			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+
+			if (!json->obj_has("tabSize")) return std::nullopt;
+			auto tab_size = json->obj_get("tabSize").value();
+			if (tab_size->kind()!=json_value_kind::NUMBER) return std::nullopt;
+
+			if (!json->obj_has("insertSpaces")) return std::nullopt;
+			auto insert_spaces = json->obj_get("insertSpaces").value();
+			if (insert_spaces->kind()!=json_value_kind::BOOL) return std::nullopt;
+
+			std::optional<bool> trim_trailing_whitespace = {};
+			if (json->obj_has("trimTrailingWhitespace")) {
+				auto trim_trailing_whitespace_json = json->obj_get("trimTrailingWhitespace").value();
+				if (trim_trailing_whitespace_json->kind()!=json_value_kind::BOOL) return std::nullopt;
+				trim_trailing_whitespace = trim_trailing_whitespace_json->boolean().value();
+			}
+
+			std::optional<bool> insert_final_newline = {};
+			if (json->obj_has("insertFinalNewline")) {
+				auto insert_final_newline_json = json->obj_get("insertFinalNewline").value();
+				if (insert_final_newline_json->kind()!=json_value_kind::BOOL) return std::nullopt;
+				insert_final_newline = insert_final_newline_json->boolean().value();
+			}
+
+			std::optional<bool> trim_final_newlines = {};
+			if (json->obj_has("trimFinalNewlines")) {
+				auto trim_final_newlines_json = json->obj_get("trimFinalNewlines").value();
+				if (trim_final_newlines_json->kind()!=json_value_kind::BOOL) return std::nullopt;
+				trim_final_newlines = trim_final_newlines_json->boolean().value();
+			}
+
+			return formatting_options{
+				.tab_size = (uint32_t)tab_size->num().value(),
+				.insert_spaces = insert_spaces->boolean().value(),
+				.trim_trailing_whitespace = trim_trailing_whitespace,
+				.insert_final_newline = insert_final_newline,
+				.trim_final_newlines = trim_final_newlines,
+			};
+		}
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_num("tabSize", (double)tab_size);
+			json->obj_add_bool("insertSpaces", insert_spaces);
+			if (trim_trailing_whitespace.has_value()) {json->obj_add_bool("trimTrailingWhitespace", trim_trailing_whitespace.value());}
+			if (insert_final_newline.has_value()) {json->obj_add_bool("insertFinalNewline", insert_final_newline.value());}
+			if (trim_final_newlines.has_value()) {json->obj_add_bool("trimFinalNewlines", trim_final_newlines.value());}
+			return json;
+		}
+	};
+
+	// Extends work_done_progress_params
+	struct document_formatting_params {
+		text_document_identifier text_document;
+		formatting_options options;
+
+		// work_done_progress_params
+		std::optional<int> work_done_token = {};
+
+		static std::optional<document_formatting_params> from_json(const std::shared_ptr<utils::json_value> &json)
+		{
+			using namespace ::hill::utils;
+
+			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+
+			if (!json->obj_has("textDocument")) return std::nullopt;
+			auto text_document = text_document_identifier::from_json(json->obj_get("textDocument").value());
+			if (!text_document.has_value()) return std::nullopt;
+
+			if (!json->obj_has("options")) return std::nullopt;
+			auto options = formatting_options::from_json(json->obj_get("options").value());
+			if (!options.has_value()) return std::nullopt;
+
+			auto work_done_prog_params = work_done_progress_params::from_json(json);
+
+			return document_formatting_params{
+				.text_document = text_document.value(),
+				.options = options.value(),
+				.work_done_token = work_done_prog_params.value().work_done_token
+			};
+		}
+
+		std::shared_ptr<utils::json_value> json() const
+		{
+			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			json->obj_add_obj("textDocument", text_document.json());
+			json->obj_add_obj("options", options.json());
+			if (work_done_token.has_value()) {json->obj_add_num("workDoneToken", (double)work_done_token.value());}
+			return json;
+		}
+	};
+
 	// --------------------------------------
 
-	enum class text_document_sync_kind : int {
-		/**
-		 * Documents should not be synced at all.
-		 */
+	enum class position_encoding_kind {
+		UTF8,
+		UTF16,
+		UTF32,
+	};
+
+	constexpr const char *position_encoding_kind_str(position_encoding_kind kind)
+	{
+		// This string is used as part of the protocl
+		// and is therefor case sensitive.
+		switch (kind) {
+		case position_encoding_kind::UTF8: return "utf-8";
+		case position_encoding_kind::UTF16: return "utf-16";
+		case position_encoding_kind::UTF32: return "utf-32";
+		default: throw internal_exception();
+		}
+	}
+
+	enum class text_document_sync_kind: int {
 		NONE = 0,
-
-		/**
-		 * Documents are synced by always sending the full content
-		 * of the document.
-		 */
 		FULL = 1,
-
-		/**
-		 * Documents are synced by sending the full content on open.
-		 * After that only incremental updates to the document are
-		 * sent.
-		 */
 		INCREMENTAL = 2,
 	};
 
@@ -1233,17 +1344,21 @@ namespace hill::lsp::models {
 	};
 
 	struct server_capabilities {
+		std::optional<position_encoding_kind> position_encoding = {};
 		std::optional<text_document_sync_kind> text_document_sync = {};
 		std::optional<completion_options> completion_provider = {};
-		//std::optional<std::variant<bool, hover_options>> hoverProvider = {};
+		//std::optional<std::variant<bool, hover_options>> hover_provider = {};
 		std::optional<bool> hover_provider = {};
+		std::optional<bool> document_formatting_provider = {};
 
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
+			if (position_encoding.has_value()) {json->obj_add_str("positionEncoding", position_encoding_kind_str(position_encoding.value()));}
 			if (text_document_sync.has_value()) {json->obj_add_num("textDocumentSync", (double)text_document_sync.value());}
 			if (completion_provider.has_value()) {json->obj_add_obj("completionProvider", completion_provider.value().json());}
 			if (hover_provider.has_value()) {json->obj_add_bool("hoverProvider", hover_provider.value());}
+			if (document_formatting_provider.has_value()) {json->obj_add_bool("documentFormattingProvider", document_formatting_provider.value());}
 			return json;
 		}
 	};

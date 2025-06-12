@@ -15,9 +15,11 @@ namespace hill::lsp {
 		lsp::document_store document_store;
 
 		const models::server_capabilities server_capabilities = {
+			.position_encoding = models::position_encoding_kind::UTF16,
 			.text_document_sync = models::text_document_sync_kind::FULL,
 			.completion_provider = models::completion_options{},
 			.hover_provider = true,
+			.document_formatting_provider = true,
 		};
 
 		bool should_cancel(int request_id)
