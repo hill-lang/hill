@@ -3,6 +3,7 @@
 
 #include "models.hpp"
 
+#include "methods/cancel_request.h"
 #include "methods/lifecycle.hpp"
 #include "methods/text_document/completion.hpp"
 #include "methods/text_document/formatting.hpp"
@@ -61,6 +62,7 @@ namespace hill::lsp {
 		static const std::unordered_map<models::method, notify_endpoint_t> &get_notify_map()
 		{
 			static const std::unordered_map<models::method, notify_endpoint_t> map = {
+				{models::method::CANCEL_REQUEST, methods::cancel_request},
 				{models::method::INITIALIZED, methods::initialized},
 				{models::method::SET_TRACE, methods::set_trace},
 				{models::method::EXIT, methods::exit},

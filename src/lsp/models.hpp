@@ -14,6 +14,7 @@
 namespace hill::lsp::models {
 
 	enum class method {
+		CANCEL_REQUEST,
 		// Lifecycle
 		INITIALIZE,
 		INITIALIZED,
@@ -42,6 +43,7 @@ namespace hill::lsp::models {
 		// This string is used as part of the protocl
 		// and is therefor case sensitive.
 		switch (m) {
+		case method::CANCEL_REQUEST: return "$/cancelRequest";
 		case method::INITIALIZE: return "initialize";
 		case method::INITIALIZED: return "initialized";
 		case method::SET_TRACE: return "$/setTrace";
@@ -64,7 +66,8 @@ namespace hill::lsp::models {
 
 	constexpr std::optional<method> method_parse(const std::string &str)
 	{
-		if (str==method_str(method::INITIALIZE)) return method::INITIALIZE;
+		if (str==method_str(method::CANCEL_REQUEST)) return method::CANCEL_REQUEST;
+		else if (str==method_str(method::INITIALIZE)) return method::INITIALIZE;
 		else if (str==method_str(method::INITIALIZED)) return method::INITIALIZED;
 		else if (str==method_str(method::SET_TRACE)) return method::SET_TRACE;
 		else if (str==method_str(method::LOG_TRACE)) return method::LOG_TRACE;

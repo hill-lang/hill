@@ -81,6 +81,7 @@ namespace hill::lsp {
 			auto method_str = std::string(models::method_str(method));
 
 			logger::info("Received method<" + method_str + "> id<" + std::to_string(id) + ">");
+			server_state::get().request_state.on_recv(id);
 
 			models::request_message req = {
 				.id = id,
@@ -95,14 +96,25 @@ namespace hill::lsp {
 
 			auto result = func.value()(req);
 			models::response_message resp_msg = {.id=id, .result=std::nullopt, .error=std::nullopt};
-			if (std::holds_alternative<std::optional<models::result_t>>(result)) {
-				resp_msg.result = std::get<std::optional<models::result_t>>(result);
-			} else {
-				resp_msg.error = std::get<models::response_error>(result);
-				logger::error("Request failed method<" + method_str
+
+			if (server_state::get().request_state.cancelled(id)) {
+				resp_msg.error = models::response_error{
+					.code = models::error_code::REQUEST_CANCELLED,
+					.message = "Request cancelled"};
+				logger::info("Request cancelled - method<" + method_str
 					+ "> id<" + std::to_string(id)
 					+ "> code< "+ std::to_string((int)resp_msg.error.value().code)
 					+ "> message<" + resp_msg.error.value().message + '>');
+			} else {
+				if (std::holds_alternative<std::optional<models::result_t>>(result)) {
+					resp_msg.result = std::get<std::optional<models::result_t>>(result);
+				} else {
+					resp_msg.error = std::get<models::response_error>(result);
+					logger::info("Request error - method<" + method_str
+						+ "> id<" + std::to_string(id)
+						+ "> code< "+ std::to_string((int)resp_msg.error.value().code)
+						+ "> message<" + resp_msg.error.value().message + '>');
+				}
 			}
 
 			auto resp_msg_str = resp_msg.json()->stringify();
@@ -124,6 +136,7 @@ namespace hill::lsp {
 			}
 
 			logger::info("Sent response method<" + method_str + "> id<" + std::to_string(id) + ">");
+			server_state::get().request_state.on_complete(id);
 		}
 	};
 };
