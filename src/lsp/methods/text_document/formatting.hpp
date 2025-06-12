@@ -18,7 +18,14 @@ namespace hill::lsp::methods {
 
 		std::vector<models::text_edit> text_edits = {
 			{
-				.range = {.start=0, .end=0},
+				.range = models::range{
+					.start = models::position{
+						.line = 0u,
+						.character = 0u},
+					.end = models::position{
+						.line = 0u,
+						.character = 0u},
+				},
 				.new_text = "Imagine if this actually worked\n\n"
 			}
 		};
