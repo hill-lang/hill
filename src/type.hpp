@@ -122,6 +122,7 @@ namespace hill {
 		}
 		//type_spec(const type_spec &other): types(other.types) {}
 		bool operator==(const type_spec &other) const {return this->types == other.types;}
+		bool operator!=(const type_spec &other) const {return !(*this==other);}
 		bool operator<(const type_spec &other) const {return this->types < other.types;}
 		
 		std::vector<basic_type> types;
@@ -131,16 +132,31 @@ namespace hill {
 			return types.empty() ? basic_type::UNDECIDED : types[0];
 		}
 
+		bool is_composit_type(basic_type t) const
+		{
+			return t==basic_type::FUNC || t==basic_type::TUPLE;
+		}
+
 		type_spec inner_type(size_t ix) const
 		{
-			(void)ix; // Unused for now
-			std::vector<basic_type> inner_types;
+			if (ix>=types.size()) throw semantic_error_exception();
 			
-			if (types.size()>1 && types[0]==basic_type::TUPLE) {
-				// TODO: Until end
+			std::vector<basic_type> inner_types;
+
+			if (is_composit_type(types[ix])) {
+				inner_types.push_back(types[ix]);
+				int lvl = 1;
+				while (lvl>0) {
+					if (++ix>=types.size()) throw semantic_error_exception();
+					inner_types.push_back(types[ix]);
+
+					if (is_composit_type(types[ix])) ++lvl;
+					else if (types[ix]==basic_type::END) --lvl;
+				}
 			} else {
-				inner_types.push_back(types[0]);
+				inner_types.push_back(types[ix]);
 			}
+
 			return type_spec(inner_types);
 		}
 

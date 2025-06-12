@@ -52,7 +52,7 @@ namespace hill {
 		auto s = scope::create(parent);
 
 		s->ids["the_answer"] = val_ref((int32_t)42, basic_type::I32);
-		s->ids["abs"] = val_ref((void *)pf_abs, type_spec({basic_type::FUNC, basic_type::I32, basic_type::I32}));
+		s->ids["abs"] = val_ref((void *)pf_abs, type_spec({basic_type::FUNC, basic_type::I32, basic_type::I32, basic_type::END}));
 
 		return s;
 	}

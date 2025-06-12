@@ -322,15 +322,16 @@ namespace hill {
 					type_spec res_ts;
 					type_spec arg_ts;
 					if (ts.top(1).first()==basic_type::FUNC) {
-						res_ts = ts.top().inner_type(1);
-						arg_ts = ts.top().inner_type(1+res_ts.types.size());
+						res_ts = ts.top(1).inner_type(1);
+						arg_ts = ts.top(1).inner_type(1+res_ts.types.size());
+						if (arg_ts!=ts.top()) throw semantic_error_exception();
 
 						instrs.push_back(instr{
 							.op = op_code::CALL,
 							.res_ts = res_ts,
 							.val = {},
-							.arg1_ts = ts.top(),
-							.arg2_ts = arg_ts});
+							.arg1_ts = ts.top(1),
+							.arg2_ts = ts.top()});
 					} else {
 						throw semantic_error_exception();
 					}
