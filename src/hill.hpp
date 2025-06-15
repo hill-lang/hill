@@ -42,9 +42,14 @@ namespace hill {
 		return s;
 	}
 
-	int32_t pf_abs(int32_t v)
+	void pf_abs(uint8_t *rp, const uint8_t *ap)
 	{
-		return (int32_t)abs(v);
+		*((int32_t *)rp) = (int32_t)abs(*((int32_t *)ap));
+	}
+
+	void pf_pow(uint8_t *rp, const uint8_t *ap)
+	{
+		*((int32_t *)rp) = (int32_t)pow(*((int32_t *)ap), *(((int32_t *)ap)+1));
 	}
 
 	std::shared_ptr<scope> build_lib(const std::shared_ptr<scope> &parent)
@@ -52,8 +57,18 @@ namespace hill {
 		auto s = scope::create(parent);
 
 		s->ids["the_answer"] = val_ref((int32_t)42, basic_type::I32);
-		s->ids["abs"] = val_ref((void *)pf_abs, type_spec({basic_type::FUNC, basic_type::I32, basic_type::I32, basic_type::END}));
-
+		s->ids["abs"] = val_ref((void *)pf_abs, type_spec({
+			basic_type::FUNC,
+			basic_type::I32,
+			basic_type::I32,
+			basic_type::END}));
+		s->ids["pow"] = val_ref((void *)pf_pow, type_spec({
+			basic_type::FUNC,
+			basic_type::I32,
+			basic_type::TUPLE,
+			basic_type::I32,
+			basic_type::I32,
+			basic_type::END}));
 		return s;
 	}
 
