@@ -20,12 +20,7 @@ namespace hill {
 		{
 			std::stringstream ss;
 
-			size_t sz = ts.types.size();
 			const uint8_t *p = data.data();
-
-			if (sz==0 || sz>1) {
-				ss << '(';
-			}
 
 			auto prev_type = basic_type::TUPLE;
 			for (auto &type: ts.types) {
@@ -52,10 +47,6 @@ namespace hill {
 
 				p += basic_type_size(type);
 				prev_type = type;
-			}
-
-			if (sz==0 || sz>1) {
-				ss << ')';
 			}
 
 			return ss.str();

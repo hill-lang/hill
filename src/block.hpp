@@ -54,6 +54,12 @@ namespace hill {
 			return types[types.size()-1-pos];
 		}
 
+		type_spec &vtop(size_t pos=0)
+		{
+			if (types.size() < (1+pos)) throw semantic_error_exception();
+			return types[types.size()-1-pos];
+		}
+
 		void pop()
 		{
 			types.pop_back();
@@ -87,6 +93,9 @@ namespace hill {
 		{
 			switch (t.get_type()) {
 			case tt::RPAR:
+			case tt::RCURLY:
+			case tt::RSQUARE:
+				ts.vtop().close_tuple();
 				break;
 			case tt::END:
 				{

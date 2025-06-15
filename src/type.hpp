@@ -104,21 +104,18 @@ namespace hill {
 		explicit type_spec(basic_type bt): types{bt} {}
 		explicit type_spec(const std::vector<basic_type> &bts): types(bts) {}
 		type_spec(const type_spec &left, const type_spec &right) {
-			if (left.types.size()>1) {
-				this->types.push_back(basic_type::TUPLE);
-				this->types.insert(this->types.end(), left.types.begin(), left.types.end());
-				this->types.push_back(basic_type::END);
+			this->types.push_back(basic_type::TUPLE);
+
+			if (left.types[0]==basic_type::TUPLE && !left.tuple_closed) {
+				// TODO: Handle situation where the tuple is closed, and should not be extended
+				this->types.insert(this->types.end(), left.types.cbegin()+1, left.types.cend()-1);
 			} else {
-				this->types.push_back(left.types[0]);
+				this->types.insert(this->types.end(), left.types.cbegin(), left.types.cend());
 			}
 
-			if (right.types.size()>1) {
-				this->types.push_back(basic_type::TUPLE);
-				this->types.insert(this->types.end(), right.types.cbegin(), right.types.cend());
-				this->types.push_back(basic_type::END);
-			} else {
-				this->types.push_back(right.types[0]);
-			}
+			this->types.insert(this->types.end(), right.types.cbegin(), right.types.cend());
+
+			this->types.push_back(basic_type::END);
 		}
 		//type_spec(const type_spec &other): types(other.types) {}
 		bool operator==(const type_spec &other) const {return this->types == other.types;}
@@ -126,13 +123,14 @@ namespace hill {
 		bool operator<(const type_spec &other) const {return this->types < other.types;}
 		
 		std::vector<basic_type> types;
+		bool tuple_closed = false;
 
 		basic_type first() const
 		{
 			return types.empty() ? basic_type::UNDECIDED : types[0];
 		}
 
-		bool is_composit_type(basic_type t) const
+		bool is_composite_type(basic_type t) const
 		{
 			return t==basic_type::FUNC || t==basic_type::TUPLE;
 		}
@@ -143,14 +141,14 @@ namespace hill {
 			
 			std::vector<basic_type> inner_types;
 
-			if (is_composit_type(types[ix])) {
+			if (is_composite_type(types[ix])) {
 				inner_types.push_back(types[ix]);
 				int lvl = 1;
 				while (lvl>0) {
 					if (++ix>=types.size()) throw semantic_error_exception();
 					inner_types.push_back(types[ix]);
 
-					if (is_composit_type(types[ix])) ++lvl;
+					if (is_composite_type(types[ix])) ++lvl;
 					else if (types[ix]==basic_type::END) --lvl;
 				}
 			} else {
@@ -163,11 +161,6 @@ namespace hill {
 		std::string to_str() const
 		{
 			std::ostringstream ss;
-			size_t sz = this->types.size();
-
-			if (sz>1 || sz==0) {
-				ss << '(';
-			}
 
 			auto prev_type = basic_type::TUPLE;
 			for (auto &type: types) {
@@ -175,10 +168,6 @@ namespace hill {
 				ss << type;
 
 				prev_type = type;
-			}
-
-			if (sz>1 || sz==0) {
-				ss << ')';
 			}
 
 			return ss.str();
@@ -195,6 +184,11 @@ namespace hill {
 				types.end(),
 				(size_t)0,
 				[](size_t sum, auto &bt){return sum+basic_type_size(bt);});
+		}
+
+		void close_tuple()
+		{
+			tuple_closed = true;
 		}
 	};
 }
