@@ -6,6 +6,7 @@
 #include "token.hpp"
 #include "value.hpp"
 
+#include <cmath>
 #include <concepts>
 #include <iostream>
 #include <vector>
@@ -42,14 +43,14 @@ namespace hill {
 		return s;
 	}
 
-	void pf_abs(uint8_t *rp, const uint8_t *ap)
+	inline void pf_abs(uint8_t *rp, const uint8_t *ap)
 	{
-		*((int32_t *)rp) = (int32_t)abs(*((int32_t *)ap));
+		*((int32_t *)rp) = (int32_t)std::abs(*((int32_t *)ap));
 	}
 
-	void pf_pow(uint8_t *rp, const uint8_t *ap)
+	inline void pf_pow(uint8_t *rp, const uint8_t *ap)
 	{
-		*((int32_t *)rp) = (int32_t)pow(*((int32_t *)ap), *(((int32_t *)ap)+1));
+		*((int32_t *)rp) = (int32_t)std::pow(*((int32_t *)ap), *(((int32_t *)ap)+1));
 	}
 
 	std::shared_ptr<scope> build_lib(const std::shared_ptr<scope> &parent)
