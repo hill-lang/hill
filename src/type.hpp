@@ -100,6 +100,7 @@ namespace hill {
 		std::vector<type_dict_entry> entries;
 	};
 
+	struct instr;
 	struct type_spec {
 		type_spec() = default;
 		explicit type_spec(basic_type bt): types{bt} {}
@@ -111,7 +112,6 @@ namespace hill {
 		bool matches(const type_spec &other) const {
 			if (this->types.size()!=other.types.size()) return false;
 			for (size_t ix=0; ix<this->types.size(); ++ix) {
-				// TODO: Match wildcards with composite types
 				if (this->types[ix]!=other.types[ix] && this->types[ix]!=basic_type::UNDECIDED) {
 					return false;
 				}
@@ -121,6 +121,7 @@ namespace hill {
 		
 		std::vector<basic_type> types;
 		bool tuple_closed = false;
+		size_t iref = SIZE_MAX;
 
 		basic_type first() const
 		{

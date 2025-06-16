@@ -50,7 +50,7 @@ namespace hill {
 
 			if (ids.contains(identifier)) {
 				for (const auto &val_ref: ids.at(identifier)) {
-					if (pattern.matches(val_ref.ts)) {
+					if (pattern.matches(val_ref.type)) {
 						return &val_ref;
 					}
 				}
@@ -98,15 +98,95 @@ namespace hill {
 		std::vector<type_spec> types;
 	};
 
+	instr make_val_instr(const val_ref &val)
+	{
+		if (val.mt == mem_type::STACK) {
+			return instr {
+				.op = op_code::LOAD,
+				.res_ts = val.type,
+				.val = {.ix=val.ix},
+				.arg1_ts = type_spec(),
+				.arg2_ts = type_spec()};
+		} else if (val.mt == mem_type::LITERAL) {
+			if (val.type.first()==basic_type::FUNC) {
+				return make_instr(op_code::LOADI, val.type, val.p);
+			} else {
+				return make_instr(op_code::LOADI, val.type, val.u32);
+			}
+		} else {
+			throw internal_exception();
+		}
+	}
+
+	bool resolve_rs_id_vals(type_stack &ts, std::vector<instr> &instrs, const scope &s)
+	{
+		(void)instrs;
+		auto &rsts = ts.vtop();
+		if (rsts.types.empty()) {
+			auto rsinstr = instrs[rsts.iref];
+			const val_ref *val = s.find_val_ref(rsinstr.id);
+			if (!val) return false;
+
+			rsinstr = make_val_instr(*val);
+
+			rsts = val->type;
+		}
+
+		return true;
+	}
+
+	bool resolve_call_id_vals(type_stack &ts, std::vector<instr> &instrs, const scope &s)
+	{
+		if (!resolve_rs_id_vals(ts, instrs, s)) return false;
+
+		auto &lsts = ts.vtop(1);
+		if (lsts.types.empty()) {
+			// TODO: Make ts: FUNC wildcard RS
+			auto &lsinstr = instrs[lsts.iref];
+
+			type_spec type(basic_type::FUNC);
+			type.types.push_back(basic_type::UNDECIDED);
+			type.types.insert(type.types.end(), ts.top().types.cbegin(), ts.top().types.cend());
+			type.types.push_back(basic_type::END);
+
+			const val_ref *val = s.find_matching_val_ref(lsinstr.id, type);
+			if (!val) return false;
+
+			lsinstr = make_val_instr(*val);
+
+			//auto &lsts = ts.vtop();
+			lsts = val->type;
+		}
+
+		return true;
+	}
+
+	bool resolve_var_id_vals(type_stack &ts, std::vector<instr> &instrs, const scope &s)
+	{
+		if (!resolve_rs_id_vals(ts, instrs, s)) return false;
+
+		auto &lsts = ts.vtop(1);
+		if (lsts.types.empty()) {
+			auto lsinstr = instrs[lsts.iref];
+
+			const val_ref *val = s.find_val_ref(lsinstr.id);
+			if (!val) return false;
+
+			lsinstr = make_val_instr(*val);
+
+			auto &rsts = ts.vtop();
+			rsts = val->type;
+		}
+
+		return true;
+	}
+
 	struct block { // The code
 		scope s;
 		type_stack ts;
 
 		literal_values values;
 		std::vector<instr> instrs;
-
-		// Very temp, just to make stuff work
-		//std::string curr_id;
 
 		std::string to_str() const
 		{
@@ -140,31 +220,12 @@ namespace hill {
 				break;
 			case tt::NAME:
 				{
-					instrs.push_back(make_placeholder_instr(t.text));
-					ts.push(type_spec());
-/*					this->curr_id = t.text;
-
-					// If this is on the right side of the equal sign
-					auto val = s.find_val_ref(t.text);
-					if (val) {
-						if (val->mt == mem_type::STACK) {
-							instrs.push_back(instr{
-								.op = op_code::LOAD,
-								.res_ts = val->ts,
-								.val = {.ix=val->ix},
-								.arg1_ts = type_spec(),
-								.arg2_ts = type_spec()});
-						} else if (val->mt == mem_type::LITERAL) {
-							if (val->ts.first()==basic_type::FUNC) {
-								instrs.push_back(make_instr(op_code::LOADI, val->ts, val->p));
-							} else {
-								instrs.push_back(make_instr(op_code::LOADI, val->ts, val->u32));
-							}
-						} else {
-							throw internal_exception();
-						}
-						ts.push(val->ts);
-					}*/
+					auto instr = make_placeholder_instr(t.text);
+					instrs.push_back(instr);
+					//auto t = type_spec {
+					auto type = type_spec();
+					type.iref = instrs.size()-1;
+					ts.push(type);
 				}
 				break;
 			case tt::NUM:
@@ -215,6 +276,8 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
+					if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
+
 					type_spec res_ts = ts.top();
 					instrs.push_back(instr{
 						.op = op_code::ADD,
@@ -235,6 +298,8 @@ namespace hill {
 						last().res_dt);*/
 
 					if (t.get_arity()==tt_arity::LUNARY) {
+						if (!resolve_rs_id_vals(ts, instrs, s)) throw semantic_error_exception();
+
 						type_spec res_ts = ts.top();
 						instrs.push_back(instr{
 							.op = op_code::NEG,
@@ -245,6 +310,8 @@ namespace hill {
 						ts.pop();
 						ts.push(res_ts);
 					} else if (t.get_arity()==tt_arity::BINARY) {
+						if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
+
 						type_spec res_ts = ts.top();
 						instrs.push_back(instr{
 							.op = op_code::SUB,
@@ -262,10 +329,7 @@ namespace hill {
 				break;
 			case tt::OP_STAR:
 				{
-					/*const auto res_type = convert_binary(
-						t.get_type(),
-						second_last().res_dt,
-						last().res_dt);*/
+					if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
 
 					type_spec res_ts = ts.top();
 					instrs.push_back(instr{
@@ -290,6 +354,8 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
+					if (!resolve_rs_id_vals(ts, instrs, s)) throw semantic_error_exception();
+
 					type_spec res_ts = ts.top();
 
 					// "Copy" value to stack
@@ -307,7 +373,7 @@ namespace hill {
 					// Create load value to stack instruction
 					instrs.push_back(instr{
 						.op = op_code::COPY,
-						.res_ts = val.ts,
+						.res_ts = val.type,
 						.val = {.ix=val.ix},
 						.arg1_ts = type_spec(),
 						.arg2_ts = ts.top()});
@@ -320,6 +386,8 @@ namespace hill {
 				{
 					// TODO: Check parent scope(s)
 					// If identifier starts with '@'. Only check root scope
+
+					if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
 
 					type_spec res_ts = ts.top();
 
@@ -347,6 +415,8 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
+					if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
+
 					type_spec res_ts=build_tuple(ts.top(1), ts.top());
 
 					instrs.push_back(instr{
@@ -363,6 +433,8 @@ namespace hill {
 				break;
 			case tt::CALL:
 				{
+					if (!resolve_call_id_vals(ts, instrs, s)) throw semantic_error_exception();
+
 					type_spec res_ts;
 					type_spec arg_ts;
 					if (ts.top(1).first()==basic_type::FUNC) {
