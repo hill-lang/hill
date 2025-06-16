@@ -178,7 +178,7 @@ namespace hill {
 		}
 	};
 
-	type_spec build_tuple(const type_spec &left, const type_spec &right)
+	inline type_spec build_tuple(const type_spec &left, const type_spec &right)
 	{
 		std::vector<basic_type> types;
 
