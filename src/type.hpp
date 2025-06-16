@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <numeric>
+#include <ranges>
 
 namespace hill {
 
@@ -107,6 +108,16 @@ namespace hill {
 		bool operator==(const type_spec &other) const {return this->types == other.types;}
 		bool operator!=(const type_spec &other) const {return !(*this==other);}
 		bool operator<(const type_spec &other) const {return this->types < other.types;}
+		bool matches(const type_spec &other) const {
+			if (this->types.size()!=other.types.size()) return false;
+			for (size_t ix=0; ix<this->types.size(); ++ix) {
+				// TODO: Match wildcards with composite types
+				if (this->types[ix]!=other.types[ix] && this->types[ix]!=basic_type::UNDECIDED) {
+					return false;
+				}
+			}
+			return true;
+		}
 		
 		std::vector<basic_type> types;
 		bool tuple_closed = false;

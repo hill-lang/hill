@@ -23,6 +23,8 @@ namespace hill {
 
 		TUPLE, // Build tuple
 		CALL, // Call function
+
+		ID, // Placeholder for identifiers
 	};
 
 	inline const char *op_code_str(op_code op)
@@ -39,6 +41,7 @@ namespace hill {
 		case op_code::NEG: return "NEG";
 		case op_code::TUPLE: return "TUPLE";
 		case op_code::CALL: return "CALL";
+		case op_code::ID: return "ID";
 		default: throw internal_exception();
 		}
 	}
@@ -67,6 +70,7 @@ namespace hill {
 		} val;
 		type_spec arg1_ts;
 		type_spec arg2_ts;
+		std::string id;
 
 		std::string to_str() const
 		{
@@ -137,6 +141,16 @@ namespace hill {
 		i.op = o;
 		i.res_ts = ts;
 		i.val.imm_p = v;
+
+		return i;
+	}
+
+	inline instr make_placeholder_instr(const std::string &id)
+	{
+		instr i;
+
+		i.op = op_code::ID;
+		i.id = id;
 
 		return i;
 	}

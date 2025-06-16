@@ -37,6 +37,28 @@ namespace hill {
 			return v && v->size()>0 ? &((*v)[0]) : nullptr;
 		}
 
+		bool are_matching(const type_spec &pattern, const type_spec &actual) const
+		{
+			if (pattern==actual) return true;
+
+
+		}
+
+		const val_ref *find_matching_val_ref(const std::string &identifier, const type_spec &pattern) const
+		{
+			const val_ref *r = nullptr;
+
+			if (ids.contains(identifier)) {
+				for (const auto &val_ref: ids.at(identifier)) {
+					if (pattern.matches(val_ref.ts)) {
+						return &val_ref;
+					}
+				}
+			}
+
+			return r ? r : (parent ? parent->find_matching_val_ref(identifier, pattern) : nullptr);
+		}
+
 		static std::shared_ptr<scope> create()
 		{
 			return std::make_shared<scope>();
@@ -84,7 +106,7 @@ namespace hill {
 		std::vector<instr> instrs;
 
 		// Very temp, just to make stuff work
-		std::string curr_id;
+		//std::string curr_id;
 
 		std::string to_str() const
 		{
@@ -118,7 +140,9 @@ namespace hill {
 				break;
 			case tt::NAME:
 				{
-					this->curr_id = t.text;
+					instrs.push_back(make_placeholder_instr(t.text));
+					ts.push(type_spec());
+/*					this->curr_id = t.text;
 
 					// If this is on the right side of the equal sign
 					auto val = s.find_val_ref(t.text);
@@ -140,7 +164,7 @@ namespace hill {
 							throw internal_exception();
 						}
 						ts.push(val->ts);
-					}
+					}*/
 				}
 				break;
 			case tt::NUM:
@@ -257,7 +281,7 @@ namespace hill {
 				break;
 			case tt::OP_COLON_EQ:
 				{
-					// TODO: Check if id already exists in this scope.
+					// TODO: Check if id with same type already exists in this scope.
 					// If it does, that is a compilation error
 					// Maybe try to create some nice error message?
 
@@ -274,7 +298,9 @@ namespace hill {
 						mem_type::STACK,
 						s.frame.add(res_ts.size(), 1),
 						res_ts);
-					s.ids[this->curr_id].push_back(val);
+
+					if (instrs.size()<2 || instrs[instrs.size()-2].op!=op_code::ID) throw semantic_error_exception();
+					s.ids[instrs[instrs.size()-2].id].push_back(val);
 
 					// TODO: Optimization: Do not copy if immutable variable and right side is immutable
 
@@ -289,6 +315,7 @@ namespace hill {
 					ts.push(res_ts);
 				}
 				break;
+#if 0
 			case tt::OP_EQ:
 				{
 					// TODO: Check parent scope(s)
@@ -312,6 +339,7 @@ namespace hill {
 					ts.push(res_ts);
 				}
 				break;
+#endif
 			case tt::OP_COMMA:
 				{
 					/*const auto res_type = convert_binary(
