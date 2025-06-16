@@ -440,6 +440,7 @@ namespace hill {
 					if (ts.top(1).first()==basic_type::FUNC) {
 						res_ts = ts.top(1).inner_type(1);
 						arg_ts = ts.top(1).inner_type(1+res_ts.types.size());
+						
 						if (arg_ts!=ts.top()) throw semantic_error_exception();
 
 						instrs.push_back(instr{

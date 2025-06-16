@@ -110,9 +110,9 @@ namespace hill {
 		bool operator!=(const type_spec &other) const {return !(*this==other);}
 		bool operator<(const type_spec &other) const {return this->types < other.types;}
 		bool matches(const type_spec &other) const {
-			if (this->types.size()!=other.types.size()) return false;
 			for (size_t ix=0; ix<this->types.size(); ++ix) {
-				if (this->types[ix]!=other.types[ix] && this->types[ix]!=basic_type::UNDECIDED) {
+				// TODO: First condition is a hack to avoid mismatching missing END in incomplete tuple
+				if (this->types[ix]!=basic_type::END && this->types[ix]!=other.types[ix] && this->types[ix]!=basic_type::UNDECIDED) {
 					return false;
 				}
 			}
@@ -154,6 +154,17 @@ namespace hill {
 			}
 
 			return type_spec(inner_types);
+		}
+
+		type_spec inner_type_complete(size_t ix) const
+		{
+			auto type = inner_type(ix);
+
+			if (type.types[0]==basic_type::TUPLE && type.types[type.types.size()-1]!=basic_type::END) {
+				type.types.push_back(basic_type::END);
+			}
+
+			return type;
 		}
 
 		std::string to_str() const
