@@ -14,20 +14,27 @@
 namespace hill {
 
 	struct scope { // The names and values
-		std::map<std::string, val_ref> ids;
+		std::map<std::string, std::vector<val_ref>> ids;
 		frame_def frame;
 
 		std::shared_ptr<scope> parent = nullptr;
 
-		const val_ref *find_val_ref(const std::string &identifier) const
+		const std::vector<val_ref> *find_id(const std::string &identifier) const
 		{
 			if (ids.contains(identifier)) {
 				return &ids.at(identifier);
 			} else if (parent) {
-				return parent->find_val_ref(identifier);
+				return parent->find_id(identifier);
 			} else {
 				return nullptr;
 			}
+		}
+
+		const val_ref *find_val_ref(const std::string &identifier) const
+		{
+			auto v = find_id(identifier);
+
+			return v && v->size()>0 ? &((*v)[0]) : nullptr;
 		}
 
 		static std::shared_ptr<scope> create()
@@ -267,7 +274,7 @@ namespace hill {
 						mem_type::STACK,
 						s.frame.add(res_ts.size(), 1),
 						res_ts);
-					s.ids[this->curr_id] = val;
+					s.ids[this->curr_id].push_back(val);
 
 					// TODO: Optimization: Do not copy if immutable variable and right side is immutable
 
