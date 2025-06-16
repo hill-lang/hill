@@ -312,7 +312,7 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
-					type_spec res_ts(ts.top(1), ts.top());
+					type_spec res_ts=build_tuple(ts.top(1), ts.top());
 
 					instrs.push_back(instr{
 						.op = op_code::TUPLE,

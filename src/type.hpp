@@ -103,20 +103,6 @@ namespace hill {
 		type_spec() = default;
 		explicit type_spec(basic_type bt): types{bt} {}
 		explicit type_spec(const std::vector<basic_type> &bts): types(bts) {}
-		type_spec(const type_spec &left, const type_spec &right) {
-			this->types.push_back(basic_type::TUPLE);
-
-			if (left.types[0]==basic_type::TUPLE && !left.tuple_closed) {
-				// TODO: Handle situation where the tuple is closed, and should not be extended
-				this->types.insert(this->types.end(), left.types.cbegin()+1, left.types.cend()-1);
-			} else {
-				this->types.insert(this->types.end(), left.types.cbegin(), left.types.cend());
-			}
-
-			this->types.insert(this->types.end(), right.types.cbegin(), right.types.cend());
-
-			this->types.push_back(basic_type::END);
-		}
 		//type_spec(const type_spec &other): types(other.types) {}
 		bool operator==(const type_spec &other) const {return this->types == other.types;}
 		bool operator!=(const type_spec &other) const {return !(*this==other);}
@@ -191,6 +177,25 @@ namespace hill {
 			tuple_closed = true;
 		}
 	};
+
+	type_spec build_tuple(const type_spec &left, const type_spec &right)
+	{
+		std::vector<basic_type> types;
+
+		types.push_back(basic_type::TUPLE);
+
+		if (left.types[0]==basic_type::TUPLE && !left.tuple_closed) {
+			types.insert(types.end(), left.types.cbegin()+1, left.types.cend()-1);
+		} else {
+			types.insert(types.end(), left.types.cbegin(), left.types.cend());
+		}
+
+		types.insert(types.end(), right.types.cbegin(), right.types.cend());
+
+		types.push_back(basic_type::END);
+
+		return type_spec(types);
+	}
 }
 
 #endif /* HILL__TYPE_HPP_INCLUDED */
