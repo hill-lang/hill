@@ -22,7 +22,8 @@ namespace hill {
 		NEG, // Arithmetic negation
 
 		TUPLE, // Build tuple
-		CALL, // Call function
+		CALL, // Regular function call
+		PCALL, // Pipe function call
 
 		ID, // Placeholder for identifiers
 	};
@@ -41,6 +42,7 @@ namespace hill {
 		case op_code::NEG: return "NEG";
 		case op_code::TUPLE: return "TUPLE";
 		case op_code::CALL: return "CALL";
+		case op_code::PCALL: return "PCALL";
 		case op_code::ID: return "ID";
 		default: throw internal_exception();
 		}
@@ -70,7 +72,7 @@ namespace hill {
 		} val;
 		type_spec arg1_ts;
 		type_spec arg2_ts;
-		std::string id;
+		std::string id="";
 
 		std::string to_str() const
 		{

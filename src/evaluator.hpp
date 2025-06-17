@@ -86,6 +86,7 @@ namespace hill {
 				case op_code::NEG: neg(ins); break;
 				case op_code::TUPLE: tuple(ins); break;
 				case op_code::CALL: call(ins); break;
+				case op_code::PCALL: pcall(ins); break;
 				case op_code::ID: break; // throw internal_exception();
 				default: throw internal_exception();
 				}
@@ -300,6 +301,33 @@ namespace hill {
 				s.pop((size_t)diff_size);
 			}
 		}
+
+		void pcall(const instr &ins)
+		{
+			(void)ins;
+			/*auto func_size = ins.arg1_ts.size();
+			auto arg_size = ins.arg2_ts.size();
+			auto res_size = ins.res_ts.size();
+
+			uint8_t *p;
+			int diff_size = (int)func_size+(int)arg_size-(int)res_size;
+			if (diff_size<0) {
+				s.push_alloc((size_t)-diff_size);
+				p = s.vtop(func_size+arg_size-diff_size);
+			} else {
+				p = s.vtop(func_size+arg_size);
+			}
+
+			//auto func = *(void (**)(uint8_t *, const uint8_t *))p;
+			auto func = *(ifunc *)p;
+
+			func(p, p+func_size);
+
+			if (diff_size>0) {
+				s.pop((size_t)diff_size);
+			}*/
+		}
+
 	};
 }
 

@@ -98,7 +98,7 @@ namespace hill {
 		std::vector<type_spec> types;
 	};
 
-	instr make_val_instr(const val_ref &val)
+	inline instr make_val_instr(const val_ref &val)
 	{
 		if (val.mt == mem_type::STACK) {
 			return instr {
@@ -118,7 +118,7 @@ namespace hill {
 		}
 	}
 
-	bool resolve_rs_id_vals(type_stack &ts, std::vector<instr> &instrs, const scope &s)
+	inline bool resolve_rs_id_vals(type_stack &ts, std::vector<instr> &instrs, const scope &s)
 	{
 		(void)instrs;
 		auto &rsts = ts.vtop();
@@ -135,7 +135,7 @@ namespace hill {
 		return true;
 	}
 
-	bool resolve_call_id_vals(type_stack &ts, std::vector<instr> &instrs, const scope &s)
+	inline bool resolve_call_id_vals(type_stack &ts, std::vector<instr> &instrs, const scope &s)
 	{
 		if (!resolve_rs_id_vals(ts, instrs, s)) return false;
 
@@ -161,7 +161,7 @@ namespace hill {
 		return true;
 	}
 
-	bool resolve_var_id_vals(type_stack &ts, std::vector<instr> &instrs, const scope &s)
+	inline bool resolve_var_id_vals(type_stack &ts, std::vector<instr> &instrs, const scope &s)
 	{
 		if (!resolve_rs_id_vals(ts, instrs, s)) return false;
 
@@ -451,6 +451,16 @@ namespace hill {
 							.val = {},
 							.arg1_ts = ts.top(1),
 							.arg2_ts = ts.top()});
+					} else if (ts.top(1).first()==basic_type::PFUNC) {
+						res_ts = ts.top(1).inner_type(1);
+						arg_ts = ts.top(1).inner_type(1+res_ts.types.size());
+						
+						instrs.push_back(instr{
+							.op = op_code::PCALL,
+							.res_ts = res_ts,
+							.val = {},
+							.arg1_ts = ts.top(1),
+							.arg2_ts = ts.top()});
 					} else {
 						throw semantic_error_exception();
 					}
@@ -458,6 +468,18 @@ namespace hill {
 					ts.pop();
 					ts.pop();
 					ts.push(res_ts);
+				}
+				break;
+			case tt::OP_DOT: // Dot defaults to piping
+			case tt::OP_OR_GREATER: // Piping
+				{
+					if (!resolve_call_id_vals(ts, instrs, s)) throw semantic_error_exception();
+
+					if (ts.top().first()==basic_type::FUNC) {
+						ts.vtop().types[0] = basic_type::PFUNC;
+					} else {
+						throw semantic_error_exception();
+					}
 				}
 				break;
 			default:
