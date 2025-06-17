@@ -145,6 +145,7 @@ namespace hill {
 				type_spec_ascii(ins.arg1_ts, ofs);
 				break;
 			case op_code::CALL:
+			case op_code::ID:
 				// TODO:
 				break;
 			default:
@@ -201,6 +202,7 @@ namespace hill {
 				type_spec_bin(ins.arg1_ts, ofs);
 				break;
 			case op_code::CALL:
+			case op_code::ID:
 				// TODO:
 				break;
 			default:

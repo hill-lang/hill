@@ -86,6 +86,7 @@ namespace hill {
 				case op_code::NEG: neg(ins); break;
 				case op_code::TUPLE: tuple(ins); break;
 				case op_code::CALL: call(ins); break;
+				case op_code::ID: break; // throw internal_exception();
 				default: throw internal_exception();
 				}
 			}

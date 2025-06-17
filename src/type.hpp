@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <numeric>
+#include <ranges>
 
 namespace hill {
 
@@ -99,6 +100,7 @@ namespace hill {
 		std::vector<type_dict_entry> entries;
 	};
 
+	struct instr;
 	struct type_spec {
 		type_spec() = default;
 		explicit type_spec(basic_type bt): types{bt} {}
@@ -107,9 +109,19 @@ namespace hill {
 		bool operator==(const type_spec &other) const {return this->types == other.types;}
 		bool operator!=(const type_spec &other) const {return !(*this==other);}
 		bool operator<(const type_spec &other) const {return this->types < other.types;}
+		bool matches(const type_spec &other) const {
+			for (size_t ix=0; ix<this->types.size(); ++ix) {
+				// TODO: First condition is a hack to avoid mismatching missing END in incomplete tuple
+				if (this->types[ix]!=basic_type::END && this->types[ix]!=other.types[ix] && this->types[ix]!=basic_type::UNDECIDED) {
+					return false;
+				}
+			}
+			return true;
+		}
 		
 		std::vector<basic_type> types;
 		bool tuple_closed = false;
+		size_t iref = SIZE_MAX;
 
 		basic_type first() const
 		{
@@ -142,6 +154,17 @@ namespace hill {
 			}
 
 			return type_spec(inner_types);
+		}
+
+		type_spec inner_type_complete(size_t ix) const
+		{
+			auto type = inner_type(ix);
+
+			if (type.types[0]==basic_type::TUPLE && type.types[type.types.size()-1]!=basic_type::END) {
+				type.types.push_back(basic_type::END);
+			}
+
+			return type;
 		}
 
 		std::string to_str() const
