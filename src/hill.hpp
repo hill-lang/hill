@@ -53,6 +53,11 @@ namespace hill {
 		*((int32_t *)rp) = (int32_t)std::pow(*((int32_t *)ap), *(((int32_t *)ap)+1));
 	}
 
+	inline void pf_dpow(uint8_t *rp, const uint8_t *ap)
+	{
+		*((double *)rp) = (int32_t)std::pow(*((double *)ap), *(((double *)ap)+1));
+	}
+
 	std::shared_ptr<scope> build_lib(const std::shared_ptr<scope> &parent)
 	{
 		auto s = scope::create(parent);
@@ -69,6 +74,13 @@ namespace hill {
 			basic_type::TUPLE,
 			basic_type::I32,
 			basic_type::I32,
+			basic_type::END})));
+		s->ids["pow"].push_back(val_ref((void *)pf_dpow, type_spec({
+			basic_type::FUNC,
+			basic_type::F64,
+			basic_type::TUPLE,
+			basic_type::F64,
+			basic_type::F64,
 			basic_type::END})));
 		return s;
 	}

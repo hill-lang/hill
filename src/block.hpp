@@ -234,8 +234,8 @@ namespace hill {
 				{
 					char *endp = nullptr;
 #define USE_LOAD_IMMEDIATE
-					if (t.str().find('.')!=std::string::npos) { // floating point
-						type_spec res_ts = type_spec(basic_type::F);
+					if (t.str().find('.')!=std::string::npos) { // floating point (just  double for now)
+						type_spec res_ts = type_spec(basic_type::F64);
 #ifdef USE_LOAD_IMMEDIATE
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
