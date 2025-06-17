@@ -123,7 +123,7 @@ namespace hill {
 		(void)instrs;
 		auto &rsts = ts.vtop();
 		if (rsts.types.empty()) {
-			auto rsinstr = instrs[rsts.iref];
+			auto &rsinstr = instrs[rsts.iref];
 			const val_ref *val = s.find_val_ref(rsinstr.id);
 			if (!val) return false;
 
@@ -208,6 +208,8 @@ namespace hill {
 				break;
 			case tt::END:
 				{
+					if (!resolve_rs_id_vals(ts, instrs, s)) throw semantic_error_exception();
+
 					type_spec res_ts = ts.top();
 					instrs.push_back(instr{
 						.op = op_code::END,
