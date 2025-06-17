@@ -40,8 +40,7 @@ namespace hill {
 		bool are_matching(const type_spec &pattern, const type_spec &actual) const
 		{
 			if (pattern==actual) return true;
-
-
+			else return false;
 		}
 
 		const val_ref *find_matching_val_ref(const std::string &identifier, const type_spec &pattern) const
