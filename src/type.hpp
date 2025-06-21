@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <numeric>
-#include <ranges>
 
 namespace hill {
 
@@ -15,7 +14,6 @@ namespace hill {
 		U, U8, U16, U32, U64,
 		F, F32, F64, /*F128,*/
 		FUNC, // Regular function
-		PFUNC, // Pipe function
 //		ARRAY,
 		TUPLE,
 		END,
@@ -101,7 +99,6 @@ namespace hill {
 		std::vector<type_dict_entry> entries;
 	};
 
-	struct instr;
 	struct type_spec {
 		type_spec() = default;
 		explicit type_spec(basic_type bt): types{bt} {}
@@ -123,6 +120,7 @@ namespace hill {
 		std::vector<basic_type> types;
 		bool tuple_closed = false;
 		size_t iref = SIZE_MAX;
+		bool is_pipe_arg = false;
 
 		basic_type first() const
 		{

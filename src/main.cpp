@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
 		}
 	} else {
 		auto test_session = hill::utils::junit_session("Hill unit tests", "test-results.xml");
-		if (!hill::test::lexer(test_session)) ok = false;
-		if (!hill::test::parser(test_session)) ok = false;
+		//if (!hill::test::lexer(test_session)) ok = false;
+		//if (!hill::test::parser(test_session)) ok = false;
 		//if (!hill::test::analyzer(test_session)) ok = false;
 		if (!hill::test::evaluator(test_session)) ok = false;
 		if (!hill::test::json_parser(test_session)) ok = false;

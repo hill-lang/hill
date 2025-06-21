@@ -35,8 +35,16 @@ namespace hill {
 			lix(other.lix),
 			cix(other.cix)
 		{}
+		token(token &other) noexcept:
+			type(other.type),
+			type_spec(other.type_spec),
+			op_type_spec(other.op_type_spec),
+			text(std::move(other.text)),
+			lix(other.lix),
+			cix(other.cix)
+		{}
 
-		token(token &) = delete;
+		//token(token &) = delete;
 		token(const token &) = delete;
 		token &operator=(token &) = delete;
 		token &operator=(const token &) = delete;

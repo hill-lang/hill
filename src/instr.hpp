@@ -23,7 +23,6 @@ namespace hill {
 
 		TUPLE, // Build tuple
 		CALL, // Regular function call
-		PCALL, // Pipe function call
 
 		ID, // Placeholder for identifiers
 	};
@@ -42,7 +41,6 @@ namespace hill {
 		case op_code::NEG: return "NEG";
 		case op_code::TUPLE: return "TUPLE";
 		case op_code::CALL: return "CALL";
-		case op_code::PCALL: return "PCALL";
 		case op_code::ID: return "ID";
 		default: throw internal_exception();
 		}
@@ -70,9 +68,10 @@ namespace hill {
 
 			void *imm_p;
 		} val;
-		type_spec arg1_ts;
-		type_spec arg2_ts;
-		std::string id="";
+		type_spec arg1_type;
+		type_spec arg2_type;
+		std::string id = "";
+		int offset = 0;
 
 		std::string to_str() const
 		{
@@ -109,13 +108,13 @@ namespace hill {
 				break;
 			case op_code::COPY:
 				ss << " ix:" << this->val.ix;
-				ss << " arg2_ts:" << this->arg2_ts.to_str();
+				ss << " arg2_ts:" << this->arg2_type.to_str();
 				break;
 			case op_code::ADD:
 			case op_code::SUB:
 			case op_code::MUL:
-				ss << " arg1_ts:" << this->arg1_ts.to_str();
-				ss << " arg2_ts:" << this->arg2_ts.to_str();
+				ss << " arg1_ts:" << this->arg1_type.to_str();
+				ss << " arg2_ts:" << this->arg2_type.to_str();
 				break;
 			default:
 				throw internal_exception();
@@ -125,34 +124,37 @@ namespace hill {
 		}
 	};
 
-	template<typename VT> instr make_instr(op_code o, type_spec ts, VT v)
+	template<typename VT> instr make_instr(op_code o, type_spec ts, VT v, int offset)
 	{
 		instr i;
 
 		i.op = o;
 		i.res_ts = ts;
 		i.val.imm_u32 = v;
+		i.offset = offset;
 
 		return i;
 	}
 
-	template<> instr make_instr<void *>(op_code o, type_spec ts, void *v)
+	template<> instr make_instr<void *>(op_code o, type_spec ts, void *v, int offset)
 	{
 		instr i;
 
 		i.op = o;
 		i.res_ts = ts;
 		i.val.imm_p = v;
+		i.offset = offset;
 
 		return i;
 	}
 
-	inline instr make_placeholder_instr(const std::string &id)
+	inline instr make_placeholder_instr(const std::string &id, int offset)
 	{
 		instr i;
 
 		i.op = op_code::ID;
 		i.id = id;
+		i.offset = offset;
 
 		return i;
 	}

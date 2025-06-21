@@ -22,6 +22,7 @@ namespace hill::test {
 		const char *expected_type;
 		const char *expected_value;
 	} evaluator_tests[]={
+		//{"2 .pow 8 .pow 2", "@i32", "65536"},
 		{":tests/initial-assignment.hill", "@i32", "5"},
 		{":tests/add.hill", "@i32", "7"},
 		{":tests/sub.hill", "@i32", "-1"},
@@ -40,6 +41,8 @@ namespace hill::test {
 		{"pow (2, 3)", "@i32", "8"},
 		{"pow (2.0, 3.0)", "@f64", "8.0"},
 		{"the_answer", "@i32", "42"},
+		{"2 .pow 16", "@i32", "65536"},
+		//{"2 .pow 8 .pow 2", "@i32", "65536"},
 		//{"a:=1;a=2", "@i32", "2"},
 		//{"a:=1;a=a+2", "@i32", "3"},
 		//{"a:=1;b:=10;a=a+2", "@i32", "3"},

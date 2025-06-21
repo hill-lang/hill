@@ -21,22 +21,25 @@ namespace hill {
 			return mem.data();
 		}
 
-		uint8_t *push_alloc(size_t size)
+		uint8_t *push_alloc(int offset, size_t size)
 		{
 			size_t start_ix = mem.size();
-			mem.resize(start_ix + size);
+			if (offset >=0) {
+				mem.resize(start_ix + size + offset);
+			}
+			start_ix += offset;
 			return mem.data() + start_ix;
 		}
 
-		void push(size_t size, const uint8_t *data)
+		void push(int offset, size_t size, const uint8_t *data)
 		{
-			uint8_t *p = push_alloc(size);
+			uint8_t *p = push_alloc(offset, size);
 			memcpy(p, data, size);
 		}
 
-		template<typename T> void push(T val)
+		template<typename T> void push(int offset, T val)
 		{
-			uint8_t *p = push_alloc(sizeof val);
+			uint8_t *p = push_alloc(offset, sizeof val);
 			*(T *)p = val;
 		}
 
@@ -71,7 +74,10 @@ namespace hill {
 
 		value evaluate(const block &b)
 		{
-			s.push_alloc(b.s.frame.size()); // Allocate stack frame
+			s.push_alloc(result_ins.offset, b.s.frame.size()); // Allocate stack frame, TODO: Check why we do this
+
+			/*const uint8_t *p = s.mem.data();
+			(void)p;*/
 
 			for (auto &ins : b.instrs) {
 				switch (ins.op) {
@@ -86,7 +92,6 @@ namespace hill {
 				case op_code::NEG: neg(ins); break;
 				case op_code::TUPLE: tuple(ins); break;
 				case op_code::CALL: call(ins); break;
-				case op_code::PCALL: pcall(ins); break;
 				case op_code::ID: break; // throw internal_exception();
 				default: throw internal_exception();
 				}
@@ -104,12 +109,12 @@ namespace hill {
 		void load(const instr &ins)
 		{
 			// TODO: What if we want to load from a different stack frame?
-			s.push(ins.arg2_ts.size(), s.data() + ins.val.ix);
+			s.push(ins.offset, ins.arg2_type.size(), s.data() + ins.val.ix);
 		}
 
 		void loadl(const instr &ins, const literal_values &values)
 		{
-			uint8_t *p = s.push_alloc(ins.res_ts.size());
+			uint8_t *p = s.push_alloc(ins.offset, ins.res_ts.size());
 			values.copy(ins.val.ix, p, ins.res_ts.size());
 		}
 
@@ -118,7 +123,7 @@ namespace hill {
 		 */
 		void loadi(const instr &ins)
 		{
-			uint8_t *p = s.push_alloc(ins.res_ts.size());
+			uint8_t *p = s.push_alloc(ins.offset, ins.res_ts.size());
 			
 			switch (ins.res_ts.types[0]) {
 			case basic_type::I8: *(int8_t *)p = ins.val.imm_i8; break;
@@ -142,18 +147,18 @@ namespace hill {
 		void copy(const instr &ins)
 		{
 			// TODO: Type conversion?
-			const uint8_t *src = s.top(ins.arg2_ts.size());
+			const uint8_t *src = s.top(ins.arg2_type.size());
 			uint8_t *dst = s.data() + ins.val.ix;
-			memcpy(dst, src, ins.arg2_ts.size());
-			s.pop(ins.arg2_ts.size());
-			s.push(ins.arg2_ts.size(), dst);
+			memcpy(dst, src, ins.arg2_type.size());
+			s.pop(ins.arg2_type.size());
+			s.push(ins.offset, ins.arg2_type.size(), dst);
 		}
 
-		template<typename T> void add()
+		template<typename T> void add(const instr &ins)
 		{
 			T right = s.pop<T>();
 			T left = s.pop<T>();
-			s.push<T>(left + right);
+			s.push<T>(ins.offset, left + right);
 		}
 		void add(const instr &ins)
 		{
@@ -161,28 +166,28 @@ namespace hill {
 			// Maybe type conversion is its own instruction and handled by the analizer?
 
 			switch (ins.res_ts.types[0]) {
-			case basic_type::I8: add<int8_t>(); break;
-			case basic_type::I16: add<int16_t>(); break;
-			case basic_type::I32: add<int32_t>(); break;
+			case basic_type::I8: add<int8_t>(ins); break;
+			case basic_type::I16: add<int16_t>(ins); break;
+			case basic_type::I32: add<int32_t>(ins); break;
 			case basic_type::I64:
-			case basic_type::I: add<int64_t>(); break;
-			case basic_type::U8: add<uint8_t>(); break;
-			case basic_type::U16: add<uint16_t>(); break;
-			case basic_type::U32: add<uint32_t>(); break;
+			case basic_type::I: add<int64_t>(ins); break;
+			case basic_type::U8: add<uint8_t>(ins); break;
+			case basic_type::U16: add<uint16_t>(ins); break;
+			case basic_type::U32: add<uint32_t>(ins); break;
 			case basic_type::U64:
-			case basic_type::U: add<uint64_t>(); break;
-			case basic_type::F32: add<float>(); break;
+			case basic_type::U: add<uint64_t>(ins); break;
+			case basic_type::F32: add<float>(ins); break;
 			case basic_type::F64:
-			case basic_type::F: add<double>(); break;
+			case basic_type::F: add<double>(ins); break;
 			default: break; /* Throw? Look for custom implemetation? */
 			}
 		}
 
-		template<typename T> void sub()
+		template<typename T> void sub(const instr &ins)
 		{
 			T right = s.pop<T>();
 			T left = s.pop<T>();
-			s.push<T>(left - right);
+			s.push<T>(ins.offset, left - right);
 		}
 		void sub(const instr &ins)
 		{
@@ -190,28 +195,28 @@ namespace hill {
 			// Maybe type conversion is its own instruction and handled by the analizer?
 
 			switch (ins.res_ts.types[0]) {
-			case basic_type::I8: sub<int8_t>(); break;
-			case basic_type::I16: sub<int16_t>(); break;
-			case basic_type::I32: sub<int32_t>(); break;
+			case basic_type::I8: sub<int8_t>(ins); break;
+			case basic_type::I16: sub<int16_t>(ins); break;
+			case basic_type::I32: sub<int32_t>(ins); break;
 			case basic_type::I64:
-			case basic_type::I: sub<int64_t>(); break;
-			case basic_type::U8: sub<uint8_t>(); break;
-			case basic_type::U16: sub<uint16_t>(); break;
-			case basic_type::U32: sub<uint32_t>(); break;
+			case basic_type::I: sub<int64_t>(ins); break;
+			case basic_type::U8: sub<uint8_t>(ins); break;
+			case basic_type::U16: sub<uint16_t>(ins); break;
+			case basic_type::U32: sub<uint32_t>(ins); break;
 			case basic_type::U64:
-			case basic_type::U: sub<uint64_t>(); break;
-			case basic_type::F32: sub<float>(); break;
+			case basic_type::U: sub<uint64_t>(ins); break;
+			case basic_type::F32: sub<float>(ins); break;
 			case basic_type::F64:
-			case basic_type::F: sub<double>(); break;
+			case basic_type::F: sub<double>(ins); break;
 			default: break; /* Throw? Look for custom implemetation? */
 			}
 		}
 
-		template<typename T> void mul()
+		template<typename T> void mul(const instr &ins)
 		{
 			T right = s.pop<T>();
 			T left = s.pop<T>();
-			s.push<T>(left * right);
+			s.push<T>(ins.offset, left * right);
 		}
 		void mul(const instr &ins)
 		{
@@ -219,44 +224,44 @@ namespace hill {
 			// Maybe type conversion is its own instruction and handled by the analizer?
 
 			switch (ins.res_ts.types[0]) {
-			case basic_type::I8: mul<int8_t>(); break;
-			case basic_type::I16: mul<int16_t>(); break;
-			case basic_type::I32: mul<int32_t>(); break;
+			case basic_type::I8: mul<int8_t>(ins); break;
+			case basic_type::I16: mul<int16_t>(ins); break;
+			case basic_type::I32: mul<int32_t>(ins); break;
 			case basic_type::I64:
-			case basic_type::I: mul<int64_t>(); break;
-			case basic_type::U8: mul<uint8_t>(); break;
-			case basic_type::U16: mul<uint16_t>(); break;
-			case basic_type::U32: mul<uint32_t>(); break;
+			case basic_type::I: mul<int64_t>(ins); break;
+			case basic_type::U8: mul<uint8_t>(ins); break;
+			case basic_type::U16: mul<uint16_t>(ins); break;
+			case basic_type::U32: mul<uint32_t>(ins); break;
 			case basic_type::U64:
-			case basic_type::U: mul<uint64_t>(); break;
-			case basic_type::F32: mul<float>(); break;
+			case basic_type::U: mul<uint64_t>(ins); break;
+			case basic_type::F32: mul<float>(ins); break;
 			case basic_type::F64:
-			case basic_type::F: mul<double>(); break;
+			case basic_type::F: mul<double>(ins); break;
 			default: break; /* Throw? Look for custom implemetation? */
 			}
 		}
 
-		template<typename T> void neg()
+		template<typename T> void neg(const instr &ins)
 		{
 			T v = s.pop<T>();
-			s.push<T>(-v);
+			s.push<T>(ins.offset, -v);
 		}
 		void neg(const instr &ins)
 		{
 			switch (ins.res_ts.types[0]) {
-			case basic_type::I8: neg<int8_t>(); break;
-			case basic_type::I16: neg<int16_t>(); break;
-			case basic_type::I32: neg<int32_t>(); break;
+			case basic_type::I8: neg<int8_t>(ins); break;
+			case basic_type::I16: neg<int16_t>(ins); break;
+			case basic_type::I32: neg<int32_t>(ins); break;
 			case basic_type::I64:
-			case basic_type::I: neg<int64_t>(); break;
-			/*case basic_type::U8: neg<uint8_t>(); break;
-			case basic_type::U16: neg<uint16_t>(); break;
-			case basic_type::U32: neg<uint32_t>(); break;
+			case basic_type::I: neg<int64_t>(ins); break;
+			/*case basic_type::U8: neg<uint8_t>(ins); break;
+			case basic_type::U16: neg<uint16_t>(ins); break;
+			case basic_type::U32: neg<uint32_t>(ins); break;
 			case basic_type::U64:
-			case basic_type::U: neg<uint64_t>(); break;*/
-			case basic_type::F32: neg<float>(); break;
+			case basic_type::U: neg<uint64_t>(ins); break;*/
+			case basic_type::F32: neg<float>(ins); break;
 			case basic_type::F64:
-			case basic_type::F: neg<double>(); break;
+			case basic_type::F: neg<double>(ins); break;
 			default: throw internal_exception();
 			}
 		}
@@ -279,14 +284,14 @@ namespace hill {
 
 		void call(const instr &ins)
 		{
-			auto func_size = ins.arg1_ts.size();
-			auto arg_size = ins.arg2_ts.size();
+			auto func_size = ins.arg1_type.size();
+			auto arg_size = ins.arg2_type.size();
 			auto res_size = ins.res_ts.size();
 
 			uint8_t *p;
 			int diff_size = (int)func_size+(int)arg_size-(int)res_size;
 			if (diff_size<0) {
-				s.push_alloc((size_t)-diff_size);
+				s.push_alloc(ins.offset, (size_t)-diff_size);
 				p = s.vtop(func_size+arg_size-diff_size);
 			} else {
 				p = s.vtop(func_size+arg_size);
@@ -305,27 +310,6 @@ namespace hill {
 		void pcall(const instr &ins)
 		{
 			(void)ins;
-			/*auto func_size = ins.arg1_ts.size();
-			auto arg_size = ins.arg2_ts.size();
-			auto res_size = ins.res_ts.size();
-
-			uint8_t *p;
-			int diff_size = (int)func_size+(int)arg_size-(int)res_size;
-			if (diff_size<0) {
-				s.push_alloc((size_t)-diff_size);
-				p = s.vtop(func_size+arg_size-diff_size);
-			} else {
-				p = s.vtop(func_size+arg_size);
-			}
-
-			//auto func = *(void (**)(uint8_t *, const uint8_t *))p;
-			auto func = *(ifunc *)p;
-
-			func(p, p+func_size);
-
-			if (diff_size>0) {
-				s.pop((size_t)diff_size);
-			}*/
 		}
 
 	};

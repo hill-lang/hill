@@ -97,20 +97,21 @@ namespace hill {
 		std::vector<type_spec> types;
 	};
 
-	inline instr make_val_instr(const val_ref &val)
+	inline instr make_val_instr(const val_ref &val, int offset)
 	{
 		if (val.mt == mem_type::STACK) {
 			return instr {
 				.op = op_code::LOAD,
 				.res_ts = val.type,
 				.val = {.ix=val.ix},
-				.arg1_ts = type_spec(),
-				.arg2_ts = type_spec()};
+				.arg1_type = type_spec(),
+				.arg2_type = type_spec(),
+				.offset = offset};
 		} else if (val.mt == mem_type::LITERAL) {
 			if (val.type.first()==basic_type::FUNC) {
-				return make_instr(op_code::LOADI, val.type, val.p);
+				return make_instr(op_code::LOADI, val.type, val.p, offset);
 			} else {
-				return make_instr(op_code::LOADI, val.type, val.u32);
+				return make_instr(op_code::LOADI, val.type, val.u32, offset);
 			}
 		} else {
 			throw internal_exception();
@@ -119,16 +120,31 @@ namespace hill {
 
 	inline bool resolve_rs_id_vals(type_stack &ts, std::vector<instr> &instrs, const scope &s)
 	{
-		(void)instrs;
 		auto &rsts = ts.vtop();
 		if (rsts.types.empty()) {
 			auto &rsinstr = instrs[rsts.iref];
 			const val_ref *val = s.find_val_ref(rsinstr.id);
 			if (!val) return false;
 
-			rsinstr = make_val_instr(*val);
+			rsinstr = make_val_instr(*val, rsinstr.offset);
 
 			rsts = val->type;
+		}
+
+		return true;
+	}
+
+	inline bool resolve_ls_id_vals(type_stack &ts, std::vector<instr> &instrs, const scope &s)
+	{
+		auto &lsts = ts.vtop(1);
+		if (lsts.types.empty()) {
+			auto &lsinstr = instrs[lsts.iref];
+			const val_ref *val = s.find_val_ref(lsinstr.id);
+			if (!val) return false;
+
+			lsinstr = make_val_instr(*val, lsinstr.offset);
+
+			lsts = val->type;
 		}
 
 		return true;
@@ -151,7 +167,7 @@ namespace hill {
 			const val_ref *val = s.find_matching_val_ref(lsinstr.id, type);
 			if (!val) return false;
 
-			lsinstr = make_val_instr(*val);
+			lsinstr = make_val_instr(*val, lsinstr.offset);
 
 			//auto &lsts = ts.vtop();
 			lsts = val->type;
@@ -171,7 +187,7 @@ namespace hill {
 			const val_ref *val = s.find_val_ref(lsinstr.id);
 			if (!val) return false;
 
-			lsinstr = make_val_instr(*val);
+			lsinstr = make_val_instr(*val, lsinstr.offset);
 
 			auto &rsts = ts.vtop();
 			rsts = val->type;
@@ -209,24 +225,25 @@ namespace hill {
 				{
 					if (!resolve_rs_id_vals(ts, instrs, s)) throw semantic_error_exception();
 
-					type_spec res_ts = ts.top();
+					type_spec res_type = ts.top();
 					instrs.push_back(instr{
 						.op = op_code::END,
-						.res_ts = res_ts,
+						.res_ts = res_type,
 						.val = {},
-						.arg1_ts = type_spec(),
-						.arg2_ts = type_spec()});
-					ts.push(res_ts);
+						.arg1_type = type_spec(),
+						.arg2_type = type_spec()});
+					res_type.iref = instrs.size()-1;
+					ts.push(res_type);
 				}
 				break;
 			case tt::NAME:
 				{
-					auto instr = make_placeholder_instr(t.text);
+					auto instr = make_placeholder_instr(t.text, 0);
 					instrs.push_back(instr);
 					//auto t = type_spec {
-					auto type = type_spec();
-					type.iref = instrs.size()-1;
-					ts.push(type);
+					auto res_type = type_spec();
+					res_type.iref = instrs.size()-1;
+					ts.push(res_type);
 				}
 				break;
 			case tt::NUM:
@@ -234,14 +251,14 @@ namespace hill {
 					char *endp = nullptr;
 #define USE_LOAD_IMMEDIATE
 					if (t.str().find('.')!=std::string::npos) { // floating point (just  double for now)
-						type_spec res_ts = type_spec(basic_type::F64);
+						type_spec res_type = type_spec(basic_type::F64);
 #ifdef USE_LOAD_IMMEDIATE
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
-							.res_ts = res_ts,
+							.res_ts = res_type,
 							.val = {.imm_f64 = static_cast<double>(std::strtold(t.get_text().c_str(), &endp))},
-							.arg1_ts = type_spec(),
-							.arg2_ts = type_spec()});
+							.arg1_type = type_spec(),
+							.arg2_type = type_spec()});
 #else
 						auto vix = values.add(std::strtold(t.get_text().c_str(), &endp));
 						instrs.push_back(instr{
@@ -249,16 +266,17 @@ namespace hill {
 							.res_ts = res_ts,
 							.val = {.ix = vix}});
 #endif /* USE_LOAD_IMMEDIATE */
-						ts.push(res_ts);
+						res_type.iref = instrs.size()-1;
+						ts.push(res_type);
 					} else { // integral
-						type_spec res_ts = type_spec(basic_type::I32);
+						type_spec res_type = type_spec(basic_type::I32);
 #ifdef USE_LOAD_IMMEDIATE
 						instrs.push_back(instr{
 							.op = op_code::LOADI,
-							.res_ts = res_ts,
+							.res_ts = res_type,
 							.val = {.imm_i32 = static_cast<int32_t>(std::strtol(t.get_text().c_str(), &endp, 10))},
-							.arg1_ts = type_spec(),
-							.arg2_ts = type_spec()});
+							.arg1_type = type_spec(),
+							.arg2_type = type_spec()});
 #else
 						auto vix = values.add(std::strtoll(t.get_text().c_str(), &endp, 10));
 						instrs.push_back(instr{
@@ -266,7 +284,8 @@ namespace hill {
 							.res_ts = res_ts,
 							.val = {.ix = vix}});
 #endif /* USE_LOAD_IMMEDIATE */
-						ts.push(res_ts);
+						res_type.iref = instrs.size()-1;
+						ts.push(res_type);
 					}
 				}
 				break;
@@ -279,16 +298,17 @@ namespace hill {
 
 					if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
 
-					type_spec res_ts = ts.top();
+					type_spec res_type = ts.top();
 					instrs.push_back(instr{
 						.op = op_code::ADD,
-						.res_ts = res_ts,
+						.res_ts = res_type,
 						.val = {},
-						.arg1_ts = ts.top(1),
-						.arg2_ts = ts.top()});
+						.arg1_type = ts.top(1),
+						.arg2_type = ts.top()});
 					ts.pop();
 					ts.pop();
-					ts.push(res_ts);
+					res_type.iref = instrs.size()-1;
+					ts.push(res_type);
 				}
 				break;
 			case tt::OP_MINUS:
@@ -301,28 +321,30 @@ namespace hill {
 					if (t.get_arity()==tt_arity::LUNARY) {
 						if (!resolve_rs_id_vals(ts, instrs, s)) throw semantic_error_exception();
 
-						type_spec res_ts = ts.top();
+						type_spec res_type = ts.top();
 						instrs.push_back(instr{
 							.op = op_code::NEG,
-							.res_ts = res_ts,
+							.res_ts = res_type,
 							.val = {},
-							.arg1_ts = ts.top(),
-							.arg2_ts = type_spec()});
+							.arg1_type = ts.top(),
+							.arg2_type = type_spec()});
 						ts.pop();
-						ts.push(res_ts);
+						res_type.iref = instrs.size()-1;
+						ts.push(res_type);
 					} else if (t.get_arity()==tt_arity::BINARY) {
 						if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
 
-						type_spec res_ts = ts.top();
+						type_spec res_type = ts.top();
 						instrs.push_back(instr{
 							.op = op_code::SUB,
-							.res_ts = res_ts,
+							.res_ts = res_type,
 							.val = {},
-							.arg1_ts = ts.top(1),
-							.arg2_ts = ts.top()});
+							.arg1_type = ts.top(1),
+							.arg2_type = ts.top()});
 						ts.pop();
 						ts.pop();
-						ts.push(res_ts);
+						res_type.iref = instrs.size()-1;
+						ts.push(res_type);
 					} else {
 						throw internal_exception();
 					}
@@ -332,16 +354,17 @@ namespace hill {
 				{
 					if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
 
-					type_spec res_ts = ts.top();
+					type_spec res_type = ts.top();
 					instrs.push_back(instr{
 						.op = op_code::MUL,
-						.res_ts = res_ts,
+						.res_ts = res_type,
 						.val = {},
-						.arg1_ts = ts.top(1),
-						.arg2_ts = ts.top()});
+						.arg1_type = ts.top(1),
+						.arg2_type = ts.top()});
 					ts.pop();
 					ts.pop();
-					ts.push(res_ts);
+					res_type.iref = instrs.size()-1;
+					ts.push(res_type);
 				}
 				break;
 			case tt::OP_COLON_EQ:
@@ -357,14 +380,14 @@ namespace hill {
 
 					if (!resolve_rs_id_vals(ts, instrs, s)) throw semantic_error_exception();
 
-					type_spec res_ts = ts.top();
+					type_spec res_type = ts.top();
 
 					// "Copy" value to stack
 					// Bind id instruction on left side to the value
 					auto val = val_ref(
 						mem_type::STACK,
-						s.frame.add(res_ts.size(), 1),
-						res_ts);
+						s.frame.add(res_type.size(), 1),
+						res_type);
 
 					if (instrs.size()<2 || instrs[instrs.size()-2].op!=op_code::ID) throw semantic_error_exception();
 					s.ids[instrs[instrs.size()-2].id].push_back(val);
@@ -376,10 +399,11 @@ namespace hill {
 						.op = op_code::COPY,
 						.res_ts = val.type,
 						.val = {.ix=val.ix},
-						.arg1_ts = type_spec(),
-						.arg2_ts = ts.top()});
+						.arg1_type = type_spec(),
+						.arg2_type = ts.top()});
 					ts.pop();
-					ts.push(res_ts);
+					res_type.iref = instrs.size()-1;
+					ts.push(res_type);
 				}
 				break;
 #if 0
@@ -418,67 +442,82 @@ namespace hill {
 
 					if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
 
-					type_spec res_ts=build_tuple(ts.top(1), ts.top());
+					type_spec res_type=build_tuple(ts.top(1), ts.top());
 
 					instrs.push_back(instr{
 						.op = op_code::TUPLE,
-						.res_ts = res_ts,
+						.res_ts = res_type,
 						.val = {},
-						.arg1_ts = type_spec(),
-						.arg2_ts = type_spec()});
+						.arg1_type = type_spec(),
+						.arg2_type = type_spec()});
 
 					ts.pop();
 					ts.pop();
-					ts.push(res_ts);
+					res_type.iref = instrs.size()-1;
+					ts.push(res_type);
 				}
 				break;
 			case tt::CALL:
 				{
 					if (!resolve_call_id_vals(ts, instrs, s)) throw semantic_error_exception();
 
-					type_spec res_ts;
-					type_spec arg_ts;
+					if (ts.top(1).is_pipe_arg) {
+						// TODO: join top(1) and top() as a tuple on ts
+						auto l_type = ts.top(1);
+						auto r_type = ts.top();
+
+						ts.pop();
+						ts.pop();
+						ts.push(build_tuple(l_type, r_type));
+
+						if (!resolve_ls_id_vals(ts, instrs, s)) throw semantic_error_exception();
+					}
+
+					type_spec res_type;
+					type_spec arg_type;
 					if (ts.top(1).first()==basic_type::FUNC) {
-						res_ts = ts.top(1).inner_type(1);
-						arg_ts = ts.top(1).inner_type(1+res_ts.types.size());
+						res_type = ts.top(1).inner_type(1);
+						arg_type = ts.top(1).inner_type(1+res_type.types.size());
 						
-						if (arg_ts!=ts.top()) throw semantic_error_exception();
+						if (arg_type!=ts.top()) throw semantic_error_exception();
 
 						instrs.push_back(instr{
 							.op = op_code::CALL,
-							.res_ts = res_ts,
+							.res_ts = res_type,
 							.val = {},
-							.arg1_ts = ts.top(1),
-							.arg2_ts = ts.top()});
-					} else if (ts.top(1).first()==basic_type::PFUNC) {
-						res_ts = ts.top(1).inner_type(1);
-						arg_ts = ts.top(1).inner_type(1+res_ts.types.size());
-						
-						instrs.push_back(instr{
-							.op = op_code::PCALL,
-							.res_ts = res_ts,
-							.val = {},
-							.arg1_ts = ts.top(1),
-							.arg2_ts = ts.top()});
+							.arg1_type = ts.top(1),
+							.arg2_type = ts.top()});
 					} else {
 						throw semantic_error_exception();
 					}
 
 					ts.pop();
 					ts.pop();
-					ts.push(res_ts);
+					res_type.iref = instrs.size()-1;
+					ts.push(res_type);
 				}
 				break;
 			case tt::OP_DOT: // Dot defaults to piping
 			case tt::OP_OR_GREATER: // Piping
 				{
-					if (!resolve_call_id_vals(ts, instrs, s)) throw semantic_error_exception();
+					if (!resolve_ls_id_vals(ts, instrs, s)) throw semantic_error_exception();
 
-					if (ts.top().first()==basic_type::FUNC) {
-						ts.vtop().types[0] = basic_type::PFUNC;
-					} else {
-						throw semantic_error_exception();
-					}
+					// things.where {_/2==0} . select {_*9} . last ();
+					// last (select (where (things, ({_/2==0}), {_*9}), ());
+
+					auto arg1_type = ts.top(1);
+					auto pfunc_type = ts.top();
+
+					// Add padding to place function first end partial data next
+					instrs[arg1_type.iref].offset = (int)type_spec(basic_type::FUNC).size();
+					instrs[pfunc_type.iref].offset = -((int)arg1_type.size() + (int)type_spec(basic_type::FUNC).size());
+
+					arg1_type.is_pipe_arg = true;
+
+					ts.pop();
+					ts.pop();
+					ts.push(pfunc_type);
+					ts.push(arg1_type);
 				}
 				break;
 			default:

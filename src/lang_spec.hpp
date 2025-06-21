@@ -127,7 +127,8 @@ namespace hill {
 			{tt::RCURLY, {tt_kind::RGROUP, "RCURLY", "}", {}}},
 			{tt::LSQUARE, {tt_kind::LGROUP, "LSQUARE", "[", {}}},
 			{tt::RSQUARE, {tt_kind::RGROUP, "RSQUARE", "]", {}}},
-			{tt::CALL, {tt_kind::OP, "CALL", "", {}}},
+			{tt::CALL, {tt_kind::OP, "CALL", "", {
+				{2, tt_assoc::LEFT, tt_arity::BINARY}}}},
 			{tt::OP_PLUS_PLUS, {tt_kind::OP, "OP_PLUS_PLUS", "++", {
 				{2, tt_assoc::RIGHT, tt_arity::RUNARY}, /* Postfix increment */
 				{3, tt_assoc::LEFT, tt_arity::LUNARY}}}}, /* Prefix increment */

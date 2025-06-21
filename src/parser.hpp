@@ -101,7 +101,10 @@ namespace hill {
 				const auto &next_t = &queue.peek_token();
 
 				if (prev_t.vend() && t.vbegin()) {
-					parse_token(token(tt::CALL, "", next_t->lix, next_t->cix));
+					auto ct = token(tt::CALL, "", next_t->lix, next_t->cix);
+					ct.select_op_spec(tt_arity::BINARY);//op_type_spec = ct.get();
+					parse_token(ct);
+					//parse_token(token(tt::CALL, "", next_t->lix, next_t->cix));
 				}
 
 				if (t.op()) {

@@ -133,16 +133,16 @@ namespace hill {
 				break;
 			case op_code::COPY:
 				ofs << ' ' << ins.val.ix;
-				type_spec_ascii(ins.arg2_ts, ofs);
+				type_spec_ascii(ins.arg2_type, ofs);
 				break;
 			case op_code::ADD:
 			case op_code::SUB:
 			case op_code::MUL:
-				type_spec_ascii(ins.arg1_ts, ofs);
-				type_spec_ascii(ins.arg2_ts, ofs);
+				type_spec_ascii(ins.arg1_type, ofs);
+				type_spec_ascii(ins.arg2_type, ofs);
 				break;
 			case op_code::NEG:
-				type_spec_ascii(ins.arg1_ts, ofs);
+				type_spec_ascii(ins.arg1_type, ofs);
 				break;
 			case op_code::CALL:
 			case op_code::ID:
@@ -190,16 +190,16 @@ namespace hill {
 				break;
 			case op_code::COPY:
 				write_bin(static_cast<uint64_t>(ins.val.ix), ofs);
-				type_spec_bin(ins.arg2_ts, ofs);
+				type_spec_bin(ins.arg2_type, ofs);
 				break;
 			case op_code::ADD:
 			case op_code::SUB:
 			case op_code::MUL:
-				type_spec_bin(ins.arg1_ts, ofs);
-				type_spec_bin(ins.arg2_ts, ofs);
+				type_spec_bin(ins.arg1_type, ofs);
+				type_spec_bin(ins.arg2_type, ofs);
 				break;
 			case op_code::NEG:
-				type_spec_bin(ins.arg1_ts, ofs);
+				type_spec_bin(ins.arg1_type, ofs);
 				break;
 			case op_code::CALL:
 			case op_code::ID:
