@@ -97,7 +97,7 @@ namespace hill {
 				}
 			}
 
-			return value(result_ins.res_ts, s.top(result_ins.res_ts.size()));
+			return value(result_ins.res_type, s.top(result_ins.res_type.size()));
 		}
 
 	private:
@@ -114,8 +114,8 @@ namespace hill {
 
 		void loadl(const instr &ins, const literal_values &values)
 		{
-			uint8_t *p = s.push_alloc(ins.offset, ins.res_ts.size());
-			values.copy(ins.val.ix, p, ins.res_ts.size());
+			uint8_t *p = s.push_alloc(ins.offset, ins.res_type.size());
+			values.copy(ins.val.ix, p, ins.res_type.size());
 		}
 
 		/**
@@ -123,9 +123,9 @@ namespace hill {
 		 */
 		void loadi(const instr &ins)
 		{
-			uint8_t *p = s.push_alloc(ins.offset, ins.res_ts.size());
+			uint8_t *p = s.push_alloc(ins.offset, ins.res_type.size());
 			
-			switch (ins.res_ts.types[0]) {
+			switch (ins.res_type.types[0]) {
 			case basic_type::I8: *(int8_t *)p = ins.val.imm_i8; break;
 			case basic_type::I16: *(int16_t *)p = ins.val.imm_i16; break;
 			case basic_type::I32: *(int32_t *)p = ins.val.imm_i32; break;
@@ -165,7 +165,7 @@ namespace hill {
 			// TODO: Type conversion?
 			// Maybe type conversion is its own instruction and handled by the analizer?
 
-			switch (ins.res_ts.types[0]) {
+			switch (ins.res_type.types[0]) {
 			case basic_type::I8: add<int8_t>(ins); break;
 			case basic_type::I16: add<int16_t>(ins); break;
 			case basic_type::I32: add<int32_t>(ins); break;
@@ -194,7 +194,7 @@ namespace hill {
 			// TODO: Type conversion?
 			// Maybe type conversion is its own instruction and handled by the analizer?
 
-			switch (ins.res_ts.types[0]) {
+			switch (ins.res_type.types[0]) {
 			case basic_type::I8: sub<int8_t>(ins); break;
 			case basic_type::I16: sub<int16_t>(ins); break;
 			case basic_type::I32: sub<int32_t>(ins); break;
@@ -223,7 +223,7 @@ namespace hill {
 			// TODO: Type conversion?
 			// Maybe type conversion is its own instruction and handled by the analizer?
 
-			switch (ins.res_ts.types[0]) {
+			switch (ins.res_type.types[0]) {
 			case basic_type::I8: mul<int8_t>(ins); break;
 			case basic_type::I16: mul<int16_t>(ins); break;
 			case basic_type::I32: mul<int32_t>(ins); break;
@@ -248,7 +248,7 @@ namespace hill {
 		}
 		void neg(const instr &ins)
 		{
-			switch (ins.res_ts.types[0]) {
+			switch (ins.res_type.types[0]) {
 			case basic_type::I8: neg<int8_t>(ins); break;
 			case basic_type::I16: neg<int16_t>(ins); break;
 			case basic_type::I32: neg<int32_t>(ins); break;
@@ -269,12 +269,12 @@ namespace hill {
 		void tuple(const instr &ins)
 		{
 			(void)ins; // Unused for now
-/*			const uint8_t *right = s.top(ins.arg2_ts.size());
-			s.pop(ins.arg2_ts.size());
-			const uint8_t *left = s.top(ins.arg1_ts.size());
-			s.pop(ins.arg1_ts.size());
+/*			const uint8_t *right = s.top(ins.arg2_type.size());
+			s.pop(ins.arg2_type.size());
+			const uint8_t *left = s.top(ins.arg1_type.size());
+			s.pop(ins.arg1_type.size());
 
-			uint8_t *p = s.push_alloc(ins.res_ts.size());*/
+			uint8_t *p = s.push_alloc(ins.res_type.size());*/
 
 			// Make tuple
 			// The top of the stack already looks like a tuple
@@ -286,7 +286,7 @@ namespace hill {
 		{
 			auto func_size = ins.arg1_type.size();
 			auto arg_size = ins.arg2_type.size();
-			auto res_size = ins.res_ts.size();
+			auto res_size = ins.res_type.size();
 
 			/*uint8_t *memp = s.mem.data();
 			(void)memp;*/

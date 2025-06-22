@@ -69,7 +69,7 @@ namespace hill {
 			ofs.write((const char *)&v, sizeof v);
 		}
 
-		void type_spec_ascii(const type_spec &ts, std::ofstream &ofs)
+		void type_spec_ascii(const type &ts, std::ofstream &ofs)
 		{
 			size_t sz = ts.types.size();
 			ofs << ' ';
@@ -91,7 +91,7 @@ namespace hill {
 			}
 		}
 
-		void type_spec_bin(const type_spec &ts, std::ofstream &ofs)
+		void type_spec_bin(const type &ts, std::ofstream &ofs)
 		{
 			write_bin(static_cast<uint16_t>(ts.types.size()), ofs);
 			for (auto &t : ts.types) {
@@ -102,7 +102,7 @@ namespace hill {
 		void instr_ascii(const instr &ins, std::ofstream &ofs)
 		{
 			ofs << op_code_str(ins.op);
-			type_spec_ascii(ins.res_ts, ofs);
+			type_spec_ascii(ins.res_type, ofs);
 
 			switch (ins.op) {
 			case op_code::END:
@@ -114,7 +114,7 @@ namespace hill {
 				break;
 			case op_code::LOADI:
 				ofs << ' ';
-				switch (ins.res_ts.types[0]) {
+				switch (ins.res_type.types[0]) {
 				case basic_type::I8: ofs << ins.val.imm_i8; break;
 				case basic_type::I16: ofs << ins.val.imm_i16; break;
 				case basic_type::I32: ofs << ins.val.imm_i32; break;
@@ -158,7 +158,7 @@ namespace hill {
 		{
 			write_bin(static_cast<uint16_t>(ins.op), ofs);
 
-			type_spec_bin(ins.res_ts, ofs);
+			type_spec_bin(ins.res_type, ofs);
 
 			switch (ins.op) {
 			case op_code::END:
@@ -171,7 +171,7 @@ namespace hill {
 				write_bin<uint32_t>(0u, ofs);
 				break;
 			case op_code::LOADI:
-				switch (ins.res_ts.types[0]) {
+				switch (ins.res_type.types[0]) {
 				case basic_type::I8: write_bin(static_cast<uint64_t>(ins.val.imm_i8), ofs); break;
 				case basic_type::I16: write_bin(static_cast<uint16_t>(ins.val.imm_i16), ofs); break;
 				case basic_type::I32: write_bin(static_cast<uint32_t>(ins.val.imm_i32), ofs); break;

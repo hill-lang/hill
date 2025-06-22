@@ -48,7 +48,7 @@ namespace hill {
 
 	struct instr {
 		op_code op;
-		type_spec res_ts;
+		type res_type;
 		union {
 			size_t ix;
 
@@ -68,8 +68,8 @@ namespace hill {
 
 			void *imm_p;
 		} val;
-		type_spec arg1_type;
-		type_spec arg2_type;
+		type arg1_type;
+		type arg2_type;
 		std::string id = "";
 		int offset = 0;
 
@@ -79,7 +79,7 @@ namespace hill {
 
 			ss << op_code_str(op);
 
-			ss << " res_ts:" << res_ts.to_str();
+			ss << " res_type:" << res_type.to_str();
 			switch (op) {
 			case op_code::END:
 			case op_code::TUPLE:
@@ -89,7 +89,7 @@ namespace hill {
 				break;
 			case op_code::LOADI:
 				ss << " imm:";
-				switch (this->res_ts.first()) {
+				switch (this->res_type.first()) {
 				case basic_type::I8: ss << this->val.imm_i8; break;
 				case basic_type::I16: ss << this->val.imm_i16; break;
 				case basic_type::I32: ss << this->val.imm_i32; break;
@@ -108,13 +108,13 @@ namespace hill {
 				break;
 			case op_code::COPY:
 				ss << " ix:" << this->val.ix;
-				ss << " arg2_ts:" << this->arg2_type.to_str();
+				ss << " arg2_type:" << this->arg2_type.to_str();
 				break;
 			case op_code::ADD:
 			case op_code::SUB:
 			case op_code::MUL:
-				ss << " arg1_ts:" << this->arg1_type.to_str();
-				ss << " arg2_ts:" << this->arg2_type.to_str();
+				ss << " arg1_type:" << this->arg1_type.to_str();
+				ss << " arg2_type:" << this->arg2_type.to_str();
 				break;
 			default:
 				throw internal_exception();
@@ -124,24 +124,24 @@ namespace hill {
 		}
 	};
 
-	template<typename VT> instr make_instr(op_code o, type_spec ts, VT v, int offset)
+	template<typename VT> instr make_instr(op_code o, type ts, VT v, int offset)
 	{
 		instr i;
 
 		i.op = o;
-		i.res_ts = ts;
+		i.res_type = ts;
 		i.val.imm_u32 = v;
 		i.offset = offset;
 
 		return i;
 	}
 
-	template<> instr make_instr<void *>(op_code o, type_spec ts, void *v, int offset)
+	template<> instr make_instr<void *>(op_code o, type ts, void *v, int offset)
 	{
 		instr i;
 
 		i.op = o;
-		i.res_ts = ts;
+		i.res_type = ts;
 		i.val.imm_p = v;
 		i.offset = offset;
 

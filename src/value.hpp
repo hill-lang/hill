@@ -11,9 +11,9 @@
 namespace hill {
 
 	struct value {
-		value(type_spec ts, const uint8_t *data): ts(ts), data(data, data+ts.size()) {}
+		value(type ts, const uint8_t *data): ts(ts), data(data, data+ts.size()) {}
 
-		type_spec ts;
+		type ts;
 		std::vector<uint8_t> data;
 
 		std::string to_str()

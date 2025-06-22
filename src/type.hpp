@@ -99,15 +99,15 @@ namespace hill {
 		std::vector<type_dict_entry> entries;
 	};
 
-	struct type_spec {
-		type_spec() = default;
-		explicit type_spec(basic_type bt): types{bt} {}
-		explicit type_spec(const std::vector<basic_type> &bts): types(bts) {}
+	struct type {
+		type() = default;
+		explicit type(basic_type bt): types{bt} {}
+		explicit type(const std::vector<basic_type> &bts): types(bts) {}
 		//type_spec(const type_spec &other): types(other.types) {}
-		bool operator==(const type_spec &other) const {return this->types == other.types;}
-		bool operator!=(const type_spec &other) const {return !(*this==other);}
-		bool operator<(const type_spec &other) const {return this->types < other.types;}
-		bool matches(const type_spec &other) const {
+		bool operator==(const type &other) const {return this->types == other.types;}
+		bool operator!=(const type &other) const {return !(*this==other);}
+		bool operator<(const type &other) const {return this->types < other.types;}
+		bool matches(const type &other) const {
 			for (size_t ix=0; ix<this->types.size(); ++ix) {
 				// TODO: First condition is a hack to avoid mismatching missing END in incomplete tuple
 				if (this->types[ix]!=basic_type::END && this->types[ix]!=other.types[ix] && this->types[ix]!=basic_type::UNDECIDED) {
@@ -132,7 +132,7 @@ namespace hill {
 			return t==basic_type::FUNC || t==basic_type::TUPLE;
 		}
 
-		type_spec inner_type(size_t ix) const
+		type inner_type(size_t ix) const
 		{
 			if (ix>=types.size()) throw semantic_error_exception();
 			
@@ -152,10 +152,10 @@ namespace hill {
 				inner_types.push_back(types[ix]);
 			}
 
-			return type_spec(inner_types);
+			return type(inner_types);
 		}
 
-		type_spec inner_type_complete(size_t ix) const
+		type inner_type_complete(size_t ix) const
 		{
 			auto type = inner_type(ix);
 
@@ -200,7 +200,7 @@ namespace hill {
 		}
 	};
 
-	inline type_spec build_tuple(const type_spec &left, const type_spec &right)
+	inline type build_tuple(const type &left, const type &right)
 	{
 		std::vector<basic_type> types;
 
@@ -216,7 +216,7 @@ namespace hill {
 
 		types.push_back(basic_type::END);
 
-		return type_spec(types);
+		return type(types);
 	}
 }
 

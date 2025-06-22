@@ -7,13 +7,13 @@
 
 namespace hill {
 
-	inline const std::map<const type_spec, std::map<const type_spec, const type_spec>> &get_conversions()
+	inline const std::map<const type, std::map<const type, const type>> &get_conversions()
 	{
-		static std::map<const type_spec, std::map<const type_spec, const type_spec>> conversions = {
-			{type_spec(basic_type::UNDECIDED),
+		static std::map<const type, std::map<const type, const type>> conversions = {
+			{type(basic_type::UNDECIDED),
 				{
-					{type_spec(basic_type::I), type_spec(basic_type::I32)},
-					{type_spec(basic_type::I32), type_spec(basic_type::I32)}
+					{type(basic_type::I), type(basic_type::I32)},
+					{type(basic_type::I32), type(basic_type::I32)}
 				},
 			}
 		};
@@ -21,15 +21,15 @@ namespace hill {
 		return conversions;
 	}
 
-	inline const type_spec convert(const type_spec &target, const type_spec &src)
+	inline const type convert(const type &target, const type &src)
 	{
-		if (target==type_spec(basic_type::UNDECIDED)) {
-			if (src==type_spec(basic_type::I) || src==type_spec(basic_type::I32)) return type_spec(basic_type::I32);
+		if (target==type(basic_type::UNDECIDED)) {
+			if (src==type(basic_type::I) || src==type(basic_type::I32)) return type(basic_type::I32);
 			else return target;
 		} else return target;
 	}
 
-	inline const type_spec convert_binary(tt op, const type_spec &left, const type_spec &right)
+	inline const type convert_binary(tt op, const type &left, const type &right)
 	{
 		switch (op) {
 		case tt::OP_COLON_EQ:

@@ -90,13 +90,13 @@ namespace hill {
 
 	struct val_ref {
 		val_ref(): mt(mem_type::UNDECIDED), ix(SIZE_MAX) {}
-		val_ref(mem_type mt, size_t ix, type_spec ts): mt(mt), ix(ix), type(ts) {}
+		val_ref(mem_type mt, size_t ix, type ts): mt(mt), ix(ix), type(ts) {}
 		template<typename VT> val_ref(VT v, basic_type bt): mt(mem_type::LITERAL), type(bt)
 		{
 			memcpy(this->val, (uint8_t *)&v, sizeof v);
 		}
 		val_ref(uint32_t v, basic_type bt): mt(mem_type::LITERAL), u32(v), type(bt) {}
-		val_ref(void *p, type_spec ts): mt(mem_type::LITERAL), p(p), type(ts) {}
+		val_ref(void *p, type ts): mt(mem_type::LITERAL), p(p), type(ts) {}
 
 		mem_type mt;
 		union {
@@ -105,7 +105,7 @@ namespace hill {
 			void *p;
 			uint8_t val[8];
 		};
-		type_spec type;
+		type type;
 
 		std::string to_str() const
 		{

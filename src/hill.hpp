@@ -68,26 +68,26 @@ namespace hill {
 		auto s = scope::create(parent);
 
 		s->ids["the_answer"].push_back(val_ref((int32_t)42, basic_type::I32));
-		s->ids["abs"].push_back(val_ref((void *)pf_abs, type_spec({
+		s->ids["abs"].push_back(val_ref((void *)pf_abs, type({
 			basic_type::FUNC,
 			basic_type::I32,
 			basic_type::I32,
 			basic_type::END})));
-		s->ids["pow"].push_back(val_ref((void *)pf_pow, type_spec({
+		s->ids["pow"].push_back(val_ref((void *)pf_pow, type({
 			basic_type::FUNC,
 			basic_type::I32,
 			basic_type::TUPLE,
 			basic_type::I32,
 			basic_type::I32,
 			basic_type::END})));
-		s->ids["pow"].push_back(val_ref((void *)pf_dpow, type_spec({
+		s->ids["pow"].push_back(val_ref((void *)pf_dpow, type({
 			basic_type::FUNC,
 			basic_type::F64,
 			basic_type::TUPLE,
 			basic_type::F64,
 			basic_type::F64,
 			basic_type::END})));
-		s->ids["div"].push_back(val_ref((void *)pf_div, type_spec({
+		s->ids["div"].push_back(val_ref((void *)pf_div, type({
 			basic_type::FUNC,
 			basic_type::I32,
 			basic_type::TUPLE,
