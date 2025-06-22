@@ -288,6 +288,9 @@ namespace hill {
 			auto arg_size = ins.arg2_type.size();
 			auto res_size = ins.res_ts.size();
 
+			/*uint8_t *memp = s.mem.data();
+			(void)memp;*/
+
 			uint8_t *p;
 			int diff_size = (int)func_size+(int)arg_size-(int)res_size;
 			if (diff_size<0) {
@@ -297,13 +300,15 @@ namespace hill {
 				p = s.vtop(func_size+arg_size);
 			}
 
+			//std::cout << (p-memp) << '\n';
+
 			//auto func = *(void (**)(uint8_t *, const uint8_t *))p;
 			auto func = *(ifunc *)p;
 
-			func(p, p+func_size);
+			func(p+ins.offset, p+func_size);
 
 			if (diff_size>0) {
-				s.pop((size_t)diff_size);
+				s.pop((size_t)(diff_size - (ins.offset>0 ? ins.offset : 0)));
 			}
 		}
 

@@ -31,10 +31,10 @@ namespace hill {
 
 		void analyze(const std::vector<token> &rpn)
 		{
-			for (auto &t: rpn) {
+			/*for (auto &t: rpn) {
 				std::cout << " - " << t.to_str();
 			}
-			std::cout << std::endl;
+			std::cout << std::endl;*/
 			for (auto &t: rpn) {
 				analyze_token(t);
 			}

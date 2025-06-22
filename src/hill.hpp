@@ -55,7 +55,12 @@ namespace hill {
 
 	inline void pf_dpow(uint8_t *rp, const uint8_t *ap)
 	{
-		*((double *)rp) = (int32_t)std::pow(*((double *)ap), *(((double *)ap)+1));
+		*((double *)rp) = (double)std::pow(*((double *)ap), *(((double *)ap)+1));
+	}
+
+	inline void pf_div(uint8_t *rp, uint8_t *ap)
+	{
+		*((int32_t *)rp) = (int32_t)*((int32_t *)ap) / *(((int32_t *)ap)+1);
 	}
 
 	std::shared_ptr<scope> build_lib(const std::shared_ptr<scope> &parent)
@@ -81,6 +86,13 @@ namespace hill {
 			basic_type::TUPLE,
 			basic_type::F64,
 			basic_type::F64,
+			basic_type::END})));
+		s->ids["div"].push_back(val_ref((void *)pf_div, type_spec({
+			basic_type::FUNC,
+			basic_type::I32,
+			basic_type::TUPLE,
+			basic_type::I32,
+			basic_type::I32,
 			basic_type::END})));
 		return s;
 	}

@@ -137,6 +137,8 @@ namespace hill {
 				{3, tt_assoc::LEFT, tt_arity::LUNARY}}}}, /* Prefix increment */
 			{tt::OP_DOT, {tt_kind::OP, "OP_DOT", ".", {
 				{2, tt_assoc::LEFT, tt_arity::BINARY}}}},
+			{tt::OP_OR_GREATER, {tt_kind::OP, "OP_OR_GREATER", "|>", {
+				{2, tt_assoc::LEFT, tt_arity::BINARY}}}},
 			{tt::OP_PLUS, {tt_kind::OP, "OP_PLUS", "+", {
 				{3, tt_assoc::RIGHT, tt_arity::LUNARY}, /* Unary plus */
 				{6, tt_assoc::LEFT, tt_arity::BINARY}}}}, /* Addition */
@@ -181,8 +183,6 @@ namespace hill {
 				{17, tt_assoc::RIGHT, tt_arity::BINARY}}}},
 			{tt::OP_PERCENT_EQ, {tt_kind::OP, "OP_PERCENT_EQ", "%=", {
 				{17, tt_assoc::RIGHT, tt_arity::BINARY}}}},
-			{tt::OP_OR_GREATER, {tt_kind::OP, "OP_OR_GREATER", "|>", {
-				{17, tt_assoc::LEFT, tt_arity::BINARY}}}},
 			{tt::OP_COMMA, {tt_kind::OP, "OP_COMMA", ",", {
 				{18, tt_assoc::LEFT, tt_arity::BINARY}}}},
 			{tt::OP_SEMICOLON, {tt_kind::OP, "OP_SEMICOLON", ";", {
