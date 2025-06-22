@@ -105,7 +105,7 @@ namespace hill {
 			void *p;
 			uint8_t val[8];
 		};
-		type type;
+		hill::type type;
 
 		std::string to_str() const
 		{
