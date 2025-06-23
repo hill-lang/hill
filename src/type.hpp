@@ -130,7 +130,7 @@ namespace hill {
 
 		bool is_composite_type(basic_type t) const
 		{
-			return t==basic_type::FUNC || t==basic_type::TUPLE;
+			return t==basic_type::FUNC || t==basic_type::TUPLE || t==basic_type::ARRAY;
 		}
 
 		type inner_type(size_t ix) const
