@@ -84,6 +84,83 @@ namespace hill {
 		return os;
 	}
 
+	inline bool is_composite_type(basic_type t)
+	{
+		return t==basic_type::FUNC || t==basic_type::TUPLE || t==basic_type::ARRAY;
+	}
+
+	inline std::vector<basic_type> inner_type(std::vector<basic_type> types, size_t ix)
+	{
+		if (ix>=types.size()) throw semantic_error_exception();
+			
+		std::vector<basic_type> inner_types;
+
+		if (types[ix]==basic_type::END) {
+			return inner_types;
+		} else if (is_composite_type(types[ix])) {
+			inner_types.push_back(types[ix]);
+			int lvl = 1;
+			while (lvl>0) {
+				if (++ix>=types.size()) throw semantic_error_exception();
+				inner_types.push_back(types[ix]);
+
+				if (is_composite_type(types[ix])) ++lvl;
+				else if (types[ix]==basic_type::END) --lvl;
+			}
+		} else {
+			inner_types.push_back(types[ix]);
+		}
+
+		return inner_types;
+	}
+
+	inline std::string to_str(std::vector<basic_type> types)
+	{
+		if (types.empty()) return "";
+
+		std::ostringstream ss;
+
+		switch (types[0]) {
+		case basic_type::FUNC:
+			{
+				ss << "@func(";
+				std::vector<basic_type> itypes = inner_type(types, 1);
+				ss << to_str(itypes);
+				ss << ",";
+				ss << to_str(inner_type(types, itypes.size() + 1));
+				ss << ")";
+			}
+			break;
+		case basic_type::TUPLE:
+			{
+				ss << "(";
+				std::vector<basic_type> itypes;
+				size_t ix;
+				for (ix = 1; ix<types.size()-1; ix+=itypes.size()) {
+					itypes = inner_type(types, ix);
+					if (ix>1) ss << ",";
+					ss << to_str(itypes);
+				}
+				ss << ")";
+			}
+			break;
+		case basic_type::ARRAY:
+			{
+				ss << "@array(";
+				std::vector<basic_type> itypes = inner_type(types, 1);
+				ss << to_str(itypes);
+				ss << ",";
+				ss << (size_t)types[itypes.size()+1];
+				ss << ")";
+			}
+			break;
+		default:
+			ss << types[0];
+		}
+
+		return ss.str();
+	}
+
 	enum class type_kind {
 		PLACEHOLDER,
 		DEPENDENT,
@@ -156,34 +233,9 @@ namespace hill {
 			return type(inner_types);
 		}
 
-		type inner_type_complete(size_t ix) const
-		{
-			auto type = inner_type(ix);
-
-			if (type.types[0]==basic_type::TUPLE && type.types[type.types.size()-1]!=basic_type::END) {
-				type.types.push_back(basic_type::END);
-			}
-
-			return type;
-		}
-
 		std::string to_str() const
 		{
-			std::ostringstream ss;
-
-			if (!types.empty() && types[0]==basic_type::ARRAY) {
-				ss << "@array(" << types[1] << "," << (int)types[2] << ")";
-			} else {
-				auto prev_type = basic_type::TUPLE;
-				for (auto &type: types) {
-					if (prev_type!=basic_type::TUPLE && prev_type!=basic_type::ARRAY && type!=basic_type::END) ss << ',';
-					ss << type;
-
-					prev_type = type;
-				}
-			}
-
-			return ss.str();
+			return ::hill::to_str(types);
 		}
 
 		size_t size() const
