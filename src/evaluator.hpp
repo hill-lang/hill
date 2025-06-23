@@ -76,9 +76,6 @@ namespace hill {
 		{
 			s.push_alloc(result_ins.offset, b.s.frame.size()); // Allocate stack frame, TODO: Check why we do this
 
-			/*const uint8_t *p = s.mem.data();
-			(void)p;*/
-
 			for (auto &ins : b.instrs) {
 				switch (ins.op) {
 				case op_code::END: end(ins); break;

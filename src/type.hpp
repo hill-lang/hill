@@ -14,7 +14,7 @@ namespace hill {
 		U, U8, U16, U32, U64,
 		F, F32, F64, /*F128,*/
 		FUNC, // Regular function
-//		ARRAY,
+		ARRAY,
 		TUPLE,
 		END,
 	};
@@ -45,6 +45,7 @@ namespace hill {
 			return sizeof(void *);
 		case basic_type::TUPLE:
 		case basic_type::END:
+		case basic_type::ARRAY:
 			return 0u;
 		default: throw internal_exception();
 		}
@@ -71,7 +72,7 @@ namespace hill {
 		case basic_type::FUNC: return "@fn";
 		//case basic_type::F128: return "@f128";
 		case basic_type::TUPLE: return "(";
-		//case basic_type::ARRAY: return "@array";
+		case basic_type::ARRAY: return "@array(";
 		case basic_type::END: return ")";
 		default: throw internal_exception();;
 		}
@@ -170,12 +171,16 @@ namespace hill {
 		{
 			std::ostringstream ss;
 
-			auto prev_type = basic_type::TUPLE;
-			for (auto &type: types) {
-				if (prev_type!=basic_type::TUPLE && type!=basic_type::END) ss << ',';
-				ss << type;
+			if (!types.empty() && types[0]==basic_type::ARRAY) {
+				ss << "@array(" << types[1] << "," << (int)types[2] << ")";
+			} else {
+				auto prev_type = basic_type::TUPLE;
+				for (auto &type: types) {
+					if (prev_type!=basic_type::TUPLE && prev_type!=basic_type::ARRAY && type!=basic_type::END) ss << ',';
+					ss << type;
 
-				prev_type = type;
+					prev_type = type;
+				}
 			}
 
 			return ss.str();
@@ -185,6 +190,9 @@ namespace hill {
 		{
 			if (types.size()>0 && types[0]==basic_type::FUNC) {
 				return basic_type_size(basic_type::FUNC); // A function is always the size of a function pointer
+			}
+			if (types.size()>0 && types[0]==basic_type::ARRAY) {
+				return basic_type_size(types[1]) * (size_t)types[2];
 			}
 
 			return std::accumulate(

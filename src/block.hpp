@@ -217,9 +217,39 @@ namespace hill {
 		{
 			switch (t.get_type()) {
 			case tt::RPAR:
-			case tt::RCURLY:
-			case tt::RSQUARE:
 				ts.vtop().close_tuple();
+				break;
+			case tt::RCURLY:
+				break;
+			case tt::RSQUARE:
+				{
+					// TODO: Handle embedded composite types
+					auto &ttype = ts.vtop();
+					basic_type elm_type;
+
+					if (ttype.types[0]==basic_type::TUPLE) {
+						elm_type = ttype.types[1];
+						int cnt = 0;
+						for (size_t ix=1; ttype.types[ix]!=basic_type::END; ++ix) {
+							if (elm_type!=ttype.types[ix]) throw semantic_error_exception();
+							++cnt;
+						}
+						ttype.types.clear();
+
+						ttype.types.push_back(basic_type::ARRAY);
+						ttype.types.push_back(elm_type);
+						ttype.types.push_back((basic_type)cnt);
+					} else {
+						elm_type = ttype.types[0];
+						ttype.types.clear();
+
+						ttype.types.push_back(basic_type::ARRAY);
+						ttype.types.push_back(elm_type);
+						ttype.types.push_back((basic_type)1);
+					}
+
+					ttype.types.push_back(basic_type::END);
+				}
 				break;
 			case tt::END:
 				{
