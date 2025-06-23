@@ -46,7 +46,7 @@ namespace hill {
 			const uint8_t *p = data.data();
 			if (!ts.types.empty() && ts.types[0]==basic_type::ARRAY) {
 				auto elm_type = ts.types[1];
-				int cnt = (int)ts.types[2];
+				size_t cnt = (size_t)ts.types[2];
 				ss << "[";
 				for (size_t ix=0; ix<cnt; ++ix, p+=basic_type_size(elm_type)) {
 					if (ix>0) {
