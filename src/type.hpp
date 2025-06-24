@@ -117,7 +117,7 @@ namespace hill {
 		return inner_types;
 	}
 
-	inline std::string to_str(std::vector<basic_type> types)
+	inline std::string type_to_str(std::vector<basic_type> types)
 	{
 		if (types.empty()) return "";
 
@@ -128,9 +128,9 @@ namespace hill {
 			{
 				ss << "@func(";
 				std::vector<basic_type> itypes = inner_type(types, 1);
-				ss << to_str(itypes);
+				ss << type_to_str(itypes);
 				ss << ",";
-				ss << to_str(inner_type(types, itypes.size() + 1));
+				ss << type_to_str(inner_type(types, itypes.size() + 1));
 				ss << ")";
 			}
 			break;
@@ -142,7 +142,7 @@ namespace hill {
 				for (ix = 1; ix<types.size()-1; ix+=itypes.size()) {
 					itypes = inner_type(types, ix);
 					if (ix>1) ss << ",";
-					ss << to_str(itypes);
+					ss << type_to_str(itypes);
 				}
 				ss << ")";
 			}
@@ -151,7 +151,7 @@ namespace hill {
 			{
 				ss << "@array(";
 				std::vector<basic_type> itypes = inner_type(types, 1);
-				ss << to_str(itypes);
+				ss << type_to_str(itypes);
 				ss << ",";
 				ss << (size_t)types[itypes.size()+1];
 				ss << ")";
@@ -222,7 +222,7 @@ namespace hill {
 
 		std::string to_str() const
 		{
-			return ::hill::to_str(types);
+			return ::hill::type_to_str(types);
 		}
 
 		size_t size() const
