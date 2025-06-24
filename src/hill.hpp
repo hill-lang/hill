@@ -63,6 +63,14 @@ namespace hill {
 		*((int32_t *)rp) = (int32_t)*((int32_t *)ap) / *(((int32_t *)ap)+1);
 	}
 
+	inline void pf_select(uint8_t *rp, uint8_t *ap)
+	{
+		(void)ap;
+		(void)rp;
+		// TODO: Type inference
+		// TODO: Block support
+	}
+
 	std::shared_ptr<scope> build_lib(const std::shared_ptr<scope> &parent)
 	{
 		auto s = scope::create(parent);
@@ -93,6 +101,22 @@ namespace hill {
 			basic_type::TUPLE,
 			basic_type::I32,
 			basic_type::I32,
+			basic_type::END})));
+		s->ids["select"].push_back(val_ref((void *)pf_select, type({
+			basic_type::FUNC,
+			basic_type::ARRAY,
+			basic_type::I32,
+			(basic_type)-1, // Placeholder for actual value
+			basic_type::END,
+			basic_type::TUPLE,
+			basic_type::ARRAY,
+			basic_type::I32,
+			(basic_type)-1,
+			basic_type::END,
+			basic_type::BLOCK,
+			// TODO: Block type inference
+			basic_type::END,
+			basic_type::END,
 			basic_type::END})));
 		return s;
 	}

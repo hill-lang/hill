@@ -16,6 +16,7 @@ namespace hill {
 		FUNC, // Regular function
 		ARRAY,
 		TUPLE,
+		BLOCK,
 		END,
 	};
 
@@ -44,8 +45,9 @@ namespace hill {
 		case basic_type::FUNC:
 			return sizeof(void *);
 		case basic_type::TUPLE:
-		case basic_type::END:
 		case basic_type::ARRAY:
+		case basic_type::BLOCK:
+		case basic_type::END:
 			return 0u;
 		default: throw internal_exception();
 		}
@@ -73,6 +75,7 @@ namespace hill {
 		//case basic_type::F128: return "@f128";
 		case basic_type::TUPLE: return "(";
 		case basic_type::ARRAY: return "@array(";
+		case basic_type::BLOCK: return "@block(";
 		case basic_type::END: return ")";
 		default: throw internal_exception();;
 		}
@@ -154,6 +157,8 @@ namespace hill {
 				ss << ")";
 			}
 			break;
+		case basic_type::BLOCK:
+			break;
 		default:
 			ss << types[0];
 		}
@@ -212,25 +217,7 @@ namespace hill {
 
 		type inner_type(size_t ix) const
 		{
-			if (ix>=types.size()) throw semantic_error_exception();
-			
-			std::vector<basic_type> inner_types;
-
-			if (is_composite_type(types[ix])) {
-				inner_types.push_back(types[ix]);
-				int lvl = 1;
-				while (lvl>0) {
-					if (++ix>=types.size()) throw semantic_error_exception();
-					inner_types.push_back(types[ix]);
-
-					if (is_composite_type(types[ix])) ++lvl;
-					else if (types[ix]==basic_type::END) --lvl;
-				}
-			} else {
-				inner_types.push_back(types[ix]);
-			}
-
-			return type(inner_types);
+			return type(::hill::inner_type(types, ix));
 		}
 
 		std::string to_str() const
