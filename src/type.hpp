@@ -166,6 +166,39 @@ namespace hill {
 		return ss.str();
 	}
 
+	inline size_t type_size(std::vector<basic_type> types)
+	{
+		if (types.empty()) return 0;
+
+		std::ostringstream ss;
+
+		switch (types[0]) {
+		case basic_type::FUNC:
+			return sizeof(void*);
+		case basic_type::TUPLE:
+			{
+				size_t tsize = 0;
+				std::vector<basic_type> itypes;
+				size_t ix;
+				for (ix = 1; ix<types.size()-1; ix+=itypes.size()) {
+					itypes = inner_type(types, ix);
+					tsize += type_size(itypes);
+				}
+				return tsize;
+			}
+			break;
+		case basic_type::ARRAY:
+			{
+				std::vector<basic_type> itypes = inner_type(types, 1);
+				return type_size(itypes) * (size_t)types[itypes.size()+1];
+			}
+		case basic_type::BLOCK:
+			return 0;
+		default:
+			return basic_type_size(types[0]);
+		}
+	}
+
 	enum class type_kind {
 		PLACEHOLDER,
 		DEPENDENT,
@@ -227,18 +260,7 @@ namespace hill {
 
 		size_t size() const
 		{
-			if (types.size()>0 && types[0]==basic_type::FUNC) {
-				return basic_type_size(basic_type::FUNC); // A function is always the size of a function pointer
-			}
-			if (types.size()>0 && types[0]==basic_type::ARRAY) {
-				return basic_type_size(types[1]) * (size_t)types[2];
-			}
-
-			return std::accumulate(
-				types.begin(),
-				types.end(),
-				(size_t)0,
-				[](size_t sum, auto &bt){return sum+basic_type_size(bt);});
+			return type_size(types);
 		}
 
 		void close_tuple()
