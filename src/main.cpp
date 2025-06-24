@@ -69,6 +69,8 @@ int main(int argc, char *argv[])
 				if (!hill::test::evaluator(test_session)) ok = false;
 				if (!hill::test::json_parser(test_session)) ok = false;
 			}
+			std::cout << '\n';
+			::hill::test::test_report(test_session, std::cout);
 		}
 	} else {
 		auto test_session = hill::utils::junit_session("Hill unit tests", "test-results.xml");
@@ -77,6 +79,8 @@ int main(int argc, char *argv[])
 		//if (!hill::test::analyzer(test_session)) ok = false;
 		if (!hill::test::evaluator(test_session)) ok = false;
 		if (!hill::test::json_parser(test_session)) ok = false;
+		std::cout << '\n';
+		::hill::test::test_report(test_session, std::cout);
 	}
 
 	return ok ? EXIT_SUCCESS : EXIT_FAILURE;

@@ -11,7 +11,7 @@
 namespace hill {
 
 	struct value {
-		value(type ts, const uint8_t *data): ts(ts), data(data, data+ts.size()) {}
+		value(type ts, const uint8_t *data): ts(ts), data(data, data+ts.mem_size()) {}
 
 		type ts;
 		std::vector<uint8_t> data;

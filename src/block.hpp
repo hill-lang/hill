@@ -416,7 +416,7 @@ namespace hill {
 					// Bind id instruction on left side to the value
 					auto val = val_ref(
 						mem_type::STACK,
-						s.frame.add(res_type.size(), 1),
+						s.frame.add(res_type.mem_size(), 1),
 						res_type);
 
 					if (instrs.size()<2 || instrs[instrs.size()-2].op!=op_code::ID) throw semantic_error_exception();
@@ -539,8 +539,8 @@ namespace hill {
 					auto pfunc_type = ts.top();
 
 					// Add padding to place function first end partial data next
-					instrs[arg1_type.iref].offset = (int)type(basic_type::FUNC).size();
-					instrs[pfunc_type.iref].offset = -((int)arg1_type.size() + (int)type(basic_type::FUNC).size());
+					instrs[arg1_type.iref].offset = (int)type(basic_type::FUNC).mem_size();
+					instrs[pfunc_type.iref].offset = -((int)arg1_type.mem_size() + (int)type(basic_type::FUNC).mem_size());
 
 					arg1_type.is_pipe_arg = true;
 

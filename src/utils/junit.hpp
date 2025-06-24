@@ -161,7 +161,6 @@ namespace hill::utils {
 			return suite;
 		}
 
-	private:
 		double time() const
 		{
 			double t = 0.0;
@@ -198,6 +197,10 @@ namespace hill::utils {
 			return cnt;
 		}
 
+		size_t passed_count() const
+		{
+			return test_count()-failed_count();
+		}
 	private:
 		static void write_case(
 			const std::shared_ptr<junit_test_case> &test_case,

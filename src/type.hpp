@@ -186,7 +186,6 @@ namespace hill {
 				}
 				return tsize;
 			}
-			break;
 		case basic_type::ARRAY:
 			{
 				std::vector<basic_type> itypes = inner_type(types, 1);
@@ -258,7 +257,7 @@ namespace hill {
 			return ::hill::type_to_str(types);
 		}
 
-		size_t size() const
+		size_t mem_size() const
 		{
 			return type_size(types);
 		}

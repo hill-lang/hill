@@ -94,7 +94,7 @@ namespace hill {
 				}
 			}
 
-			return value(result_ins.res_type, s.top(result_ins.res_type.size()));
+			return value(result_ins.res_type, s.top(result_ins.res_type.mem_size()));
 		}
 
 	private:
@@ -106,13 +106,13 @@ namespace hill {
 		void load(const instr &ins)
 		{
 			// TODO: What if we want to load from a different stack frame?
-			s.push(ins.offset, ins.arg2_type.size(), s.data() + ins.val.ix);
+			s.push(ins.offset, ins.arg2_type.mem_size(), s.data() + ins.val.ix);
 		}
 
 		void loadl(const instr &ins, const literal_values &values)
 		{
-			uint8_t *p = s.push_alloc(ins.offset, ins.res_type.size());
-			values.copy(ins.val.ix, p, ins.res_type.size());
+			uint8_t *p = s.push_alloc(ins.offset, ins.res_type.mem_size());
+			values.copy(ins.val.ix, p, ins.res_type.mem_size());
 		}
 
 		/**
@@ -120,7 +120,7 @@ namespace hill {
 		 */
 		void loadi(const instr &ins)
 		{
-			uint8_t *p = s.push_alloc(ins.offset, ins.res_type.size());
+			uint8_t *p = s.push_alloc(ins.offset, ins.res_type.mem_size());
 			
 			switch (ins.res_type.types[0]) {
 			case basic_type::I8: *(int8_t *)p = ins.val.imm_i8; break;
@@ -144,11 +144,11 @@ namespace hill {
 		void copy(const instr &ins)
 		{
 			// TODO: Type conversion?
-			const uint8_t *src = s.top(ins.arg2_type.size());
+			const uint8_t *src = s.top(ins.arg2_type.mem_size());
 			uint8_t *dst = s.data() + ins.val.ix;
-			memcpy(dst, src, ins.arg2_type.size());
-			s.pop(ins.arg2_type.size());
-			s.push(ins.offset, ins.arg2_type.size(), dst);
+			memcpy(dst, src, ins.arg2_type.mem_size());
+			s.pop(ins.arg2_type.mem_size());
+			s.push(ins.offset, ins.arg2_type.mem_size(), dst);
 		}
 
 		template<typename T> void add(const instr &ins)
@@ -281,9 +281,9 @@ namespace hill {
 
 		void call(const instr &ins)
 		{
-			auto func_size = ins.arg1_type.size();
-			auto arg_size = ins.arg2_type.size();
-			auto res_size = ins.res_type.size();
+			auto func_size = ins.arg1_type.mem_size();
+			auto arg_size = ins.arg2_type.mem_size();
+			auto res_size = ins.res_type.mem_size();
 
 			/*uint8_t *memp = s.mem.data();
 			(void)memp;*/

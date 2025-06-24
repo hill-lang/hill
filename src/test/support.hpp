@@ -65,6 +65,21 @@ namespace hill::test {
 
 		return ss.str();
 	}
+
+	inline void test_report(const utils::junit_session &s, std::ostream &os)
+	{
+		os << std::setw(11) << std::right << "Session" << "  " << s.name << '\n';
+		os << std::setw(11) << std::right << "Tests" << " ";
+		if (s.failed_count()>0) {
+			os << " " << ::hill::utils::color(std::to_string(s.failed_count()) + " failed", ::hill::utils::ccolor::RED);
+		}
+		if (s.passed_count()>0) {
+			os << " " << ::hill::utils::color(std::to_string(s.passed_count()) + " passed", ::hill::utils::ccolor::GREEN);
+		}
+		os << " " << s.test_count() << " total\n";
+
+		os << std::setw(11) << std::right << "Duration" << "  " << std::to_string(s.time()) << " ms\n";
+	}
 }
 
 #endif /* HILL__TEST__SUPPORT_HPP_INCLUDED */
