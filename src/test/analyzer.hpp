@@ -1,8 +1,0 @@
-#ifndef HILL__TEST__ANALYZER_HPP_INCLUDED
-#define HILL__TEST__ANALYZER_HPP_INCLUDED
-
-namespace hill::test {
-
-}
-
-#endif /* HILL__TEST__ANALYZER_HPP_INCLUDED */

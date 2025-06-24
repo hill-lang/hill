@@ -18,8 +18,8 @@ project "hill"
 	objdir "%{wks.location}/bin-int/%{cfg.buildcfg}"
 
 	files {
-		"src/**.hpp",
-		"src/**.cpp",
+		"src/**.hh",
+		"src/**.cc",
 	}
 
 	includedirs {
