@@ -78,13 +78,13 @@ namespace hill {
 
 		const type &top(size_t pos=0)
 		{
-			if (types.size() < (1+pos)) throw semantic_error_exception();
+			if (types.size() < (1+pos)) throw internal_exception();
 			return types[types.size()-1-pos];
 		}
 
 		type &vtop(size_t pos=0)
 		{
-			if (types.size() < (1+pos)) throw semantic_error_exception();
+			if (types.size() < (1+pos)) throw internal_exception();
 			return types[types.size()-1-pos];
 		}
 
@@ -230,7 +230,8 @@ namespace hill {
 					if (ttype.types[0]==basic_type::TUPLE) {
 						itype = inner_type(ttype.types, 1);
 						for (size_t ix=1; ttype.types[ix]!=basic_type::END; ix+=itype.size()) {
-							if (itype!=inner_type(ttype.types, ix)) throw semantic_error_exception();
+							if (itype!=inner_type(ttype.types, ix))
+								throw semantic_error_exception(error_code::ARRAY_ELM_TYPE_MISMATCH);
 							++cnt;
 						}
 					} else {
@@ -248,7 +249,7 @@ namespace hill {
 				break;
 			case tt::END:
 				{
-					if (!resolve_rs_id_vals(ts, instrs, s)) throw semantic_error_exception();
+					if (!resolve_rs_id_vals(ts, instrs, s)) throw semantic_error_exception(error_code::UNDEFINED_ID);
 
 					type res_type = ts.top();
 					instrs.push_back(instr{
@@ -321,7 +322,8 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
-					if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
+					if (!resolve_var_id_vals(ts, instrs, s))
+						throw semantic_error_exception(error_code::UNDEFINED_ID);
 
 					type res_type = ts.top();
 					instrs.push_back(instr{
@@ -344,7 +346,8 @@ namespace hill {
 						last().res_dt);*/
 
 					if (t.get_arity()==tt_arity::LUNARY) {
-						if (!resolve_rs_id_vals(ts, instrs, s)) throw semantic_error_exception();
+						if (!resolve_rs_id_vals(ts, instrs, s))
+							throw semantic_error_exception(error_code::UNDEFINED_ID);
 
 						type res_type = ts.top();
 						instrs.push_back(instr{
@@ -357,7 +360,8 @@ namespace hill {
 						res_type.iref = instrs.size()-1;
 						ts.push(res_type);
 					} else if (t.get_arity()==tt_arity::BINARY) {
-						if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
+						if (!resolve_var_id_vals(ts, instrs, s))
+							throw semantic_error_exception(error_code::UNDEFINED_ID);
 
 						type res_type = ts.top();
 						instrs.push_back(instr{
@@ -377,7 +381,8 @@ namespace hill {
 				break;
 			case tt::OP_STAR:
 				{
-					if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
+					if (!resolve_var_id_vals(ts, instrs, s))
+						throw semantic_error_exception(error_code::UNDEFINED_ID);
 
 					type res_type = ts.top();
 					instrs.push_back(instr{
@@ -403,7 +408,8 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
-					if (!resolve_rs_id_vals(ts, instrs, s)) throw semantic_error_exception();
+					if (!resolve_rs_id_vals(ts, instrs, s))
+						throw semantic_error_exception(error_code::UNDEFINED_ID);
 
 					type res_type = ts.top();
 
@@ -414,7 +420,8 @@ namespace hill {
 						s.frame.add(res_type.mem_size(), 1),
 						res_type);
 
-					if (instrs.size()<2 || instrs[instrs.size()-2].op!=op_code::ID) throw semantic_error_exception();
+					if (instrs.size()<2 || instrs[instrs.size()-2].op!=op_code::ID)
+						throw semantic_error_exception(error_code::UNDEFINED_ID);
 					s.ids[instrs[instrs.size()-2].id].push_back(val);
 
 					// TODO: Optimization: Do not copy if immutable variable and right side is immutable
@@ -465,7 +472,8 @@ namespace hill {
 						second_last().res_dt,
 						last().res_dt);*/
 
-					if (!resolve_var_id_vals(ts, instrs, s)) throw semantic_error_exception();
+					if (!resolve_var_id_vals(ts, instrs, s)) 
+						throw semantic_error_exception(error_code::UNDEFINED_ID);
 
 					type res_type=build_tuple(ts.top(1), ts.top());
 
@@ -484,7 +492,8 @@ namespace hill {
 				break;
 			case tt::CALL:
 				{
-					if (!resolve_call_id_vals(ts, instrs, s)) throw semantic_error_exception();
+					if (!resolve_call_id_vals(ts, instrs, s)) 
+						throw semantic_error_exception(error_code::UNDEFINED_ID);
 
 					if (ts.top(1).is_pipe_arg) {
 						// TODO: join top(1) and top() as a tuple on ts
@@ -495,7 +504,8 @@ namespace hill {
 						ts.pop();
 						ts.push(build_tuple(l_type, r_type));
 
-						if (!resolve_ls_id_vals(ts, instrs, s)) throw semantic_error_exception();
+						if (!resolve_ls_id_vals(ts, instrs, s)) 
+							throw semantic_error_exception(error_code::UNDEFINED_ID);
 					}
 
 					type res_type;
@@ -504,7 +514,8 @@ namespace hill {
 						res_type = ts.top(1).inner_type(1);
 						arg_type = ts.top(1).inner_type(1+res_type.types.size());
 						
-						if (arg_type!=ts.top()) throw semantic_error_exception();
+						if (arg_type!=ts.top()) 
+							throw semantic_error_exception(error_code::UNDEFINED_ID);
 
 						instrs.push_back(instr{
 							.op = op_code::CALL,
@@ -513,7 +524,7 @@ namespace hill {
 							.arg1_type = ts.top(1),
 							.arg2_type = ts.top()});
 					} else {
-						throw semantic_error_exception();
+						throw semantic_error_exception(error_code::CALLING_NO_FUNC);
 					}
 
 					ts.pop();
@@ -525,7 +536,8 @@ namespace hill {
 			case tt::OP_DOT: // Dot defaults to piping
 			case tt::OP_OR_GREATER: // Piping
 				{
-					if (!resolve_ls_id_vals(ts, instrs, s)) throw semantic_error_exception();
+					if (!resolve_ls_id_vals(ts, instrs, s)) 
+						throw semantic_error_exception(error_code::UNDEFINED_ID);
 
 					// things.where {_/2==0} . select {_*9} . last ();
 					// last (select (where (things, ({_/2==0}), {_*9}), ());

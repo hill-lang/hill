@@ -94,7 +94,7 @@ namespace hill {
 
 	inline std::vector<basic_type> inner_type(std::vector<basic_type> types, size_t ix)
 	{
-		if (ix>=types.size()) throw semantic_error_exception();
+		if (ix>=types.size()) throw internal_exception();
 			
 		std::vector<basic_type> inner_types;
 
@@ -104,7 +104,7 @@ namespace hill {
 			inner_types.push_back(types[ix]);
 			int lvl = 1;
 			while (lvl>0) {
-				if (++ix>=types.size()) throw semantic_error_exception();
+				if (++ix>=types.size()) throw internal_exception();
 				inner_types.push_back(types[ix]);
 
 				if (is_composite_type(types[ix])) ++lvl;

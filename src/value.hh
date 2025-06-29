@@ -93,6 +93,7 @@ namespace hill {
 	}
 
 	struct value {
+		value() {}
 		value(type ts, const uint8_t *data): ts(ts), data(data, data+ts.mem_size()) {}
 
 		type ts;
