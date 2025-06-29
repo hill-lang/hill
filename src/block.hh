@@ -223,9 +223,7 @@ namespace hill {
 				break;
 			case tt::RSQUARE:
 				{
-					// TODO: Handle embedded composite types
 					auto &ttype = ts.vtop();
-					//basic_type elm_type;
 					std::vector<basic_type> itype;
 
 					int cnt = 0;
