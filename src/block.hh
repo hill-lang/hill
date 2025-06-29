@@ -225,28 +225,25 @@ namespace hill {
 				{
 					// TODO: Handle embedded composite types
 					auto &ttype = ts.vtop();
-					basic_type elm_type;
+					//basic_type elm_type;
+					std::vector<basic_type> itype;
 
+					int cnt = 0;
 					if (ttype.types[0]==basic_type::TUPLE) {
-						elm_type = ttype.types[1];
-						int cnt = 0;
-						for (size_t ix=1; ttype.types[ix]!=basic_type::END; ++ix) {
-							if (elm_type!=ttype.types[ix]) throw semantic_error_exception();
+						itype = inner_type(ttype.types, 1);
+						for (size_t ix=1; ttype.types[ix]!=basic_type::END; ix+=itype.size()) {
+							if (itype!=inner_type(ttype.types, ix)) throw semantic_error_exception();
 							++cnt;
 						}
-						ttype.types.clear();
-
-						ttype.types.push_back(basic_type::ARRAY);
-						ttype.types.push_back(elm_type);
-						ttype.types.push_back((basic_type)cnt);
 					} else {
-						elm_type = ttype.types[0];
-						ttype.types.clear();
-
-						ttype.types.push_back(basic_type::ARRAY);
-						ttype.types.push_back(elm_type);
-						ttype.types.push_back((basic_type)1);
+						itype = ttype.types;
+						cnt = 1;
 					}
+
+					ttype.types.clear();
+					ttype.types.push_back(basic_type::ARRAY);
+					ttype.types.insert(ttype.types.end(), itype.begin(), itype.end() );
+					ttype.types.push_back((basic_type)cnt);
 
 					ttype.types.push_back(basic_type::END);
 				}
