@@ -11,6 +11,8 @@ namespace hill {
 		CALLING_NO_FUNC,
 		UNDEFINED_ID,
 		ARRAY_ELM_TYPE_MISMATCH,
+		MEMBER_ACCESS_ON_NO_TUPLE,
+		UNKNOWN_MEMBER_NAME,
 	};
 
 	struct exception: std::exception {

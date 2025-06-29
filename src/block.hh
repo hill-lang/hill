@@ -533,7 +533,37 @@ namespace hill {
 					ts.push(res_type);
 				}
 				break;
-			case tt::OP_DOT: // Dot defaults to piping
+			case tt::OP_DOT: // Member access
+				{
+					if (!resolve_ls_id_vals(ts, instrs, s)) 
+						throw semantic_error_exception(error_code::UNDEFINED_ID);
+
+					auto arg1_type = ts.top(1);
+					auto arg2_type = ts.top();
+
+					if (arg1_type.first()!=basic_type::TUPLE)
+						throw semantic_error_exception(error_code::MEMBER_ACCESS_ON_NO_TUPLE);
+
+					auto &rsinstr = instrs[arg2_type.iref];
+					auto id = rsinstr.id;
+
+					auto res_type = get_tuple_elm_type(arg1_type, id);
+
+					size_t ix = arg1_type.mem_size() - get_tuple_elm_mem_offset(arg1_type, id);
+
+					instrs.push_back(instr{
+						.op = op_code::TUPLE_ELM,
+						.res_type = res_type,
+						.val = {.ix = ix},
+						.arg1_type = ts.top(1),
+						.arg2_type = ts.top()});
+
+					ts.pop();
+					ts.pop();
+					res_type.iref = instrs.size()-1;
+					ts.push(res_type);
+				}
+				break;
 			case tt::OP_OR_GREATER: // Piping
 				{
 					if (!resolve_ls_id_vals(ts, instrs, s)) 

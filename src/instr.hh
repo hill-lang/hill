@@ -24,6 +24,8 @@ namespace hill {
 		TUPLE, // Build tuple
 		CALL, // Regular function call
 
+		TUPLE_ELM, // Access tuple element
+
 		ID, // Placeholder for identifiers
 	};
 
@@ -41,6 +43,7 @@ namespace hill {
 		case op_code::NEG: return "NEG";
 		case op_code::TUPLE: return "TUPLE";
 		case op_code::CALL: return "CALL";
+		case op_code::TUPLE_ELM: return "TUPLE_ELM";
 		case op_code::ID: return "ID";
 		default: throw internal_exception();
 		}
@@ -85,6 +88,7 @@ namespace hill {
 			case op_code::TUPLE:
 			case op_code::LOAD:
 			case op_code::LOADL:
+			case op_code::TUPLE_ELM:
 				ss << " ix:" << this->val.ix;
 				break;
 			case op_code::LOADI:

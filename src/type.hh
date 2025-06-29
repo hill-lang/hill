@@ -233,18 +233,21 @@ namespace hill {
 		}
 		
 		std::vector<basic_type> types;
+		std::map<std::string, size_t> names_inner_type;
+		std::map<std::string, size_t> names_mem_offset;
+		size_t num_elms = 0u;
 		bool tuple_closed = false;
 		size_t iref = SIZE_MAX;
 		bool is_pipe_arg = false;
 
+		void close_tuple()
+		{
+			tuple_closed = true;
+		}
+
 		basic_type first() const
 		{
 			return types.empty() ? basic_type::UNDECIDED : types[0];
-		}
-
-		bool is_composite_type(basic_type t) const
-		{
-			return t==basic_type::FUNC || t==basic_type::TUPLE || t==basic_type::ARRAY;
 		}
 
 		type inner_type(size_t ix) const
@@ -259,32 +262,48 @@ namespace hill {
 
 		size_t mem_size() const
 		{
-			return type_size(types);
-		}
-
-		void close_tuple()
-		{
-			tuple_closed = true;
+			return ::hill::type_size(types);
 		}
 	};
 
 	inline type build_tuple(const type &left, const type &right)
 	{
 		std::vector<basic_type> types;
+		size_t num_elms;
 
 		types.push_back(basic_type::TUPLE);
 
-		if (left.types[0]==basic_type::TUPLE && !left.tuple_closed) {
+		if (left.first()==basic_type::TUPLE && !left.tuple_closed) {
 			types.insert(types.end(), left.types.cbegin()+1, left.types.cend()-1);
+			num_elms = left.num_elms + 1;
 		} else {
 			types.insert(types.end(), left.types.cbegin(), left.types.cend());
+			num_elms = 2;
 		}
 
 		types.insert(types.end(), right.types.cbegin(), right.types.cend());
 
 		types.push_back(basic_type::END);
 
-		return type(types);
+		auto t = type(types);
+		std::string elm_name = "_" + std::to_string(num_elms-1);
+		t.names_inner_type[elm_name] = left.types.size()-2u+1u;
+		t.names_mem_offset[elm_name] = left.mem_size();
+		t.num_elms = num_elms;
+
+		return t;
+	}
+
+	inline type get_tuple_elm_type(const type &tuple_type, const std::string &id)
+	{
+		if (!tuple_type.names_inner_type.contains(id)) throw semantic_error_exception(error_code::UNKNOWN_MEMBER_NAME);
+		return tuple_type.inner_type(tuple_type.names_inner_type.at(id));
+	}
+
+	inline size_t get_tuple_elm_mem_offset(const type &tuple_type, const std::string &id)
+	{
+		if (!tuple_type.names_mem_offset.contains(id)) throw semantic_error_exception(error_code::UNKNOWN_MEMBER_NAME);
+		return tuple_type.names_mem_offset.at(id);
 	}
 }
 
