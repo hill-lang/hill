@@ -97,18 +97,27 @@ namespace hill::test {
 					error_code_to_str(ec).c_str(),
 					&ok);
 			} else {
-				std::cout << " Type test  " << test(
-					suite, duration,
-					evaluator_tests[ix].src,
-					exp_type_ss.str().c_str(),
-					val.ts.to_str().c_str(),
-					&ok);
-				std::cout << " Value test " << test(
-					suite, duration,
-					evaluator_tests[ix].src,
-					exp_value_ss.str().c_str(),
-					val.to_str().c_str(),
-					&ok);
+				if (ec!=error_code::NO_ERROR) {
+					std::cout << " Exception  " << test(
+						suite, duration,
+						evaluator_tests[ix].src,
+						error_code_to_str(error_code::NO_ERROR).c_str(),
+						error_code_to_str(ec).c_str(),
+						&ok);
+				} else {
+					std::cout << " Type test  " << test(
+						suite, duration,
+						evaluator_tests[ix].src,
+						exp_type_ss.str().c_str(),
+						val.ts.to_str().c_str(),
+						&ok);
+					std::cout << " Value test " << test(
+						suite, duration,
+						evaluator_tests[ix].src,
+						exp_value_ss.str().c_str(),
+						val.to_str().c_str(),
+						&ok);
+				}
 			}
 		}
 
