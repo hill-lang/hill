@@ -16,24 +16,24 @@ namespace hill {
 	};
 
 	struct exception: std::exception {
-		virtual error_code get_error_code()=0;
+		virtual error_code get_error_code() const=0;
 	};
 
 	struct internal_exception : exception {
 		const char *what() const noexcept override { return "Internal error"; }
-		error_code get_error_code() {return (error_code)-1;}
+		error_code get_error_code() const override {return (error_code)-1;}
 	};
 
 	struct not_implemented_exception: exception {
 		const char *what() const noexcept override {return "Not implemented";}
-		error_code get_error_code() {return (error_code)-1;}
+		error_code get_error_code() const override {return (error_code)-1;}
 	};
 
 	struct semantic_error_exception: exception {
 		semantic_error_exception(error_code code): code(code) {}
 
 		const char *what() const noexcept override {return "Semantic error";}
-		error_code get_error_code() {
+		error_code get_error_code() const override {
 			return code;
 		};
 
