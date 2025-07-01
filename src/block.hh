@@ -199,6 +199,7 @@ namespace hill {
 	struct block { // The code
 		scope s;
 		type_stack ts;
+		block *inner_block = nullptr;
 
 		literal_values values;
 		std::vector<instr> instrs;
@@ -213,13 +214,22 @@ namespace hill {
 			return ss.str();
 		}
 
-		void add(const token &t)
+		bool add(const token &t)
 		{
+			if (inner_block) {
+				if (!inner_block->add(t)) {
+					// TODO: Save the inner block as a value
+					inner_block = nullptr;
+				}
+				return true;
+			}
+
 			switch (t.get_type()) {
 			case tt::LPAR:
 				break;
 			case tt::LCURLY:
 				// TODO: Start analyzing inner block
+				inner_block = new block();
 				break;
 			case tt::LSQUARE:
 				break;
@@ -227,7 +237,7 @@ namespace hill {
 				ts.vtop().close_tuple();
 				break;
 			case tt::RCURLY:
-				break;
+				return false; // End of inner block
 			case tt::RSQUARE:
 				{
 					auto &ttype = ts.vtop();
@@ -268,7 +278,7 @@ namespace hill {
 					res_type.iref = instrs.size()-1;
 					ts.push(res_type);
 				}
-				break;
+				return false; // End of main block
 			case tt::NAME:
 				{
 					auto instr = make_placeholder_instr(t.text, 0);
@@ -597,6 +607,8 @@ namespace hill {
 			default:
 				throw not_implemented_exception();
 			}
+
+			return true;
 		}
 	};
 }
