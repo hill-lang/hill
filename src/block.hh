@@ -216,6 +216,13 @@ namespace hill {
 		void add(const token &t)
 		{
 			switch (t.get_type()) {
+			case tt::LPAR:
+				break;
+			case tt::LCURLY:
+				// TODO: Start analyzing inner block
+				break;
+			case tt::LSQUARE:
+				break;
 			case tt::RPAR:
 				ts.vtop().close_tuple();
 				break;

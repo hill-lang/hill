@@ -46,6 +46,7 @@ namespace hill {
 				put_token(std::move(t));
 			} else if (t.lgroup()) {
 				op_stack.push(std::move(t));
+				put_token(std::move(t));
 			} else if (t.rgroup()) {
 				while (!op_stack.empty() && !op_stack.top().lgroup()) {
 					put_token(pop_mv(op_stack));
