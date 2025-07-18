@@ -11,9 +11,7 @@ namespace hill::lsp::methods {
 
 	inline void text_document_did_open(const models::notification_message &req)
 	{
-		auto params_opt = models::did_open_text_document_params::from_json(req.params.value());
-		// TODO: Handle maulformed params
-		auto &params = params_opt.value();
+		auto params = *models::did_open_text_document_params::from_json(*req.params);
 
 		logger::trace("textDocument/didOpen Uri<" + params.text_document.uri
 			+ "> langId<" + params.text_document.language_id + ">");
@@ -22,12 +20,10 @@ namespace hill::lsp::methods {
 	inline void text_document_did_change(const models::notification_message &req)
 	{
 		auto &state = server_state::get();
-		if (!state.server_capabilities.text_document_sync.has_value()) return;
-		auto &text_document_sync = state.server_capabilities.text_document_sync.value();
+		if (!state.server_capabilities.text_document_sync) return;
+		auto &text_document_sync = *state.server_capabilities.text_document_sync;
 
-		auto params_opt = models::did_change_text_document_params::from_json(req.params.value());
-		// TODO: Handle maulformed params
-		auto &params = params_opt.value();
+		auto params = *models::did_change_text_document_params::from_json(*req.params);
 
 		if (text_document_sync == models::text_document_sync_kind::FULL) {
 			logger::trace("textDocument/didChange kind<Full> uri<" + params.text_document.uri + ">");
@@ -45,9 +41,7 @@ namespace hill::lsp::methods {
 	{
 		auto &state = server_state::get();
 
-		auto params_opt = models::did_close_text_document_params::from_json(req.params.value());
-		// TODO: Handle maulformed params
-		auto &params = params_opt.value();
+		auto params = *models::did_close_text_document_params::from_json(*req.params);
 
 		logger::trace("textDocument/didClose uri<" + params.text_document.uri + ">");
 

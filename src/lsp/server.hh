@@ -40,10 +40,9 @@ namespace hill::lsp {
 			while (state.running) {
 				logger::trace("Receiving ...");
 				auto req = listener::next();
-				if (!req.has_value()) continue;
+				if (!req) continue;
 
-				auto req_ptr = req.value();
-				thread_pool.queue_job([req_ptr] {request_handler::handle(req_ptr);});
+				thread_pool.queue_job([req] {request_handler::handle(*req);});
 			}
 
 			logger::info("Shutting down ...");

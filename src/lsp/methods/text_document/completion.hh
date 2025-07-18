@@ -12,7 +12,7 @@ namespace hill::lsp::methods {
 	{
 		(void)req; // Unused
 		//auto &state = server_state::get();
-		//auto params = models::text_document_position_params::from_json(req.params.value()).value();
+		//auto params = *models::text_document_position_params::from_json(*req.params);
 
 		// TODO: We kinda need the document
 		//state.document_store.exists(params.text_document.uri);
@@ -20,7 +20,7 @@ namespace hill::lsp::methods {
 		//params.position.line;
 		//params.position.character;
 
-		//auto content = state.document_store.get(params.text_document.uri).value();
+		//auto content = *state.document_store.get(params.text_document.uri);
 		//logger::trace(content);
 
 		 auto result = std::vector<models::completion_item> {

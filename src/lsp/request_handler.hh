@@ -26,13 +26,13 @@ namespace hill::lsp {
 			}
 
 			auto method_json = json->obj_get("method");
-			if (!method_json.has_value() || method_json.value()->kind()!=json_value_kind::STRING) return;
-			auto method_opt = models::method_parse(method_json.value()->str().value());
-			if (!method_opt.has_value()) {
-				logger::error("Unknown method [" + method_json.value()->str().value() + "]");
+			if (!method_json || (*method_json)->kind()!=json_value_kind::STRING) return;
+			auto method_opt = models::method_parse(*(*method_json)->str());
+			if (!method_opt) {
+				logger::error("Unknown method [" + *(*method_json)->str() + "]");
 				return;
 			}
-			auto method = method_opt.value();
+			auto method = *method_opt;
 
 			if (json->obj_has("id")) {
 				handle_request(method, json);
@@ -59,12 +59,12 @@ namespace hill::lsp {
 				.params = json->obj_get("params")};
 
 			auto func = router::get_notify(method);
-			if (!func.has_value()) {
+			if (!func) {
 				logger::error("Fail to resolve notify method " + method_str);
 				return;
 			}
 
-			func.value()(notification);
+			(*func)(notification);
 		}
 
 		static inline void handle_request(models::method method, const std::shared_ptr<utils::json_value> &json)
@@ -72,12 +72,12 @@ namespace hill::lsp {
 			using namespace ::hill::utils;
 
 			auto id_json = json->obj_get("id");
-			if (!id_json.has_value() || id_json.value()->kind()!=json_value_kind::NUMBER) {
+			if (!id_json || (*id_json)->kind()!=json_value_kind::NUMBER) {
 				logger::error("Invalid request id");
 				return;
 			};
 
-			auto id = (int)id_json.value()->num().value();
+			auto id = (int)*(*id_json)->num();
 			auto method_str = std::string(models::method_str(method));
 
 			logger::info("Received method<" + method_str + "> id<" + std::to_string(id) + ">");
@@ -89,13 +89,13 @@ namespace hill::lsp {
 				.params = json->obj_get("params")};
 
 			auto func = router::get_req(method);
-			if (!func.has_value()) {
+			if (!func) {
 				logger::error("Fail to resolve request method " + method_str);
 				return;
 			}
 
-			auto result = func.value()(req);
-			models::response_message resp_msg = {.id=id, .result=std::nullopt, .error=std::nullopt};
+			auto result = (*func)(req);
+			models::response_message resp_msg = {.id=id};
 
 			if (server_state::get().request_state.cancelled(id)) {
 				resp_msg.error = models::response_error{
@@ -103,8 +103,8 @@ namespace hill::lsp {
 					.message = "Request cancelled"};
 				logger::info("Request cancelled - method<" + method_str
 					+ "> id<" + std::to_string(id)
-					+ "> code< "+ std::to_string((int)resp_msg.error.value().code)
-					+ "> message<" + resp_msg.error.value().message + '>');
+					+ "> code< " + std::to_string((int)(*resp_msg.error).code)
+					+ "> message<" + (*resp_msg.error).message + '>');
 			} else {
 				if (std::holds_alternative<std::optional<models::result_t>>(result)) {
 					resp_msg.result = std::get<std::optional<models::result_t>>(result);
@@ -112,8 +112,8 @@ namespace hill::lsp {
 					resp_msg.error = std::get<models::response_error>(result);
 					logger::info("Request error - method<" + method_str
 						+ "> id<" + std::to_string(id)
-						+ "> code< "+ std::to_string((int)resp_msg.error.value().code)
-						+ "> message<" + resp_msg.error.value().message + '>');
+						+ "> code< " + std::to_string((int)(*resp_msg.error).code)
+						+ "> message<" + (*resp_msg.error).message + '>');
 				}
 			}
 

@@ -35,10 +35,10 @@ namespace hill::utils {
 		static std::optional<std::shared_ptr<json_value>> parse(std::istream &istr)
 		{
 			auto value = parse_value(istr);
-			if (!value.has_value()) return std::nullopt;
+			if (!value) return {};
 
 			skip_ws(istr);
-			if (!istr.eof()) return std::nullopt;
+			if (!istr.eof()) return {};
 
 			return value;
 		}
@@ -61,7 +61,7 @@ namespace hill::utils {
 		static std::optional<std::shared_ptr<json_value>> parse_value(std::istream &istr)
 		{
 			skip_ws(istr);
-			if (istr.eof()) return std::nullopt;
+			if (istr.eof()) return {};
 
 			switch (istr.peek()) {
 			case '"': (void)istr.get(); return parse_string(istr);
@@ -80,28 +80,28 @@ namespace hill::utils {
 
 			while (true) {
 				skip_ws(istr);
-				if (istr.eof()) return std::nullopt;
+				if (istr.eof()) return {};
 
 				auto ch = istr.get();
 				if (ch=='}') break;
-				if (ch!='"') return std::nullopt; // There has to be a '"' to start the first key
+				if (ch!='"') return {}; // There has to be a '"' to start the first key
 
 				auto key = parse_string(istr);
-				if (!key.has_value()) return std::nullopt;
+				if (!key) return {};
 
 				skip_ws(istr);
-				if (istr.eof()) return std::nullopt;
+				if (istr.eof()) return {};
 
-				if (istr.get()!=':') return std::nullopt; // Member without value?
-				if (ret->obj_has(key.value()->str().value())) return std::nullopt; // Duplicate key
+				if (istr.get()!=':') return {}; // Member without value?
+				if (ret->obj_has(*(*key)->str())) return {}; // Duplicate key
 
 				auto value = parse_value(istr);
-				if (!value.has_value()) return std::nullopt;
+				if (!value) return {};
 
-				std::get<json_value::object_t>(ret->value).emplace_back(key.value()->str().value(), value.value());
+				std::get<json_value::object_t>(ret->value).emplace_back(*(*key)->str(), *value);
 
 				skip_ws(istr);
-				if (istr.eof()) return std::nullopt;
+				if (istr.eof()) return {};
 				if (istr.peek()==',') (void)istr.get();
 			}
 
@@ -114,7 +114,7 @@ namespace hill::utils {
 
 			while (true) {
 				skip_ws(istr);
-				if (istr.eof()) return std::nullopt;
+				if (istr.eof()) return {};
 
 				// End of array
 				if (istr.peek()==']') {
@@ -123,12 +123,12 @@ namespace hill::utils {
 				}
 
 				auto value = parse_value(istr);
-				if (!value.has_value()) return std::nullopt;
+				if (!value) return {};
 				
-				std::get<json_value::array_t>(arr->value).push_back(value.value());
+				std::get<json_value::array_t>(arr->value).push_back(*value);
 
 				skip_ws(istr);
-				if (istr.eof()) return std::nullopt;
+				if (istr.eof()) return {};
 				if (istr.peek()==',') (void)istr.get();
 			}
 
@@ -140,13 +140,13 @@ namespace hill::utils {
 			std::stringstream ss;
 
 			while (true) {
-				if (istr.eof()) return std::nullopt;
+				if (istr.eof()) return {};
 
 				auto ch = (char)istr.get();
 				if (ch == '"') break;
 
 				if (ch == '\\') { // Handle escaped character
-					if (istr.eof()) return std::nullopt;
+					if (istr.eof()) return {};
 
 					ch = (char)istr.get();
 					switch (ch) {
@@ -161,9 +161,9 @@ namespace hill::utils {
 					case 'b': ss.put('\b'); break;
 					case 'f': ss.put('\f'); break;
 					case 'u': // Handle \uHHHH (Unicode)
-						return std::nullopt; // Unicode escape sequences not supported
+						return {}; // Unicode escape sequences not supported
 					default:
-						return std::nullopt; // Invalid escape sequence
+						return {}; // Invalid escape sequence
 					}
 				} else {
 					ss.put(ch);
@@ -186,7 +186,7 @@ namespace hill::utils {
 
 			auto str = ss.str();
 			if (!str.size()) {
-				return std::nullopt; // Empty number
+				return {}; // Empty number
 			}
 
 			char *end = nullptr;
@@ -202,7 +202,7 @@ namespace hill::utils {
 					&& !istr.eof() && istr.get()=='e') {
 				return json_value::create(true);
 			} else {
-				return std::nullopt;
+				return {};
 			}
 		}
 
@@ -214,7 +214,7 @@ namespace hill::utils {
 					&& !istr.eof() && istr.get()=='e') {
 				return json_value::create(false);
 			} else {
-				return std::nullopt;
+				return {};
 			}
 		}
 
@@ -225,7 +225,7 @@ namespace hill::utils {
 					&& !istr.eof() && istr.get()=='l') {
 				return json_value::create<json_value_kind::JSON_NULL>();
 			} else {
-				return std::nullopt;
+				return {};
 			}
 		}
 	};

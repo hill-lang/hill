@@ -11,7 +11,7 @@ namespace hill::lsp::methods {
 	{
 		using namespace std::literals::string_literals;
 
-		auto params = models::hover_params::from_json(req.params.value()).value();
+		auto params = *models::hover_params::from_json(*req.params);
 
 		//params.text_document.uri
 

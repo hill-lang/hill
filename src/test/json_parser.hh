@@ -69,7 +69,7 @@ namespace hill::test {
 				timer.elapsed_sec(),
 				json_parser_tests[ix].src,
 				exp_kind_ss.str().c_str(),
-				json.has_value() ? json.value()->kind_str().c_str() : "",
+				json ? (*json)->kind_str().c_str() : "",
 				&ok);
 
 			if (json_parser_tests[ix].expected_value) {
@@ -78,7 +78,7 @@ namespace hill::test {
 					timer.elapsed_sec(),
 					json_parser_tests[ix].src,
 					exp_value_ss.str().c_str(),
-					json.has_value() ? json.value()->stringify().c_str() : "",
+					json ? (*json)->stringify().c_str() : "",
 					&ok);
 			}
 		}
@@ -94,7 +94,7 @@ namespace hill::test {
 				timer.elapsed_sec(),
 				json_parser_failing_tests[ix],
 				"",
-				json.has_value() ? json.value()->stringify().c_str() : "",
+				json ? (*json)->stringify().c_str() : "",
 				&ok);
 		}
 

@@ -55,7 +55,7 @@ namespace hill::lsp::methods {
 		auto &state = server_state::get();
 		state.initialized = false;
 		logger::info("Shutdown");
-		return std::nullopt;
+		return {};
 	}
 
 	/**

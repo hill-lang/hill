@@ -11,7 +11,7 @@ namespace hill::lsp::methods {
 
 	inline std::variant<std::optional<models::result_t>, models::response_error> text_document_formatting(const models::request_message &req)
 	{
-		auto params = models::document_formatting_params::from_json(req.params.value()).value();
+		auto params = *models::document_formatting_params::from_json(*req.params);
 		(void)params; // Unused
 
 		//auto output = fmt::formatter::format();

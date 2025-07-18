@@ -24,15 +24,15 @@ namespace hill::lsp {
 		static std::optional<std::shared_ptr<utils::json_value>> next()
 		{
 			auto headers = recv_headers();
-			if (!headers.has_value()) return std::nullopt;
+			if (!headers) return {};
 
-			auto content = recv_content(headers.value());
-			if (!content.has_value()) return std::nullopt;
+			auto content = recv_content(*headers);
+			if (!content) return {};
 
-			auto json = parse_content(content.value());
-			if (!json.has_value()) return std::nullopt;
+			auto json = parse_content(*content);
+			if (!json) return {};
 
-			return json.value();
+			return *json;
 		}
 
 	private:
@@ -64,7 +64,7 @@ namespace hill::lsp {
 				} else {
 					if (*b) {
 						logger::error("Received line without ':' that is not empty [" + std::string(b) + "]");
-						return std::nullopt;
+						return {};
 					}
 
 					return headers;
@@ -76,7 +76,7 @@ namespace hill::lsp {
 		{
 			if (!headers.contains("Content-Length")) {
 				logger::error("Request missing required header [Content-Length]");
-				return std::nullopt;
+				return {};
 			}
 
 			size_t content_len = std::stoull(headers.at("Content-Length").c_str());
@@ -94,11 +94,11 @@ namespace hill::lsp {
 			std::istringstream istr(content);
 			auto json = utils::json_parser::parse(istr);
 
-			if (json.has_value()) {
-				return json.value();
+			if (json) {
+				return *json;
 			} else {
 				logger::error("Failed to parse json content");
-				return std::nullopt;
+				return {};
 			}
 		}
 	};

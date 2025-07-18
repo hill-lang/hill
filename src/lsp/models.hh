@@ -83,7 +83,7 @@ namespace hill::lsp::models {
 		else if (str==method_str(method::TEXT_DOCUMENT_COMPLETION)) return method::TEXT_DOCUMENT_COMPLETION;
 		else if (str==method_str(method::TEXT_DOCUMENT_HOVER)) return method::TEXT_DOCUMENT_HOVER;
 		else if (str==method_str(method::TEXT_DOCUMENT_FORMATTING)) return method::TEXT_DOCUMENT_FORMATTING;
-		else return std::nullopt;
+		else return {};
 	}
 
 	enum class error_code: int {
@@ -197,8 +197,8 @@ namespace hill::lsp::models {
 			json->obj_add_num("code", (double)code);
 			json->obj_add_str("message", message);
 
-			if (data.has_value()) {
-				json->obj_add_obj("data", data.value());
+			if (data) {
+				json->obj_add_obj("data", *data);
 			}
 
 			return json;
@@ -216,8 +216,8 @@ namespace hill::lsp::models {
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 			json->obj_add_num("id", (double)id);
-			if (result.has_value()) {json->obj_add_obj("result", result.value());}
-			if (error.has_value()) {json->obj_add_obj("error", error.value().json());}
+			if (result) {json->obj_add_obj("result", *result);}
+			if (error) {json->obj_add_obj("error", (*error).json());}
 			return json;
 		}
 	};
@@ -233,11 +233,11 @@ namespace hill::lsp::models {
 		static std::optional<cancel_params> from_json(const std::shared_ptr<utils::json_value> &json)
 		{
 			using namespace ::hill::utils;
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
-			if (!json->obj_has("id")) return std::nullopt;
-			auto id = json->obj_get("id").value();
-			if (id->kind()!=json_value_kind::NUMBER) return std::nullopt;
-			return cancel_params{.id = (int)id->num().value()};
+			if (json->kind()!=json_value_kind::OBJECT) return {};
+			if (!json->obj_has("id")) return {};
+			auto id = *json->obj_get("id");
+			if (id->kind()!=json_value_kind::NUMBER) return {};
+			return cancel_params{.id = (int)*id->num()};
 		}
 
 		std::shared_ptr<utils::json_value> json() const
@@ -261,19 +261,19 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
-			if (!json->obj_has("line")) return std::nullopt;
-			if (!json->obj_has("character")) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
+			if (!json->obj_has("line")) return {};
+			if (!json->obj_has("character")) return {};
 
-			auto ln_json = json->obj_get("line").value();
-			auto ch_json = json->obj_get("character").value();
+			auto ln_json = *json->obj_get("line");
+			auto ch_json = *json->obj_get("character");
 
-			if (ln_json->kind()!=json_value_kind::NUMBER) return std::nullopt;
-			if (ch_json->kind()!=json_value_kind::NUMBER) return std::nullopt;
+			if (ln_json->kind()!=json_value_kind::NUMBER) return {};
+			if (ch_json->kind()!=json_value_kind::NUMBER) return {};
 
 			return position{
-				.line = (uint32_t)ln_json->num().value(),
-				.character = (uint32_t)ch_json->num().value(),
+				.line = (uint32_t)*ln_json->num(),
+				.character = (uint32_t)*ch_json->num(),
 			};
 		}
 
@@ -294,18 +294,18 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
-			if (!json->obj_has("start")) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
+			if (!json->obj_has("start")) return {};
 
-			auto start = position::from_json(json->obj_get("start").value());
-			if (!start.has_value()) return std::nullopt;
+			auto start = position::from_json(*json->obj_get("start"));
+			if (!start) return {};
 
-			auto end = position::from_json(json->obj_get("end").value());
-			if (!end.has_value()) return std::nullopt;
+			auto end = position::from_json(*json->obj_get("end"));
+			if (!end) return {};
 
 			return range{
-				.start = start.value(),
-				.end = end.value(),
+				.start = *start,
+				.end = *end,
 			};
 		}
 
@@ -328,29 +328,29 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("uri")) return std::nullopt;
-			auto uri = json->obj_get("uri").value();
-			if (uri->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("uri")) return {};
+			auto uri = *json->obj_get("uri");
+			if (uri->kind()!=json_value_kind::STRING) return {};
 
-			if (!json->obj_has("languageId")) return std::nullopt;
-			auto language_id = json->obj_get("languageId").value();
-			if (language_id->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("languageId")) return {};
+			auto language_id = *json->obj_get("languageId");
+			if (language_id->kind()!=json_value_kind::STRING) return {};
 
-			if (!json->obj_has("version")) return std::nullopt;
-			auto version = json->obj_get("version").value();
-			if (version->kind()!=json_value_kind::NUMBER) return std::nullopt;
+			if (!json->obj_has("version")) return {};
+			auto version = *json->obj_get("version");
+			if (version->kind()!=json_value_kind::NUMBER) return {};
 
-			if (!json->obj_has("text")) return std::nullopt;
-			auto text = json->obj_get("text").value();
-			if (text->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("text")) return {};
+			auto text = *json->obj_get("text");
+			if (text->kind()!=json_value_kind::STRING) return {};
 
 			return text_document_item{
-				.uri = uri->str().value(),
-				.language_id = language_id->str().value(),
-				.version = (int)version->num().value(),
-				.text = text->str().value(),
+				.uri = *uri->str(),
+				.language_id = *language_id->str(),
+				.version = (int)*version->num(),
+				.text = *text->str(),
 			};
 		}
 
@@ -372,13 +372,13 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("uri")) return std::nullopt;
-			auto uri_json = json->obj_get("uri").value();
-			if (uri_json->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("uri")) return {};
+			auto uri_json = *json->obj_get("uri");
+			if (uri_json->kind()!=json_value_kind::STRING) return {};
 
-			return text_document_identifier{.uri = uri_json->str().value()};
+			return text_document_identifier{.uri = *uri_json->str()};
 		}
 
 		std::shared_ptr<utils::json_value> json() const
@@ -397,17 +397,17 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (!json->obj_has("uri")) return std::nullopt;
-			auto uri_json = json->obj_get("uri").value();
-			if (uri_json->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("uri")) return {};
+			auto uri_json = *json->obj_get("uri");
+			if (uri_json->kind()!=json_value_kind::STRING) return {};
 
-			if (!json->obj_has("version")) return std::nullopt;
-			auto version_json = json->obj_get("version").value();
-			if (version_json->kind()!=json_value_kind::NUMBER) return std::nullopt;
+			if (!json->obj_has("version")) return {};
+			auto version_json = *json->obj_get("version");
+			if (version_json->kind()!=json_value_kind::NUMBER) return {};
 			
 			return versioned_text_document_identifier{
-				.uri = uri_json->str().value(),
-				.version = (int)version_json->num().value(),
+				.uri = *uri_json->str(),
+				.version = (int)*version_json->num(),
 			};
 		}
 
@@ -428,18 +428,18 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
-			if (!json->obj_has("textDocument")) return std::nullopt;
-			if (!json->obj_has("position")) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
+			if (!json->obj_has("textDocument")) return {};
+			if (!json->obj_has("position")) return {};
 
-			auto text_document = text_document_identifier::from_json(json->obj_get("textDocument").value());
-			if (!text_document.has_value()) return std::nullopt;
-			auto position = models::position::from_json(json->obj_get("position").value());
-			if (!position.has_value()) return std::nullopt;
+			auto text_document = text_document_identifier::from_json(*json->obj_get("textDocument"));
+			if (!text_document) return {};
+			auto position = models::position::from_json(*json->obj_get("position"));
+			if (!position) return {};
 
 			return text_document_position_params{
-				.text_document = text_document.value(),
-				.position = position.value(),
+				.text_document = *text_document,
+				.position = *position,
 			};
 		}
 
@@ -461,28 +461,28 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			std::optional<std::string> language = std::nullopt;
-			std::optional<std::string> scheme = std::nullopt;
-			std::optional<std::string> pattern = std::nullopt;
+			std::optional<std::string> language = {};
+			std::optional<std::string> scheme = {};
+			std::optional<std::string> pattern = {};
 
 			auto language_json = json->obj_get("language");
-			if (language_json.has_value()) {
-				if (language_json.value()->kind()!=json_value_kind::STRING) return std::nullopt;
-				else language = language_json.value()->str();
+			if (language_json) {
+				if ((*language_json)->kind() != json_value_kind::STRING) return {};
+				else language = (*language_json)->str();
 			}
 
 			auto scheme_json = json->obj_get("scheme");
-			if (scheme_json.has_value()) {
-				if (scheme_json.value()->kind()!=json_value_kind::STRING) return std::nullopt;
-				else scheme = scheme_json.value()->str();
+			if (scheme_json) {
+				if ((*scheme_json)->kind() != json_value_kind::STRING) return {};
+				else scheme = (*scheme_json)->str();
 			}
 
 			auto pattern_json = json->obj_get("pattern");
-			if (pattern_json.has_value()) {
-				if (pattern_json.value()->kind()!=json_value_kind::STRING) return std::nullopt;
-				else pattern = pattern_json.value()->str();
+			if (pattern_json) {
+				if ((*pattern_json)->kind() != json_value_kind::STRING) return {};
+				else pattern = (*pattern_json)->str();
 			}
 
 			return document_filter{
@@ -495,9 +495,9 @@ namespace hill::lsp::models {
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
-			if (language.has_value()) {json->obj_add_str("language", language.value());}
-			if (scheme.has_value()) {json->obj_add_str("scheme", scheme.value());}
-			if (pattern.has_value()) {json->obj_add_str("pattern", pattern.value());}
+			if (language) {json->obj_add_str("language", *language);}
+			if (scheme) {json->obj_add_str("scheme", *scheme);}
+			if (pattern) {json->obj_add_str("pattern", *pattern);}
 			return json;
 		}
 	};
@@ -510,19 +510,19 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("range")) return std::nullopt;
-			auto range = models::range::from_json(json->obj_get("range").value());
-			if (!range.has_value()) return std::nullopt;
+			if (!json->obj_has("range")) return {};
+			auto range = models::range::from_json(*json->obj_get("range"));
+			if (!range) return {};
 
-			if (!json->obj_has("newText")) return std::nullopt;
-			auto new_text = json->obj_get("newText").value();
-			if (new_text->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("newText")) return {};
+			auto new_text = *json->obj_get("newText");
+			if (new_text->kind()!=json_value_kind::STRING) return {};
 
 			return text_edit{
-				.range = range.value(),
-				.new_text = new_text->str().value(),
+				.range = *range,
+				.new_text = *new_text->str(),
 			};
 		}
 
@@ -544,29 +544,29 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("label")) return std::nullopt;
-			auto label = json->obj_get("label").value();
-			if (label->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("label")) return {};
+			auto label = *json->obj_get("label");
+			if (label->kind()!=json_value_kind::STRING) return {};
 
 			std::optional<bool> needs_confirmation = {};
 			std::optional<std::string> description = {};
 
 			auto needs_confirmation_json = json->obj_get("needsConfirmation");
-			if (needs_confirmation_json.has_value()) {
-				if (needs_confirmation_json.value()->kind()!=json_value_kind::BOOL) return std::nullopt;
-				else needs_confirmation = needs_confirmation_json.value()->boolean();
+			if (needs_confirmation_json) {
+				if ((*needs_confirmation_json)->kind() != json_value_kind::BOOL) return {};
+				else needs_confirmation = (*needs_confirmation_json)->boolean();
 			}
 
 			auto description_json = json->obj_get("description");
-			if (description_json.has_value()) {
-				if (description_json.value()->kind()!=json_value_kind::STRING) return std::nullopt;
-				else description = description_json.value()->str();
+			if (description_json) {
+				if ((*description_json)->kind() != json_value_kind::STRING) return {};
+				else description = (*description_json)->str();
 			}
 
 			return change_annotation{
-				.label = label->str().value(),
+				.label = *label->str(),
 				.needs_confirmation = needs_confirmation,
 				.description = description,
 			};
@@ -576,8 +576,8 @@ namespace hill::lsp::models {
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 			json->obj_add_str("label", label);
-			if (needs_confirmation.has_value()) json->obj_add_bool("needsConfirmation", needs_confirmation.value());
-			if (needs_confirmation.has_value()) json->obj_add_str("description", description.value());
+			if (needs_confirmation) json->obj_add_bool("needsConfirmation", *needs_confirmation);
+			if (needs_confirmation) json->obj_add_str("description", *description);
 			return json;
 		}
 	};
@@ -591,24 +591,24 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("range")) return std::nullopt;
-			auto range = models::range::from_json(json->obj_get("range").value());
-			if (!range.has_value()) return std::nullopt;
+			if (!json->obj_has("range")) return {};
+			auto range = models::range::from_json(*json->obj_get("range"));
+			if (!range) return {};
 
-			if (!json->obj_has("newText")) return std::nullopt;
-			auto new_text = json->obj_get("newText").value();
-			if (new_text->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("newText")) return {};
+			auto new_text = *json->obj_get("newText");
+			if (new_text->kind()!=json_value_kind::STRING) return {};
 
-			if (!json->obj_has("annotationId")) return std::nullopt;
-			auto annotation_id = json->obj_get("annotationId").value();
-			if (annotation_id->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("annotationId")) return {};
+			auto annotation_id = *json->obj_get("annotationId");
+			if (annotation_id->kind()!=json_value_kind::STRING) return {};
 
 			return annotated_text_edit{
-				.range = range.value(),
-				.new_text = new_text->str().value(),
-				.annotation_id = annotation_id->str().value(),
+				.range = *range,
+				.new_text = *new_text->str(),
+				.annotation_id = *annotation_id->str(),
 			};
 		}
 
@@ -634,19 +634,19 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("uri")) return std::nullopt;
-			auto uri = json->obj_get("uri").value();
-			if (uri->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("uri")) return {};
+			auto uri = *json->obj_get("uri");
+			if (uri->kind()!=json_value_kind::STRING) return {};
 
-			if (!json->obj_has("range")) return std::nullopt;
-			auto range = models::range::from_json(json->obj_get("range").value());
-			if (!range.has_value()) return std::nullopt;
+			if (!json->obj_has("range")) return {};
+			auto range = models::range::from_json(*json->obj_get("range"));
+			if (!range) return {};
 
 			return location{
-				.uri = uri->str().value(),
-				.range = range.value(),
+				.uri = *uri->str(),
+				.range = *range,
 			};
 		}
 
@@ -694,19 +694,19 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("location")) return std::nullopt;
-			auto location = models::location::from_json(json->obj_get("location").value());
-			if (!location.has_value()) return std::nullopt;
+			if (!json->obj_has("location")) return {};
+			auto location = models::location::from_json(*json->obj_get("location"));
+			if (!location) return {};
 
-			if (!json->obj_has("message")) return std::nullopt;
-			auto message = json->obj_get("message").value();
-			if (message->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("message")) return {};
+			auto message = *json->obj_get("message");
+			if (message->kind()!=json_value_kind::STRING) return {};
 
 			return diagnostic_related_information{
-				.location = location.value(),
-				.message = message->str().value(),
+				.location = *location,
+				.message = *message->str(),
 			};
 		}
 
@@ -725,13 +725,13 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("uri")) return std::nullopt;
-			auto uri = json->obj_get("uri").value();
-			if (uri->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("uri")) return {};
+			auto uri = *json->obj_get("uri");
+			if (uri->kind()!=json_value_kind::STRING) return {};
 
-			return code_description{.uri = uri->str().value()};
+			return code_description{.uri = *uri->str()};
 		}
 
 		std::shared_ptr<utils::json_value> json() const
@@ -768,9 +768,9 @@ namespace hill::lsp::models {
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 			json->obj_add_str("title", title);
 			json->obj_add_str("command", command);
-			if (arguments.has_value()) {
-				auto arr = json->obj_add_arr("arguments").value();
-				for (const auto &arg : arguments.value()) {
+			if (arguments) {
+				auto arr = *json->obj_add_arr("arguments");
+				for (const auto &arg : *arguments) {
 					arr->arr_add_obj(arg);
 				}
 			}
@@ -798,7 +798,7 @@ namespace hill::lsp::models {
 	{
 		if (str==markup_kind_str(markup_kind::PLAIN_TEXT)) return markup_kind::PLAIN_TEXT;
 		else if (str==markup_kind_str(markup_kind::MARKDOWN)) return markup_kind::MARKDOWN;
-		else return std::nullopt;
+		else return {};
 	}
 
 	struct markup_content {
@@ -809,21 +809,21 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("kind")) return std::nullopt;
-			auto kind_str = json->obj_get("kind").value();
-			if (kind_str->kind()!=json_value_kind::STRING) return std::nullopt;
-			auto kind = markup_kind_parse(kind_str->str().value());
-			if (!kind.has_value()) return std::nullopt;
+			if (!json->obj_has("kind")) return {};
+			auto kind_str = *json->obj_get("kind");
+			if (kind_str->kind()!=json_value_kind::STRING) return {};
+			auto kind = markup_kind_parse(*kind_str->str());
+			if (!kind) return {};
 
-			if (!json->obj_has("value")) return std::nullopt;
-			auto value = json->obj_get("value").value();
-			if (value->kind() != json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("value")) return {};
+			auto value = *json->obj_get("value");
+			if (value->kind() != json_value_kind::STRING) return {};
 
 			return markup_content{
-				.kind = kind.value(),
-				.value = value->str().value(),
+				.kind = *kind,
+				.value = *value->str(),
 			};
 		}
 
@@ -867,7 +867,7 @@ namespace hill::lsp::models {
 		if (str==resource_operation_kind_str(resource_operation_kind::CREATE)) return resource_operation_kind::CREATE;
 		else if (str==resource_operation_kind_str(resource_operation_kind::RENAME)) return resource_operation_kind::RENAME;
 		else if (str==resource_operation_kind_str(resource_operation_kind::DELETE)) return resource_operation_kind::DELETE;
-		else return std::nullopt;
+		else return {};
 	}
 
 	struct create_file_options {
@@ -945,7 +945,7 @@ namespace hill::lsp::models {
 		else if (str==failure_handling_kind_str(failure_handling_kind::TRANSACTIONAL)) return failure_handling_kind::TRANSACTIONAL;
 		else if (str==failure_handling_kind_str(failure_handling_kind::UNDO)) return failure_handling_kind::UNDO;
 		else if (str==failure_handling_kind_str(failure_handling_kind::TEXT_ONLY_TRANSACTIONAL)) return failure_handling_kind::TEXT_ONLY_TRANSACTIONAL;
-		else return std::nullopt;
+		else return {};
 	}
 
 	struct workspace_edit {
@@ -988,19 +988,19 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("uri")) return std::nullopt;
-			auto uri = json->obj_get("uri").value();
-			if (uri->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("uri")) return {};
+			auto uri = *json->obj_get("uri");
+			if (uri->kind()!=json_value_kind::STRING) return {};
 
-			if (!json->obj_has("name")) return std::nullopt;
-			auto name = json->obj_get("name").value();
-			if (name->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (!json->obj_has("name")) return {};
+			auto name = *json->obj_get("name");
+			if (name->kind()!=json_value_kind::STRING) return {};
 
 			return workspace_folder{
-				.uri = uri->str().value(),
-				.name = name->str().value(),
+				.uri = *uri->str(),
+				.name = *name->str(),
 			};
 		}
 
@@ -1034,7 +1034,7 @@ namespace hill::lsp::models {
 		if (str==work_done_progress_kind_str(work_done_progress_kind::BEGIN)) return work_done_progress_kind::BEGIN;
 		else if (str==work_done_progress_kind_str(work_done_progress_kind::REPORT)) return work_done_progress_kind::REPORT;
 		else if (str==work_done_progress_kind_str(work_done_progress_kind::END)) return work_done_progress_kind::END;
-		else return std::nullopt;
+		else return {};
 	}
 
 	struct work_done_progress_begin {
@@ -1070,13 +1070,13 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			std::optional<int> work_done_token = std::nullopt;
+			std::optional<int> work_done_token = {};
 			if (json->obj_has("workDoneToken")) {
-				auto work_done_token_json = json->obj_get("workDoneToken").value();
-				if (work_done_token_json->kind()!=json_value_kind::NUMBER) return std::nullopt;
-				else work_done_token = (int)work_done_token_json->num().value();
+				auto work_done_token_json = *json->obj_get("workDoneToken");
+				if (work_done_token_json->kind()!=json_value_kind::NUMBER) return {};
+				else work_done_token = (int)*work_done_token_json->num();
 			}
 
 			return work_done_progress_params{.work_done_token = work_done_token};
@@ -1085,7 +1085,7 @@ namespace hill::lsp::models {
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
-			if (work_done_token.has_value()) {json->obj_add_num("workDoneToken", (double)work_done_token.value());}
+			if (work_done_token) {json->obj_add_num("workDoneToken", (double)*work_done_token);}
 			return json;
 		}
 	};
@@ -1097,13 +1097,13 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			std::optional<bool> work_done_progress = std::nullopt;
+			std::optional<bool> work_done_progress = {};
 			if (json->obj_has("workDoneProgress")) {
-				auto work_done_progress_json = json->obj_get("workDoneProgress").value();
-				if (work_done_progress_json->kind()!=json_value_kind::BOOL) return std::nullopt;
-				else work_done_progress = work_done_progress_json->boolean().value();
+				auto work_done_progress_json = *json->obj_get("workDoneProgress");
+				if (work_done_progress_json->kind()!=json_value_kind::BOOL) return {};
+				else work_done_progress = *work_done_progress_json->boolean();
 			}
 
 			return work_done_progress_options{.work_done_progress = work_done_progress};
@@ -1112,8 +1112,8 @@ namespace hill::lsp::models {
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
-			if (work_done_progress.has_value()) {
-				json->obj_add_bool("workDoneProgress", work_done_progress.value());
+			if (work_done_progress) {
+				json->obj_add_bool("workDoneProgress", *work_done_progress);
 			}
 			return json;
 		}
@@ -1148,7 +1148,7 @@ namespace hill::lsp::models {
 		if (str==trace_value_str(trace_value::OFF)) return trace_value::OFF;
 		else if (str==trace_value_str(trace_value::MESSAGE)) return trace_value::MESSAGE;
 		else if (str==trace_value_str(trace_value::VERBOSE)) return trace_value::VERBOSE;
-		else return std::nullopt;
+		else return {};
 	}
 
 	struct client_info {
@@ -1182,13 +1182,13 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			std::optional<int> work_done_token = std::nullopt;
+			std::optional<int> work_done_token = {};
 			if (json->obj_has("workDoneToken")) {
-				auto work_done_token_json = json->obj_get("workDoneToken").value();
-				if (work_done_token_json->kind()!=json_value_kind::NUMBER) return std::nullopt;
-				else work_done_token = (int)work_done_token_json->num().value();
+				auto work_done_token_json = *json->obj_get("workDoneToken");
+				if (work_done_token_json->kind()!=json_value_kind::NUMBER) return {};
+				else work_done_token = (int)*work_done_token_json->num();
 			}
 
 			return work_done_progress_params{.work_done_token = work_done_token};
@@ -1197,8 +1197,8 @@ namespace hill::lsp::models {
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
-			if (work_done_token.has_value()) {
-				json->obj_add_num("workDoneToken", (double)work_done_token.value());
+			if (work_done_token) {
+				json->obj_add_num("workDoneToken", (double)*work_done_token);
 			}
 			return json;
 		}*/
@@ -1215,40 +1215,40 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("tabSize")) return std::nullopt;
-			auto tab_size = json->obj_get("tabSize").value();
-			if (tab_size->kind()!=json_value_kind::NUMBER) return std::nullopt;
+			if (!json->obj_has("tabSize")) return {};
+			auto tab_size = *json->obj_get("tabSize");
+			if (tab_size->kind()!=json_value_kind::NUMBER) return {};
 
-			if (!json->obj_has("insertSpaces")) return std::nullopt;
-			auto insert_spaces = json->obj_get("insertSpaces").value();
-			if (insert_spaces->kind()!=json_value_kind::BOOL) return std::nullopt;
+			if (!json->obj_has("insertSpaces")) return {};
+			auto insert_spaces = *json->obj_get("insertSpaces");
+			if (insert_spaces->kind()!=json_value_kind::BOOL) return {};
 
 			std::optional<bool> trim_trailing_whitespace = {};
 			if (json->obj_has("trimTrailingWhitespace")) {
-				auto trim_trailing_whitespace_json = json->obj_get("trimTrailingWhitespace").value();
-				if (trim_trailing_whitespace_json->kind()!=json_value_kind::BOOL) return std::nullopt;
-				trim_trailing_whitespace = trim_trailing_whitespace_json->boolean().value();
+				auto trim_trailing_whitespace_json = *json->obj_get("trimTrailingWhitespace");
+				if (trim_trailing_whitespace_json->kind()!=json_value_kind::BOOL) return {};
+				trim_trailing_whitespace = *trim_trailing_whitespace_json->boolean();
 			}
 
 			std::optional<bool> insert_final_newline = {};
 			if (json->obj_has("insertFinalNewline")) {
-				auto insert_final_newline_json = json->obj_get("insertFinalNewline").value();
-				if (insert_final_newline_json->kind()!=json_value_kind::BOOL) return std::nullopt;
-				insert_final_newline = insert_final_newline_json->boolean().value();
+				auto insert_final_newline_json = *json->obj_get("insertFinalNewline");
+				if (insert_final_newline_json->kind()!=json_value_kind::BOOL) return {};
+				insert_final_newline = *insert_final_newline_json->boolean();
 			}
 
 			std::optional<bool> trim_final_newlines = {};
 			if (json->obj_has("trimFinalNewlines")) {
-				auto trim_final_newlines_json = json->obj_get("trimFinalNewlines").value();
-				if (trim_final_newlines_json->kind()!=json_value_kind::BOOL) return std::nullopt;
-				trim_final_newlines = trim_final_newlines_json->boolean().value();
+				auto trim_final_newlines_json = *json->obj_get("trimFinalNewlines");
+				if (trim_final_newlines_json->kind()!=json_value_kind::BOOL) return {};
+				trim_final_newlines = *trim_final_newlines_json->boolean();
 			}
 
 			return formatting_options{
-				.tab_size = (uint32_t)tab_size->num().value(),
-				.insert_spaces = insert_spaces->boolean().value(),
+				.tab_size = (uint32_t)*tab_size->num(),
+				.insert_spaces = *insert_spaces->boolean(),
 				.trim_trailing_whitespace = trim_trailing_whitespace,
 				.insert_final_newline = insert_final_newline,
 				.trim_final_newlines = trim_final_newlines,
@@ -1260,9 +1260,9 @@ namespace hill::lsp::models {
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 			json->obj_add_num("tabSize", (double)tab_size);
 			json->obj_add_bool("insertSpaces", insert_spaces);
-			if (trim_trailing_whitespace.has_value()) {json->obj_add_bool("trimTrailingWhitespace", trim_trailing_whitespace.value());}
-			if (insert_final_newline.has_value()) {json->obj_add_bool("insertFinalNewline", insert_final_newline.value());}
-			if (trim_final_newlines.has_value()) {json->obj_add_bool("trimFinalNewlines", trim_final_newlines.value());}
+			if (trim_trailing_whitespace) {json->obj_add_bool("trimTrailingWhitespace", *trim_trailing_whitespace);}
+			if (insert_final_newline) {json->obj_add_bool("insertFinalNewline", *insert_final_newline); }
+			if (trim_final_newlines) {json->obj_add_bool("trimFinalNewlines", *trim_final_newlines);}
 			return json;
 		}
 	};
@@ -1279,22 +1279,22 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("textDocument")) return std::nullopt;
-			auto text_document = text_document_identifier::from_json(json->obj_get("textDocument").value());
-			if (!text_document.has_value()) return std::nullopt;
+			if (!json->obj_has("textDocument")) return {};
+			auto text_document = text_document_identifier::from_json(*json->obj_get("textDocument"));
+			if (!text_document) return {};
 
-			if (!json->obj_has("options")) return std::nullopt;
-			auto options = formatting_options::from_json(json->obj_get("options").value());
-			if (!options.has_value()) return std::nullopt;
+			if (!json->obj_has("options")) return {};
+			auto options = formatting_options::from_json(*json->obj_get("options"));
+			if (!options) return {};
 
 			auto work_done_prog_params = work_done_progress_params::from_json(json);
 
 			return document_formatting_params{
-				.text_document = text_document.value(),
-				.options = options.value(),
-				.work_done_token = work_done_prog_params.value().work_done_token
+				.text_document = *text_document,
+				.options = *options,
+				.work_done_token = (*work_done_prog_params).work_done_token
 			};
 		}
 
@@ -1303,7 +1303,7 @@ namespace hill::lsp::models {
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 			json->obj_add_obj("textDocument", text_document.json());
 			json->obj_add_obj("options", options.json());
-			if (work_done_token.has_value()) {json->obj_add_num("workDoneToken", (double)work_done_token.value());}
+			if (work_done_token) {json->obj_add_num("workDoneToken", (double)*work_done_token);}
 			return json;
 		}
 	};
@@ -1357,11 +1357,11 @@ namespace hill::lsp::models {
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
-			if (position_encoding.has_value()) {json->obj_add_str("positionEncoding", position_encoding_kind_str(position_encoding.value()));}
-			if (text_document_sync.has_value()) {json->obj_add_num("textDocumentSync", (double)text_document_sync.value());}
-			if (completion_provider.has_value()) {json->obj_add_obj("completionProvider", completion_provider.value().json());}
-			if (hover_provider.has_value()) {json->obj_add_bool("hoverProvider", hover_provider.value());}
-			if (document_formatting_provider.has_value()) {json->obj_add_bool("documentFormattingProvider", document_formatting_provider.value());}
+			if (position_encoding) {json->obj_add_str("positionEncoding", position_encoding_kind_str(*position_encoding));}
+			if (text_document_sync) {json->obj_add_num("textDocumentSync", (double)*text_document_sync);}
+			if (completion_provider) {json->obj_add_obj("completionProvider", (*completion_provider).json());}
+			if (hover_provider) {json->obj_add_bool("hoverProvider", *hover_provider);}
+			if (document_formatting_provider) {json->obj_add_bool("documentFormattingProvider", *document_formatting_provider);}
 			return json;
 		}
 	};
@@ -1376,8 +1376,8 @@ namespace hill::lsp::models {
 
 			json->obj_add_str("name", name);
 
-			if (version.has_value()) {
-				json->obj_add_str("version", version.value());
+			if (version) {
+				json->obj_add_str("version", *version);
 			}
 
 			return json;
@@ -1394,8 +1394,8 @@ namespace hill::lsp::models {
 
 			json->obj_add_obj("capabilities", capabilities.json());
 
-			if (server_info.has_value()) {
-				json->obj_add_obj("serverInfo", server_info.value().json());
+			if (server_info) {
+				json->obj_add_obj("serverInfo", (*server_info).json());
 			}
 
 			return json;
@@ -1409,13 +1409,13 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
-			if (!json->obj_has("textDocument")) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
+			if (!json->obj_has("textDocument")) return {};
 
-			auto text_document = text_document_item::from_json(json->obj_get("textDocument").value());
-			if (!text_document.has_value()) return std::nullopt;
+			auto text_document = text_document_item::from_json(*json->obj_get("textDocument"));
+			if (!text_document) return {};
 
-			return did_open_text_document_params{.text_document=text_document.value()};
+			return did_open_text_document_params{.text_document=*text_document};
 		}
 
 		std::shared_ptr<utils::json_value> json() const
@@ -1433,13 +1433,13 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
-			if (!json->obj_has("textDocument")) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
+			if (!json->obj_has("textDocument")) return {};
 
-			auto text_document = text_document_identifier::from_json(json->obj_get("textDocument").value());
-			if (!text_document.has_value()) return std::nullopt;
+			auto text_document = text_document_identifier::from_json(*json->obj_get("textDocument"));
+			if (!text_document) return {};
 
-			return did_close_text_document_params{.text_document=text_document.value()};
+			return did_close_text_document_params{.text_document=*text_document};
 		}
 
 		std::shared_ptr<utils::json_value> json() const
@@ -1467,9 +1467,9 @@ namespace hill::lsp::models {
 			auto work_done_prog_params = work_done_progress_params::from_json(json);
 
 			return hover_params{
-				.text_document = pos_params.value().text_document,
-				.position = pos_params.value().position,
-				.work_done_token = work_done_prog_params.value().work_done_token
+				.text_document = (*pos_params).text_document,
+				.position = (*pos_params).position,
+				.work_done_token = (*work_done_prog_params).work_done_token
 			};
 		}
 
@@ -1478,7 +1478,7 @@ namespace hill::lsp::models {
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 			json->obj_add_obj("textDocument", text_document.json());
 			json->obj_add_obj("position", position.json());
-			if (work_done_token.has_value()) {json->obj_add_num("workDoneToken", (double)work_done_token.value());}
+			if (work_done_token) {json->obj_add_num("workDoneToken", (double)*work_done_token);}
 			return json;
 		}
 	};
@@ -1514,7 +1514,7 @@ namespace hill::lsp::models {
 					json->obj_add_obj("contents", std::get<marked_lang_string>(marked_str).json());
 				}
 			} else if (std::holds_alternative<std::vector<marked_string_t>>(contents)) {
-				auto arr = json->obj_add_arr("contents").value();
+				auto arr = *json->obj_add_arr("contents");
 				for (const auto &marked_str : std::get<std::vector<marked_string_t>>(contents)) {
 					if (std::holds_alternative<std::string>(marked_str)) {
 						arr->arr_add_str(std::get<std::string>(marked_str));
@@ -1526,8 +1526,8 @@ namespace hill::lsp::models {
 				json->obj_add_obj("contents", std::get<markup_content>(contents).json());
 			}
 
-			if (range.has_value()) {
-				json->obj_add_obj("range", range.value().json());
+			if (range) {
+				json->obj_add_obj("range", (*range).json());
 			}
 
 			return json;
@@ -1541,8 +1541,8 @@ namespace hill::lsp::models {
 		std::shared_ptr<utils::json_value> json() const
 		{
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
-			if (detail.has_value()) {json->obj_add_str("detail", detail.value());}
-			if (description.has_value()) {json->obj_add_str("description", description.value());}
+			if (detail) {json->obj_add_str("detail", *detail);}
+			if (description) {json->obj_add_str("description", *description);}
 			return json;
 		}
 	};
@@ -1687,55 +1687,54 @@ namespace hill::lsp::models {
 			auto json = utils::json_value::create<utils::json_value_kind::OBJECT>();
 
 			json->obj_add_str("label", label);
-			if (label_details.has_value()) {json->obj_add_obj("labelDetails", label_details.value().json());}
+			if (label_details) {json->obj_add_obj("labelDetails", (*label_details).json());}
 			json->obj_add_str("label", label);
-			if (kind.has_value()) {json->obj_add_num("kind", (double)kind.value());}
-			if (tags.has_value()) {
-				auto arr = json->obj_add_arr("tags").value();
-				for (auto tag : tags.value()) {
+			if (kind) {json->obj_add_num("kind", (double)*kind);}
+			if (tags) {
+				auto arr = *json->obj_add_arr("tags");
+				for (auto tag : *tags) {
 					arr->arr_add_num((double)tag);
 				}
 			}
-			if (detail.has_value()) {json->obj_add_str("detail", detail.value());}
-			if (documentation.has_value()) {
-				auto &doc = documentation.value();
-				if (std::holds_alternative<std::string>(doc)) {
-					json->obj_add_str("documentation", std::get<std::string>(doc));
+			if (detail) {json->obj_add_str("detail", *detail);}
+			if (documentation) {
+				if (std::holds_alternative<std::string>(*documentation)) {
+					json->obj_add_str("documentation", std::get<std::string>(*documentation));
 				} else {
-					json->obj_add_obj("documentation", std::get<markup_content>(doc).json());
+					json->obj_add_obj("documentation", std::get<markup_content>(*documentation).json());
 				}
 			}
-			if (preselect.has_value()) {json->obj_add_bool("preselect", preselect.value());}
-			if (sort_text.has_value()) {json->obj_add_str("sortText", sort_text.value());}
-			if (filter_text.has_value()) {json->obj_add_str("filterText", filter_text.value());}
-			if (insert_text.has_value()) {json->obj_add_str("insertText", insert_text.value());}
-			if (insert_text_format.has_value()) {json->obj_add_num("InsertTextFormat", (double)insert_text_format.value());}
-			if (insert_text_mode.has_value()) {json->obj_add_num("insertTextMode", (double)insert_text_mode.value());}
-			if (text_edit.has_value()) {
-				if (std::holds_alternative<models::text_edit>(text_edit.value())) {
-					json->obj_add_obj("textEdit", std::get<models::text_edit>(text_edit.value()).json());
+			if (preselect) {json->obj_add_bool("preselect", *preselect);}
+			if (sort_text) {json->obj_add_str("sortText", *sort_text);}
+			if (filter_text) {json->obj_add_str("filterText", *filter_text);}
+			if (insert_text) {json->obj_add_str("insertText", *insert_text);}
+			if (insert_text_format) {json->obj_add_num("InsertTextFormat", (double)*insert_text_format);}
+			if (insert_text_mode) {json->obj_add_num("insertTextMode", (double)*insert_text_mode);}
+			if (text_edit) {
+				if (std::holds_alternative<models::text_edit>(*text_edit)) {
+					json->obj_add_obj("textEdit", std::get<models::text_edit>(*text_edit).json());
 				} else {
-					json->obj_add_obj("textEdit", std::get<insert_replace_edit>(text_edit.value()).json());
+					json->obj_add_obj("textEdit", std::get<insert_replace_edit>(*text_edit).json());
 				}
 			}
-			if (text_edit_text.has_value()) {json->obj_add_str("textEditText", text_edit_text.value());}
-			if (additional_text_edits.has_value()) {
-				auto arr = json->obj_add_arr("additionalTextEdits").value();
-				for (const auto &edit : additional_text_edits.value()) {
+			if (text_edit_text) {json->obj_add_str("textEditText", *text_edit_text);}
+			if (additional_text_edits) {
+				auto arr = *json->obj_add_arr("additionalTextEdits");
+				for (const auto &edit : *additional_text_edits) {
 					arr->arr_add_obj(edit.json());
 				}
 			}
-			if (commit_characters.has_value()) {
-				auto arr = json->obj_add_arr("commitCharacters").value();
-				for (const auto &chars : commit_characters.value()) {
+			if (commit_characters) {
+				auto arr = *json->obj_add_arr("commitCharacters");
+				for (const auto &chars : *commit_characters) {
 					arr->arr_add_str(chars);
 				}
 			}
-			if (command.has_value()) {
-				json->obj_add_obj("command", command.value().json());
+			if (command) {
+				json->obj_add_obj("command", (*command).json());
 			}
 
-			if (data.has_value()) {json->obj_add_obj("data", data.value());}
+			if (data) {json->obj_add_obj("data", *data);}
 
 			return json;
 		}
@@ -1767,7 +1766,7 @@ namespace hill::lsp::models {
 
 			json->obj_add_bool("isIncomplete", is_incomplete);
 
-			auto items_arr = json->obj_add_arr("items").value();
+			auto items_arr = *json->obj_add_arr("items");
 			for (const auto &item : items) {
 				items_arr->arr_add_obj(item.json());
 			}
@@ -1787,7 +1786,7 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 			
 			return text_document_content_change_event{};
 		}
@@ -1806,13 +1805,13 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
-			if (!json->obj_has("text")) return std::nullopt;
-			auto text_json = json->obj_get("text").value();
-			if (text_json->kind()!=json_value_kind::STRING) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
+			if (!json->obj_has("text")) return {};
+			auto text_json = *json->obj_get("text");
+			if (text_json->kind()!=json_value_kind::STRING) return {};
 
 			return text_document_content_change_all{
-				.text = text_json->str().value()
+				.text = *text_json->str()
 			};
 		}
 
@@ -1835,29 +1834,29 @@ namespace hill::lsp::models {
 		{
 			using namespace ::hill::utils;
 
-			if (json->kind()!=json_value_kind::OBJECT) return std::nullopt;
+			if (json->kind()!=json_value_kind::OBJECT) return {};
 
-			if (!json->obj_has("textDocument")) return std::nullopt;
-			auto text_document = versioned_text_document_identifier::from_json(json->obj_get("textDocument").value());
-			if (!text_document.has_value()) return std::nullopt;
+			if (!json->obj_has("textDocument")) return {};
+			auto text_document = versioned_text_document_identifier::from_json(*json->obj_get("textDocument"));
+			if (!text_document) return {};
 
-			if (!json->obj_has("contentChanges")) return std::nullopt;
-			auto content_changes_arr_json = json->obj_get("contentChanges").value();
-			if (content_changes_arr_json->kind()!=json_value_kind::ARRAY) return std::nullopt;
+			if (!json->obj_has("contentChanges")) return {};
+			auto content_changes_arr_json = *json->obj_get("contentChanges");
+			if (content_changes_arr_json->kind()!=json_value_kind::ARRAY) return {};
 
 			std::vector<text_document_content_change_all> content_changes;
-			auto content_changes_arr = content_changes_arr_json->arr().value();
+			auto content_changes_arr = *content_changes_arr_json->arr();
 			for (const auto &el : content_changes_arr) {
 				auto content_change = models::text_document_content_change_all::from_json(el);
-				if (!content_change.has_value()) return std::nullopt;
-				content_changes.push_back(content_change.value());
+				if (!content_change) return {};
+				content_changes.push_back(*content_change);
 			}
 
-			//auto content_changes = models::text_document_content_change_all::from_json(json->obj_get("contentChanges").value());
-			//if (!content_changes.has_value()) return std::nullopt;
+			//auto content_changes = models::text_document_content_change_all::from_json(*json->obj_get("contentChanges"));
+			//if (!content_changes) return {};
 
 			return did_change_text_document_params{
-				.text_document = text_document.value(),
+				.text_document = *text_document,
 				.content_changes = content_changes,
 			};
 		}
@@ -1868,7 +1867,7 @@ namespace hill::lsp::models {
 
 			json->obj_add_obj("textDocument", text_document.json());
 
-			auto content_changes_arr = json->obj_add_arr("contentChanges").value();
+			auto content_changes_arr = *json->obj_add_arr("contentChanges");
 			for (const auto &content_change : content_changes) {
 				content_changes_arr->arr_add_obj(content_change.json());
 			}

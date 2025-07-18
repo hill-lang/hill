@@ -98,37 +98,37 @@ namespace hill::utils {
 
 		/*std::optional<const object_t &> obj() const
 		{
-			if (value_kind!=json_value_kind::OBJECT) return std::nullopt;
-			if (!std::holds_alternative<object_t>(value)) return std::nullopt;
+			if (value_kind!=json_value_kind::OBJECT) return {};
+			if (!std::holds_alternative<object_t>(value)) return {};
 			return std::get<object_t>(value);
 		}*/
 
 		// NEVER extend the lifetine of this return value!
 		std::optional<json_array_ref> arr() const
 		{
-			if (value_kind!=json_value_kind::ARRAY) return std::nullopt;
-			if (!std::holds_alternative<array_t>(value)) return std::nullopt;
+			if (value_kind!=json_value_kind::ARRAY) return {};
+			if (!std::holds_alternative<array_t>(value)) return {};
 			return json_array_ref {std::get<array_t>(value)};
 		}
 
 		std::optional<std::string> str() const
 		{
-			if (value_kind!=json_value_kind::STRING) return std::nullopt;
-			if (!std::holds_alternative<std::string>(value)) return std::nullopt;
+			if (value_kind!=json_value_kind::STRING) return {};
+			if (!std::holds_alternative<std::string>(value)) return {};
 			return std::get<std::string>(value);
 		}
 
 		std::optional<number_t> num() const
 		{
-			if (value_kind!=json_value_kind::NUMBER) return std::nullopt;
-			if (!std::holds_alternative<number_t>(value)) return std::nullopt;
+			if (value_kind!=json_value_kind::NUMBER) return {};
+			if (!std::holds_alternative<number_t>(value)) return {};
 			return std::get<number_t>(value);
 		}
 
 		std::optional<bool> boolean() const
 		{
-			if (value_kind!=json_value_kind::BOOL) return std::nullopt;
-			if (!std::holds_alternative<bool>(value)) return std::nullopt;
+			if (value_kind!=json_value_kind::BOOL) return {};
+			if (!std::holds_alternative<bool>(value)) return {};
 			return std::get<bool>(value);
 		}
 
@@ -137,8 +137,8 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> obj_add_obj(const std::string &key)
 		{
-			if (value_kind!=json_value_kind::OBJECT) return std::nullopt;
-			if (obj_has(key)) return std::nullopt;
+			if (value_kind!=json_value_kind::OBJECT) return {};
+			if (obj_has(key)) return {};
 
 			auto val = create<json_value_kind::OBJECT>();
 			std::get<object_t>(value).emplace_back(key, val);
@@ -150,8 +150,8 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> obj_add_obj(const std::string &key, const std::shared_ptr<json_value> &obj)
 		{
-			if (value_kind!=json_value_kind::OBJECT) return std::nullopt;
-			if (obj_has(key)) return std::nullopt;
+			if (value_kind!=json_value_kind::OBJECT) return {};
+			if (obj_has(key)) return {};
 
 			std::get<object_t>(value).emplace_back(key, obj);
 			return obj;
@@ -162,8 +162,8 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> obj_add_arr(const std::string &key)
 		{
-			if (value_kind!=json_value_kind::OBJECT) return std::nullopt;
-			if (obj_has(key)) return std::nullopt;
+			if (value_kind!=json_value_kind::OBJECT) return {};
+			if (obj_has(key)) return {};
 
 			auto val = create<json_value_kind::ARRAY>();
 			std::get<object_t>(value).emplace_back(key, val);
@@ -175,8 +175,8 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> obj_add_str(const std::string &key, const std::string &string)
 		{
-			if (value_kind!=json_value_kind::OBJECT) return std::nullopt;
-			if (obj_has(key)) return std::nullopt;
+			if (value_kind!=json_value_kind::OBJECT) return {};
+			if (obj_has(key)) return {};
 
 			auto val = create(string);
 			std::get<object_t>(value).emplace_back(key, val);
@@ -188,8 +188,8 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> obj_add_num(const std::string &key, number_t number)
 		{
-			if (value_kind!=json_value_kind::OBJECT) return std::nullopt;
-			if (obj_has(key)) return std::nullopt;
+			if (value_kind!=json_value_kind::OBJECT) return {};
+			if (obj_has(key)) return {};
 
 			auto val = create(number);
 			std::get<object_t>(value).emplace_back(key, val);
@@ -201,8 +201,8 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> obj_add_bool(const std::string &key, bool boolean)
 		{
-			if (value_kind!=json_value_kind::OBJECT) return std::nullopt;
-			if (obj_has(key)) return std::nullopt;
+			if (value_kind!=json_value_kind::OBJECT) return {};
+			if (obj_has(key)) return {};
 
 			auto val = create(boolean);
 			std::get<object_t>(value).emplace_back(key, val);
@@ -214,7 +214,7 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> arr_add_obj()
 		{
-			if (value_kind!=json_value_kind::ARRAY) return std::nullopt;
+			if (value_kind!=json_value_kind::ARRAY) return {};
 
 			auto obj = create<json_value_kind::OBJECT>();
 			std::get<array_t>(value).push_back(obj);
@@ -226,7 +226,7 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> arr_add_obj(const std::shared_ptr<json_value> &obj)
 		{
-			if (value_kind!=json_value_kind::ARRAY) return std::nullopt;
+			if (value_kind!=json_value_kind::ARRAY) return {};
 
 			std::get<array_t>(value).push_back(obj);
 			return obj;
@@ -237,7 +237,7 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> arr_add_arr()
 		{
-			if (value_kind!=json_value_kind::ARRAY) return std::nullopt;
+			if (value_kind!=json_value_kind::ARRAY) return {};
 
 			auto val = create<json_value_kind::ARRAY>();
 			std::get<array_t>(value).push_back(val);
@@ -249,7 +249,7 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> arr_add_str(const std::string &string)
 		{
-			if (value_kind!=json_value_kind::ARRAY) return std::nullopt;
+			if (value_kind!=json_value_kind::ARRAY) return {};
 
 			auto val = create(string);
 			std::get<array_t>(value).push_back(val);
@@ -261,7 +261,7 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> arr_add_num(number_t number)
 		{
-			if (value_kind!=json_value_kind::ARRAY) return std::nullopt;
+			if (value_kind!=json_value_kind::ARRAY) return {};
 
 			auto val = create(number);
 			std::get<array_t>(value).push_back(val);
@@ -273,7 +273,7 @@ namespace hill::utils {
 		/// </summary>
 		std::optional<std::shared_ptr<json_value>> arr_add_bool(bool boolean)
 		{
-			if (value_kind!=json_value_kind::ARRAY) return std::nullopt;
+			if (value_kind!=json_value_kind::ARRAY) return {};
 
 			auto val = create(boolean);
 			std::get<array_t>(value).push_back(val);
@@ -295,7 +295,7 @@ namespace hill::utils {
 				auto ix = std::distance(entires.begin(), it);
 				return entires[ix].second;
 			} else {
-				return std::nullopt;
+				return {};
 			}
 		}
 

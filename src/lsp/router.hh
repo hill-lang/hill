@@ -32,7 +32,7 @@ namespace hill::lsp {
 			if (map.contains(m)) {
 				return map.at(m);
 			} else {
-				return std::nullopt;
+				return {};
 			}
 		}
 
@@ -42,7 +42,7 @@ namespace hill::lsp {
 			if (map.contains(m)) {
 				return map.at(m);
 			} else {
-				return std::nullopt;
+				return {};
 			}
 		}
 

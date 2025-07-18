@@ -20,7 +20,7 @@ namespace hill::lsp {
 		std::optional<std::string> get(const std::string &fpath)
 		{
 			std::lock_guard<std::mutex> guard(access_mutex);
-			if (!store.contains(fpath)) return std::nullopt;
+			if (!store.contains(fpath)) return {};
 			else return store.at(fpath);
 		}
 
