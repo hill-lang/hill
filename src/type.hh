@@ -13,10 +13,12 @@ namespace hill {
 		I, I8, I16, I32, I64,
 		U, U8, U16, U32, U64,
 		F, F32, F64, /*F128,*/
-		FUNC, // Regular function
-		ARRAY,
-		TUPLE,
-		BLOCK,
+		FUNC, // FUNC, <ret-type>, <arg-type>, END
+		ARRAY, // ARRAY, <elm-type>, <num-elms>, END
+		TUPLE, // TYPLE, {<elm>}, END
+		BLOCK, // BLOCK, <ret-type>, {<anon-types>}, END
+		BIEXPR, // BIEXPR, <left-type>, <op>, <right-type>, END
+		ANON, // ANON, <num-id>, <name-ix>, END
 		END,
 	};
 
@@ -44,11 +46,6 @@ namespace hill {
 			return 16u;*/
 		case basic_type::FUNC:
 			return sizeof(void *);
-		case basic_type::TUPLE:
-		case basic_type::ARRAY:
-		case basic_type::BLOCK:
-		case basic_type::END:
-			return 0u;
 		default: throw internal_exception();
 		}
 	}
@@ -71,12 +68,7 @@ namespace hill {
 		case basic_type::F: return "@f";
 		case basic_type::F32: return "@f32";
 		case basic_type::F64: return "@f64";
-		case basic_type::FUNC: return "@fn";
 		//case basic_type::F128: return "@f128";
-		case basic_type::TUPLE: return "(";
-		case basic_type::ARRAY: return "@array(";
-		case basic_type::BLOCK: return "@block(";
-		case basic_type::END: return ")";
 		default: throw internal_exception();;
 		}
 	}
@@ -126,7 +118,7 @@ namespace hill {
 		switch (types[0]) {
 		case basic_type::FUNC:
 			{
-				ss << "@func(";
+				ss << "@fn(";
 				std::vector<basic_type> itypes = inner_type(types, 1);
 				ss << type_to_str(itypes);
 				ss << ",";
@@ -158,6 +150,10 @@ namespace hill {
 			}
 			break;
 		case basic_type::BLOCK:
+			break;
+		case basic_type::BIEXPR:
+			break;
+		case basic_type::ANON:
 			break;
 		default:
 			ss << types[0];
@@ -192,6 +188,10 @@ namespace hill {
 				return type_size(itypes) * (size_t)types[itypes.size()+1];
 			}
 		case basic_type::BLOCK:
+			return 0;
+		case basic_type::BIEXPR:
+			return 0;
+		case basic_type::ANON:
 			return 0;
 		default:
 			return basic_type_size(types[0]);

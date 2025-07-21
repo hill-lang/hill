@@ -2,7 +2,6 @@
 #define HILL__HILL_HH_INCLUDED
 
 #include "parser.hh"
-#include "serializer.hh"
 #include "token.hh"
 #include "value.hh"
 
@@ -133,13 +132,6 @@ namespace hill {
 		auto lib = build_lib(root);
 		analyzer.set_trunk(lib);
 		analyzer.analyze(parser.get_rpn());
-
-		// Debug only!
-		std::filesystem::create_directories("./tmp/");
-		serializer s(serializer_mode::ASCII);
-		s.serialize("./tmp/output.hill_c.txt", analyzer.get_main_block());
-		s = serializer(serializer_mode::BIN);
-		s.serialize("./tmp/output.hill_c", analyzer.get_main_block());
 
 		return evaluator.evaluate(analyzer.get_main_block());
 	}
