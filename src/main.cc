@@ -15,6 +15,7 @@
 #include "test/evaluator.hh"
 
 #include "test/json_parser.hh"
+#include "test/llvm.hh"
 
 #include <stdlib.h>
 #include <string.h>
@@ -61,6 +62,8 @@ int main(int argc, char *argv[])
 				//else if (!strcmp(argv[2], "analyzer")) {/*ok = hill::test::analyzer(test_session); */ }
 				else if (!strcmp(argv[2], "evaluator")) {ok = ::hill::test::evaluator(test_session);}
 				else if (!strcmp(argv[2], "json_parser")) {ok = ::hill::test::json_parser(test_session);}
+				else if (!strcmp(argv[2], "llvm")) {ok = ::hill::test::llvm(test_session);}
+				
 				else {return usage(argv[0]);}
 			} else {
 				if (!::hill::test::lexer(test_session)) ok =false;
@@ -68,6 +71,7 @@ int main(int argc, char *argv[])
 				//if (!::hill::test::analyzer(test_session)) ok = false;
 				if (!::hill::test::evaluator(test_session)) ok = false;
 				if (!::hill::test::json_parser(test_session)) ok = false;
+				if (!::hill::test::llvm(test_session)) ok = false;
 			}
 			std::cout << '\n';
 			::hill::test::test_report(test_session, std::cout);
@@ -79,6 +83,7 @@ int main(int argc, char *argv[])
 		//if (!::hill::test::analyzer(test_session)) ok = false;
 		if (!::hill::test::evaluator(test_session)) ok = false;
 		if (!::hill::test::json_parser(test_session)) ok = false;
+		if (!::hill::test::llvm(test_session)) ok = false;
 		std::cout << '\n';
 		::hill::test::test_report(test_session, std::cout);
 	}
