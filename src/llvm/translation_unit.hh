@@ -1,7 +1,7 @@
 #ifndef HILL__LLVM__TRANSLATION_UNIT_HH_INCLUDED
 #define HILL__LLVM__TRANSLATION_UNIT_HH_INCLUDED
 
-#include "type.hh"
+#include "builtin_type.hh"
 
 #include <string>
 
@@ -15,7 +15,7 @@ namespace hill::llvm {
 	  ret i32 10
 	}*/
 	struct function {
-		type return_type;
+		builtin_type return_type;
 
 	};
 
