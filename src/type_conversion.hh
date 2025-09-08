@@ -29,11 +29,14 @@ namespace hill {
 		} else return target;
 	}
 
-	inline const type convert_binary(tt op, const type &left, const type &right)
+	inline const type convert_type_binary(hl_op_code op, const type &left, const type &right)
 	{
 		switch (op) {
-		case tt::OP_COLON_EQ:
-			return convert(left, right);
+		case hl_op_code::ADD:
+			if (left==right) return left;
+			else if (left==type(basic_type::F64) || right==type(basic_type::F64)) return left;
+			else if (left==type(basic_type::I32) || right==type(basic_type::I32)) return left;
+			else throw not_implemented_exception();
 		default: throw not_implemented_exception();
 		}
 	}

@@ -5,6 +5,7 @@
 
 #include "exceptions.hh"
 #include "instr.hh"
+#include "token.hh"
 
 #include <string>
 #include <vector>
